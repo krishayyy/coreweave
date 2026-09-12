@@ -23,6 +23,26 @@ update as every hypothesis from the published library. It cannot move the
 aircraft, cannot discard a search area, and cannot weight itself. A hallucinated
 hypothesis simply fails to explain the evidence and dies.
 
+## What this is, and what it is not
+
+This is a **planning system evaluated in simulation**. No aircraft was flown and
+none is claimed. The sensor is a parameter -- a nominal 180 m effective sweep
+width for a thermal and RGB pass, degraded under canopy and on steep ground --
+not a particular product.
+
+That is the correct standard for this problem rather than a compromise. You
+cannot run a controlled experiment on real missing people: you would need the
+same case searched twice by two different methods, with the answer withheld
+from both. A simulator is what makes the ground truth withheld, the arms
+comparable and the result measurable. One real flight would be an anecdote;
+what follows is 594 runs with a control.
+
+What is real: the terrain, the drainage networks derived from it, the
+distance-from-planning-point distributions taken from published lost-person
+behaviour literature, and the detection formulation, which is the standard one
+used in search and rescue. What is synthetic: the incidents, generated
+procedurally so no model can have seen the answers.
+
 ## Grounding
 
 - **Terrain** — real elevation from AWS Terrarium tiles (public, key-free); the
