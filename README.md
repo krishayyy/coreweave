@@ -193,9 +193,61 @@ avoids.
 
         python scripts/tune_bearing_arc.py
 
+## The loop that persists
+
+The inner loop searches. The outer loop notices its premise is wrong and
+replaces it. Neither gets better over time -- the hundredth search is no wiser
+than the first, because nothing survives the end of a run.
+
+So there is a third loop, running at the timescale of many searches:
+
+1. **Search.** Run a batch, and fail at some of them.
+2. **Review.** Score every proposal the agent made against the truth it never
+   saw. Summarise into statistics and concrete worked misses.
+3. **Propose.** Show the agent its own record and ask what instruction would
+   have prevented those errors.
+4. **Validate.** Measure the candidate on a fold it was not derived from.
+5. **Gate.** Keep it only if it clears a margin. Record it either way.
+
+        python scripts/self_improve.py --rounds 2
+
+Accepted lessons are injected into the nomination prompt for every future
+search. Rejected ones stay in the book with their measured effect, so the agent
+does not re-propose them and the record shows what was tried.
+
+### Why there is a gate
+
+Because I got this wrong myself, in exactly the way the gate exists to catch.
+
+Reviewing 297 of the agent's own nominations showed that bearing error was
+6 degrees where the cue required terrain reasoning and 55-60 degrees where the
+case file simply *named* a direction. That is a clean, legible diagnosis: the
+model is good at the hard inference and bad at the lookup. I wrote a compass
+table into the prompt and predicted bearing error would fall.
+
+On the held-out suite it **rose**, 55 to 68 and 60 to 70 degrees, and the effect
+on find rate was unchanged. The mechanism was a correlation that looked good.
+The instruction has been reverted, because it earned no place on the evidence.
+
+Then the self-improvement loop, shown the same record, proposed **almost exactly
+the same instruction** -- give a stated direction priority over terrain cues --
+with the same rationale and the same predicted effect. Two independent
+reviewers, one human and one model, reached the same plausible and wrong
+conclusion from the same data.
+
+The gate rejected it.
+
+That is the whole argument for building one. A model asked to improve its own
+prompt will always produce something that sounds like an improvement, and so
+will a person. Whether it is one is an empirical question, and the answer is
+often no. Self-improvement without a validation gate is not self-improvement;
+it is a prompt slowly filling with plausible noise.
+
 ## Reproducing
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
+    python scripts/self_improve.py --rounds 2    # the loop that persists
+    python scripts/error_analysis.py     # where the remaining error comes from
     python scripts/ceiling_check.py      # the diagnostic upper bound
     python scripts/tune_trigger.py       # threshold sweep, tuning suite only
     python scripts/tune_revisions.py     # revision cap sweep, tuning suite only
