@@ -243,6 +243,42 @@ will a person. Whether it is one is an empirical question, and the answer is
 often no. Self-improvement without a validation gate is not self-improvement;
 it is a prompt slowly filling with plausible noise.
 
+### Learning from precedent instead of rules
+
+Rewriting instructions is the weaker way to improve, and in this project it kept
+failing. An abstract rule has to be right about every future case at once, it is
+hard to validate, and a confident diagnosis of your own failures is often wrong
+-- which happened twice here, once to a human and once to the agent, arriving at
+the same wrong rule from the same data.
+
+So the agent also keeps **resolved cases**. When a search ends the truth becomes
+known: this is what the evidence said, and this is where the subject had
+actually started. Facing a new case, it retrieves the resolved ones whose
+evidence most resembles this one and is shown what turned out to be true.
+
+    PRECEDENT. You have resolved 12 searches before this one. These are the most
+    similar, and in each the truth is now known:
+
+      Evidence was: "a vehicle that left heading north-east."
+        It turned out the subject had started 8.6 km from the planning point on
+        bearing 58 degrees (north-east), behaving as a hiker.
+
+That teaches a convention by example rather than by instruction, which is
+precisely what the instruction-rewriting attempts could not do. It also adapts
+per case: different evidence retrieves different precedent.
+
+Retrieval is tf-idf cosine over the evidence text. Deliberately not an embedding
+model -- that is a dependency and a failure mode, and the text being matched is
+short and lexically distinctive.
+
+        python scripts/learning_curve.py --n 16
+
+The measurement is a difference in differences. With memory, later cases should
+beat earlier ones because they have more precedent to draw on; without it, the
+same sequence should be flat. A rising line on its own would prove nothing, as
+the tail of any sequence can happen to be easier -- the flat control is what
+makes it mean something.
+
 ## Reproducing
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
