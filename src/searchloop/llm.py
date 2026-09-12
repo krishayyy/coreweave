@@ -36,6 +36,9 @@ CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "llm_cache"
 # request never arrived".
 _MIN_INTERVAL_S = float(os.getenv("LLM_MIN_INTERVAL", "0.35"))
 _MAX_RETRIES = 5
+_MAX_BACKOFF_S = float(os.getenv("LLM_MAX_BACKOFF", "95"))
+# Rate limiting should be audible. A silent stall reads as a slow run.
+_VERBOSE = os.getenv("LLM_VERBOSE", "1") != "0"
 _lock = threading.Lock()
 _last_call = 0.0
 
@@ -154,7 +157,15 @@ def complete(
             retry_after = resp.headers.get("Retry-After")
             delay = float(retry_after) if retry_after and retry_after.replace(".", "", 1).isdigit() \
                 else min(2**attempt + 1, 30)
+            # Cap it. An uncapped Retry-After turns a daily quota into an
+            # indefinite sleep, and a process asleep for an hour is
+            # indistinguishable from a process that is merely slow.
+            delay = min(delay, _MAX_BACKOFF_S)
             last = requests.HTTPError(f"{resp.status_code} from {provider.name}")
+            if _VERBOSE:
+                remaining = resp.headers.get("x-ratelimit-remaining-tokens", "?")
+                print(f"    [rate limited: {resp.status_code}, waiting {delay:.0f}s, "
+                      f"tokens left {remaining}]", flush=True)
             time.sleep(delay)
             continue
 

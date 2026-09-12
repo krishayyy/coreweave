@@ -360,7 +360,7 @@ def nominate_llm(
         f"WHY YOU ARE BEING ASKED\n{trigger.reason}.\n\n"
         f"Propose 2-3 different accounts of what happened."
     )
-    raw = llm.complete(system, user, max_tokens=1800, temperature=0.8)
+    raw = llm.complete(system, user, max_tokens=900, temperature=0.8)
     parsed = llm.extract_json(raw)
     if isinstance(parsed, dict):
         parsed = [parsed]
