@@ -34,6 +34,43 @@ hypothesis simply fails to explain the evidence and dies.
 - **Detection** — standard SAR formulation, `POD = 1 - exp(-coverage)`, with
   effective sweep width reduced under canopy and on steep ground.
 
+## Install
+
+    python3 -m pip install -r requirements.txt          # to run
+    python3 -m pip install -r requirements-dev.txt      # to run the tests and Weave
+
+No API key is needed for the deterministic arms, and terrain comes from a
+public, key-free tile source -- nothing in the baseline can fail for want of a
+credential.
+
+## The demo scenario
+
+`B005` -- *deliberate deviation*. What the incident commander has at hour zero:
+
+> Tom Aldridge, 50, told family they were hiking the standard route from
+> Timberline. Vehicle at the trailhead. Overdue since 09:30.
+
+Three operational periods in, with nothing found, one more item arrives:
+
+> A message on their phone, sent at 06:40, reads: "heading over the back side
+> first, will loop round after" -- recipient unidentified.
+
+The subject crossed the divide before starting the hike he described. He is
+6.9 km from where everyone is looking, and no amount of searching the stated
+route will reach him.
+
+Run it:
+
+    export GROQ_API_KEY=...        # or ANTHROPIC_ / WANDB_ / TYPESAFE_
+    python scripts/demo.py         # the model in the loop
+    python scripts/demo.py --oracle  # diagnostic: what a correct account looks like
+
+    python3 -m http.server 5173 --directory web   # the display
+
+`demo.py` streams the reasoning to the terminal as it happens -- evidence
+arriving, the premise failing, each proposed account with the fragment of the
+case file it cites -- and refreshes the display when it finishes.
+
 ## Layout
 
     src/searchloop/
@@ -156,34 +193,6 @@ avoids.
 
         python scripts/tune_bearing_arc.py
 
-## The demo scenario
-
-`B005` -- *deliberate deviation*. What the incident commander has at hour zero:
-
-> Tom Aldridge, 50, told family they were hiking the standard route from
-> Timberline. Vehicle at the trailhead. Overdue since 09:30.
-
-Three operational periods in, with nothing found, one more item arrives:
-
-> A message on their phone, sent at 06:40, reads: "heading over the back side
-> first, will loop round after" -- recipient unidentified.
-
-The subject crossed the divide before starting the hike he described. He is
-6.9 km from where everyone is looking, and no amount of searching the stated
-route will reach him.
-
-Run it:
-
-    export GROQ_API_KEY=...        # or ANTHROPIC_ / WANDB_ / TYPESAFE_
-    python scripts/demo.py         # the model in the loop
-    python scripts/demo.py --oracle  # diagnostic: what a correct account looks like
-
-    python3 -m http.server 5173 --directory web   # the display
-
-`demo.py` streams the reasoning to the terminal as it happens -- evidence
-arriving, the premise failing, each proposed account with the fragment of the
-case file it cites -- and refreshes the display when it finishes.
-
 ## Reproducing
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
@@ -194,15 +203,6 @@ case file it cites -- and refreshes the display when it finishes.
 
 Every arm is seeded from an explicit digest rather than `hash()`, and model
 responses are cached by prompt, so all three arms reproduce exactly.
-
-## Install
-
-    python3 -m pip install -r requirements.txt          # to run
-    python3 -m pip install -r requirements-dev.txt      # to run the tests and Weave
-
-No API key is needed for the deterministic arms, and terrain comes from a
-public, key-free tile source -- nothing in the baseline can fail for want of a
-credential.
 
 ## Observability
 
