@@ -263,9 +263,15 @@ class Display {
     const target = new Map(frame.hypotheses.map((h) => [h.label, h]));
     for (const [label, h] of target) {
       const cur = this.weights.get(label) ?? 0;
-      this.weights.set(label, lerp(cur, h.weight, 0.08));
+      this.weights.set(label, lerp(cur, h.weight, 0.10));
     }
-    const rows = [...target.values()].slice(0, 5);
+    // Order by the eased weight, not the frame's ranking. Easing lags by design,
+    // and ordering by the target while printing the eased value puts a smaller
+    // number above a larger one -- the panel contradicts itself for a second
+    // after every revision.
+    const rows = [...target.values()]
+      .sort((x, y) => (this.weights.get(y.label) ?? 0) - (this.weights.get(x.label) ?? 0))
+      .slice(0, 5);
     if (list.childElementCount !== rows.length) {
       list.innerHTML = rows.map(() =>
         '<li><span class="w"></span><span class="track"><span class="fill"></span></span><span class="label"></span></li>'
