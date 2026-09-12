@@ -173,10 +173,24 @@ case file it cites -- and refreshes the display when it finishes.
 Every arm is seeded from an explicit digest rather than `hash()`, and model
 responses are cached by prompt, so all three arms reproduce exactly.
 
+## Install
+
+    python3 -m pip install -r requirements.txt          # to run
+    python3 -m pip install -r requirements-dev.txt      # to run the tests and Weave
+
+No API key is needed for the deterministic arms, and terrain comes from a
+public, key-free tile source -- nothing in the baseline can fail for want of a
+credential.
+
 ## Observability
 
 Weave instrumentation is optional by construction -- absent credentials every
-decorator is a pass-through and the loop is unchanged. What is traced is the
+decorator is a pass-through and the loop is unchanged. Credentials are checked
+*before* `weave.init` is called, because it prompts on stdin and blocks when it
+finds none, and a frozen terminal during a live search is a worse failure than
+no tracing at all.
+
+    wandb login          # then tracing starts automatically What is traced is the
 revision rather than the search: what the evidence had ruled out, what was
 proposed in response, and what was refused. The rejected proposals are the
 informative rows, because they show the mixture declining a bad account instead

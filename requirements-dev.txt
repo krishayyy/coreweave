@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest>=8.0
+# Optional. Tracing is a no-op when weave is absent or unauthenticated, so the
+# loop never depends on it.
+weave>=0.51
