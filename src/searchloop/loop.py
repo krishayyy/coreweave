@@ -107,7 +107,7 @@ def run_scenario(
         accepted: list[dict[str, Any]] = []
         rejected: list[dict[str, Any]] = []
 
-        if trigger.fired and arm != "none":
+        if trigger.fired and arm != "none" and revisions < cfg.max_revisions:
             try:
                 if arm == "heuristic":
                     noms = nominate_heuristic(belief, grid, scenario.ipp_rc, rng)

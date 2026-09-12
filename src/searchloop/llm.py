@@ -34,7 +34,7 @@ CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "llm_cache"
 # silently degrades into a stream of 429s that get swallowed as failed
 # nominations -- which looks like "the model had no ideas" rather than "the
 # request never arrived".
-_MIN_INTERVAL_S = float(os.getenv("LLM_MIN_INTERVAL", "1.1"))
+_MIN_INTERVAL_S = float(os.getenv("LLM_MIN_INTERVAL", "0.35"))
 _MAX_RETRIES = 5
 _lock = threading.Lock()
 _last_call = 0.0
@@ -131,6 +131,11 @@ def complete(
             "messages": [{"role": "system", "content": system},
                          {"role": "user", "content": user}],
         }
+        # Reasoning models spend most of their token budget on chain of thought,
+        # which here is pure cost: the task is a short structured proposal, and
+        # the token-per-minute ceiling is the binding constraint on throughput.
+        if effort := os.getenv("LLM_REASONING_EFFORT"):
+            payload["reasoning_effort"] = effort
 
     last: Exception | None = None
     for attempt in range(_MAX_RETRIES):

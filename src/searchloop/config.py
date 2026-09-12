@@ -32,6 +32,10 @@ class Config:
     # fitting the test set.
     exhaustion_trigger: float = 0.40
     min_periods_between_revisions: int = 2
+    # Each revision admits 2-3 hypotheses. Left uncapped the mixture dilutes:
+    # the joint spreads across a dozen competing accounts and the search stops
+    # committing to any of them. Swept on the tuning suite.
+    max_revisions: int = 2
     max_periods: int = 16
 
     prune_floor: float = 1e-4
