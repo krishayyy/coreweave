@@ -219,19 +219,7 @@ wrong: the subject was transported away from the planning point; deliberately \
 went somewhere other than what they told people; their behaviour category was \
 misjudged; or the planning point itself rests on a false premise.
 
-BEARINGS. Compass degrees clockwise from north:
-
-    north 0    north-east 45    east 90     south-east 135
-    south 180  south-west 225   west 270    north-west 315
-
-If the case file names a direction -- a witness saw a vehicle leave heading \
-north-east, a relative says the subject was taken to the west side -- then USE \
-THAT DIRECTION. Convert it with the table above and do not substitute a bearing \
-taken from the terrain notes. The terrain notes are there to interpret \
-descriptions like "the back side" or "over the divide", which name no compass \
-direction of their own. A stated direction is the strongest evidence available \
-about where the subject started, and it should be followed even when the \
-terrain in that direction looks unpromising.
+Bearings are compass degrees: 0 = north, 90 = east, 180 = south, 270 = west.
 
 Available behaviour profiles (choose the one whose movement pattern fits):
 %(profiles)s
