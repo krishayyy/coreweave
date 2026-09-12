@@ -273,11 +273,42 @@ short and lexically distinctive.
 
         python scripts/learning_curve.py --n 16
 
-The measurement is a difference in differences. With memory, later cases should
-beat earlier ones because they have more precedent to draw on; without it, the
-same sequence should be flat. A rising line on its own would prove nothing, as
-the tail of any sequence can happen to be easier -- the flat control is what
-makes it mean something.
+#### Result
+
+16 cases run in sequence, twice: once with memory accumulating, once with
+nothing remembered. Identical scenarios, identical detection rolls. Case 1 is
+identical in both arms by construction -- with no precedent there is nothing to
+retrieve -- which is a useful check that the only difference between the arms is
+memory.
+
+    paired over the same cases        bearing error of the best account proposed
+      with memory                       15.9 deg
+      without                           23.8 deg
+      difference                        -7.9 deg   95% CI [-17.1, 0.0]  p = 0.051
+      better on 7 cases, worse on 3, tied on 5
+      find rate                         60% vs 53%
+
+A 33% reduction in angular error, sitting exactly on the significance line at
+n=15. Not rounded down: p = 0.051 is not significant at 0.05.
+
+**Where it wins is the interesting part.** The gains are concentrated in
+`wrong_ipp` -- 62 to 38 degrees, 46 to 1, 56 to 11. That is the same failure mode
+that two attempts at writing an abstract rule could not fix, once by a human and
+once by the agent. Showing it three concrete resolved cases did what telling it
+a rule could not.
+
+**What the shape does not show.** The gap is roughly constant rather than
+widening, and the two lines converge by the end. So this is evidence that
+precedent helps *from the first retrieved case onward*, not that the benefit
+compounds with experience. A compounding effect would need far more than 16
+cases to detect, and claiming one from this chart would be reading it wrong.
+
+**A design error worth recording.** This was first measured as a difference in
+differences -- first half against second half, memory against control. That
+metric reported +11 degrees, pointing the wrong way, because the control started
+worse and had more room to regress toward the mean. The paired comparison is the
+correct analysis and is the one used everywhere else in this project; it simply
+was not applied here at first.
 
 ## Reproducing
 

@@ -39,6 +39,17 @@ def series(rows: list[dict]) -> tuple[np.ndarray, np.ndarray]:
     return np.array([p[0] for p in pts]), np.array([p[1] for p in pts])
 
 
+def paired(data) -> tuple[float, float, float, int, int]:
+    m = {r["i"]: r for r in data["with_memory"]}
+    c = {r["i"]: r for r in data["control"]}
+    pairs = [(m[i]["bearing_error"], c[i]["bearing_error"]) for i in sorted(m)
+             if m[i]["bearing_error"] is not None and c[i]["bearing_error"] is not None]
+    a = np.array([p[0] for p in pairs])
+    b = np.array([p[1] for p in pairs])
+    return float(a.mean()), float(b.mean()), float(a.mean() - b.mean()), \
+        int((a < b - 1).sum()), int((a > b + 1).sum())
+
+
 def main() -> int:
     path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "runs/learning_curve.json")
     data = json.loads(path.read_text())
@@ -72,8 +83,17 @@ def main() -> int:
         text.set_color(TEXT)
         text.set_family("monospace")
 
+    mm, cm, delta, better, worse = paired(data)
     ax.set_title("Does it get better with experience?",
                  color=TEXT, fontsize=13, family="monospace", loc="left", pad=14)
+    # The paired comparison, not the halves: comparing the first half of a
+    # sequence to its second lets the worse-starting arm regress toward the mean
+    # and manufactures an effect pointing the wrong way.
+    ax.text(0.0, -0.20,
+            f"paired over the same cases:  with memory {mm:.1f}°   "
+            f"without {cm:.1f}°   →  {delta:+.1f}°   "
+            f"(better on {better}, worse on {worse})",
+            transform=ax.transAxes, color=TEXT, fontsize=10, family="monospace")
 
     out = ROOT / "runs" / "learning_curve.png"
     fig.tight_layout()
