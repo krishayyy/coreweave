@@ -210,6 +210,48 @@ def _profile_menu() -> str:
     )
 
 
+def _terrain_summary(grid: SearchGrid, ipp_rc: tuple[int, int]) -> str:
+    """The map an incident commander would already be holding.
+
+    Phrases like "the back side" or "the far side of the divide" are only
+    interpretable against terrain. Without this the model is guessing a compass
+    bearing from prose, which is where its proposals were going wrong.
+    """
+    rows, cols = grid.shape
+    elev = grid.elevation
+    summit = np.unravel_index(int(np.argmax(elev)), elev.shape)
+
+    def bearing_to(target) -> float:
+        return math.degrees(math.atan2(target[1] - ipp_rc[1],
+                                       -(target[0] - ipp_rc[0]))) % 360.0
+
+    def compass(deg: float) -> str:
+        points = ["north", "north-east", "east", "south-east",
+                  "south", "south-west", "west", "north-west"]
+        return points[int((deg + 22.5) % 360 // 45)]
+
+    summit_km = float(np.hypot(summit[0] - ipp_rc[0],
+                               summit[1] - ipp_rc[1]) * grid.cell_m / 1000.0)
+    summit_bearing = bearing_to(summit)
+    # The far side of the massif: continue past the summit on the same line.
+    far_bearing = (summit_bearing) % 360.0
+
+    # Where the low ground lies, which is where drainages run out to.
+    low = np.unravel_index(int(np.argmin(np.where(elev > 0, elev, 1e9))), elev.shape)
+    low_bearing = bearing_to(low)
+
+    return (
+        f"TERRAIN. The planning point sits at {elev[ipp_rc]:.0f} m. The high point "
+        f"of the massif is {summit_km:.1f} km away to the {compass(summit_bearing)} "
+        f"(bearing {summit_bearing:.0f}). The far side of the massif -- what a "
+        f"witness would call 'the back side' or 'the other side of the divide' -- "
+        f"is reached by continuing on bearing {far_bearing:.0f} past the summit, "
+        f"roughly {summit_km * 2:.0f} km from the planning point. The lowest ground "
+        f"in the operating area lies to the {compass(low_bearing)} "
+        f"(bearing {low_bearing:.0f}), which is where the drainages run out."
+    )
+
+
 def _coverage_summary(belief: Belief, grid: SearchGrid, ipp_rc: tuple[int, int]) -> str:
     """Where the search has actually been, in terms the model can reason about."""
     if not belief.history:
@@ -266,8 +308,10 @@ def nominate_llm(
         "far": extent_km * 0.55,
     }
     coverage = _coverage_summary(belief, grid, ipp_rc) if ipp_rc else ""
+    terrain = _terrain_summary(grid, ipp_rc) if ipp_rc else ""
     user = (
         f"CASE FILE\n{briefing}\n\n"
+        f"{terrain}\n\n"
         f"SEARCH TO DATE\n{_history_summary(belief, grid)}\n{coverage}\n\n"
         f"WHY YOU ARE BEING ASKED\n{trigger.reason}.\n\n"
         f"Propose 2-3 different accounts of what happened."

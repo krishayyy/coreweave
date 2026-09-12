@@ -90,17 +90,47 @@ def _sample_from_field(field_: np.ndarray, rng: np.random.Generator) -> tuple[in
 
 
 def _displace(grid: SearchGrid, rc: tuple[int, int], km: float,
-              rng: np.random.Generator) -> tuple[int, int]:
-    """Move an anchor a given distance in a random direction, clipped on-grid."""
+              rng: np.random.Generator,
+              bearing_deg: float | None = None) -> tuple[int, int]:
+    """Move an anchor a given distance, clipped on-grid.
+
+    A bearing may be supplied so the geometry agrees with the story the case
+    file tells. Placing the subject in a random direction while the evidence
+    says "the back side" makes the directional cue meaningless, and the
+    experiment would then be measuring luck on bearing rather than inference.
+    """
     rows, cols = grid.shape
     cells = km * 1000.0 / grid.cell_m
-    for _ in range(24):
-        theta = rng.uniform(0, 2 * math.pi)
-        r = int(round(rc[0] + cells * math.sin(theta)))
-        c = int(round(rc[1] + cells * math.cos(theta)))
+    for attempt in range(24):
+        if bearing_deg is None:
+            theta = rng.uniform(0, 2 * math.pi)
+            dr, dc = cells * math.sin(theta), cells * math.cos(theta)
+        else:
+            # Compass bearing: 0 = north = decreasing row.
+            jitter = rng.normal(0.0, 12.0) if attempt < 12 else rng.uniform(-45, 45)
+            theta = math.radians(bearing_deg + jitter)
+            dr, dc = -cells * math.cos(theta), cells * math.sin(theta)
+        r, c = int(round(rc[0] + dr)), int(round(rc[1] + dc))
         if 2 <= r < rows - 2 and 2 <= c < cols - 2:
             return r, c
     return int(np.clip(rc[0], 2, rows - 3)), int(np.clip(rc[1], 2, cols - 3))
+
+
+def far_side_bearing(grid: SearchGrid, ipp_rc: tuple[int, int]) -> float:
+    """Compass bearing from the planning point toward the far side of the massif.
+
+    This is what a witness means by "the back side" -- the direction through the
+    high ground and out the other side.
+    """
+    summit = np.unravel_index(int(np.argmax(grid.elevation)), grid.elevation.shape)
+    return math.degrees(math.atan2(summit[1] - ipp_rc[1],
+                                   -(summit[0] - ipp_rc[0]))) % 360.0
+
+
+def _compass(deg: float) -> str:
+    points = ["north", "north-east", "east", "south-east",
+              "south", "south-west", "west", "north-west"]
+    return points[int((deg + 22.5) % 360 // 45)]
 
 
 _A_TEMPLATES = {
@@ -132,7 +162,7 @@ _B_TEMPLATES = {
         "{name}, {age}, was dropped at the {ipp_name} trailhead intending a day hike and did not "
         "return. Vehicle is at {ipp_name}.",
         "A second party at the trailhead recalls someone matching {name}'s description "
-        "accepting a lift from another vehicle mid-morning, direction not noted.",
+        "accepting a lift mid-morning from a vehicle that left heading {direction}.",
         "The subject was driven to a different access point and began from there; the planning "
         "point is several kilometres from where they actually entered the terrain.",
     ),
@@ -156,7 +186,7 @@ _B_TEMPLATES = {
         "A vehicle registered to {name}, {age}, was found at {ipp_name} after {they} {were} "
         "reported overdue from a hike in the area.",
         "The registered owner's brother confirms the vehicle was lent out the previous week and "
-        "that {name} was driven to a different part of the range by a friend.",
+        "that {name} was driven to an access point on the {direction} side of the range.",
         "The planning point is derived from a vehicle that does not indicate where the subject "
         "actually started.",
     ),
@@ -172,6 +202,7 @@ _PRONOUNS = [("they", "were", "them", "their"), ("they", "were", "them", "their"
 def _fill(template: str, rng: np.random.Generator) -> tuple[str, dict]:
     they, were, them, their = _PRONOUNS[0]
     ctx = {
+        "direction": "",
         "name": str(rng.choice(_NAMES)), "age": int(rng.integers(19, 74)),
         "ipp_name": str(rng.choice(_IPP_NAMES)),
         "t0": f"{int(rng.integers(6, 10)):02d}:{int(rng.choice([0, 15, 30, 45])):02d}",
@@ -196,16 +227,28 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
     subkind = str(rng.choice(B_KINDS if kind == "B" else C_KINDS))
     opening, late_text, account = _B_TEMPLATES[subkind]
     text, ctx = _fill(opening, rng)
-    late = _fill(late_text, rng)[0].format(**ctx) if "{" in late_text else late_text
-    # Reuse the same context so names stay consistent across the case file.
-    late = late_text.format(**ctx)
 
     if subkind == "miscategorised":
         true_key = "despondent"
         true_anchor = ipp
+        bearing = None
     else:
         true_key = "hiker"
-        true_anchor = _displace(grid, ipp, float(rng.uniform(6.5, 10.0)), rng)
+        # The geometry must agree with the story. "The back side" means through
+        # the high ground; a named direction means that direction.
+        bearing = (far_side_bearing(grid, ipp) if subkind == "deliberate_deviation"
+                   else float(rng.uniform(0, 360)))
+        true_anchor = _displace(grid, ipp, float(rng.uniform(6.5, 10.0)), rng, bearing)
+        # Recover the bearing actually achieved after clipping, so the witness
+        # statement describes where the subject really went.
+        bearing = math.degrees(math.atan2(true_anchor[1] - ipp[1],
+                                          -(true_anchor[0] - ipp[0]))) % 360.0
+
+    # The witness statement is written only once the geometry is settled, so it
+    # describes where the subject actually went. The same context is reused so
+    # names stay consistent across the case file.
+    ctx["direction"] = _compass(bearing) if bearing is not None else "unknown"
+    late = late_text.format(**ctx)
 
     true_rc = _sample_from_field(build_prior_field(grid, PROFILES[true_key], true_anchor), rng)
     return Scenario(

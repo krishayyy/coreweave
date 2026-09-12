@@ -30,7 +30,7 @@ class Config:
     # oracle nominator, and applied unchanged to the reported held-out suite --
     # see scripts/tune_trigger.py. Choosing it on the reported scenarios would be
     # fitting the test set.
-    exhaustion_trigger: float = 0.40
+    exhaustion_trigger: float = 0.50
     min_periods_between_revisions: int = 2
     # Each revision admits 2-3 hypotheses. Left uncapped the mixture dilutes:
     # the joint spreads across a dozen competing accounts and the search stops
