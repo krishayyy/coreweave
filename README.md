@@ -126,6 +126,47 @@ Every arm sees identical scenarios with identical detection rolls.
     case-file nomination          B        60% [48-70]      75% [64-84]
     case-file nomination          C        86% [71-94]      67% [50-80]
 
+### A System One model does better than a language model here
+
+The language model arm's measured failure was never that its best proposal was
+bad -- the best proposal in each response sat 2.2 km from the truth. It was that
+it could not tell which of its own proposals was the best one: stated confidence
+ranked them at 56% concordance, where 50% is no signal.
+
+TypeSafe's System One model removes that problem rather than mitigating it. It
+does not write. You define the shape of the answer and it returns a probability
+for every option, so asked which direction the subject started in it returns a
+distribution over compass points -- and a distribution is exactly what the
+belief mixture already consumes. There is no selection step because nothing
+needs selecting.
+
+    arm                                family   find rate        localised
+    library only (no revision)         B        43% [32-55]      54% [43-65]
+    blind relocation                   B        35% [25-46]      54% [43-65]
+    language model writes accounts     B        60% [48-70]      75% [64-84]
+    System One calibrated distribution B        65% [54-75]      71% [59-80]
+
+    paired, 24 scenarios              delta      95% CI            p
+    find   System One vs baseline    +22.2pp   [+11.1, +34.7]   0.000
+    find   System One vs relocation  +30.6pp   [+15.3, +47.2]   0.000
+    localised vs baseline            +16.7pp   [ -4.2, +37.5]   0.135  not significant
+
+The gains concentrate where they should. On `wrong_ipp` -- the failure mode that
+defeated two separate attempts at writing an abstract rule, one by a human and
+one by the agent -- it reaches 73% find and 76% localise against a 48%/55%
+baseline.
+
+**The division of labour follows the measurements, not the marketing.** Direction
+comes from the System One model, which is where the language model was worst
+(52 degrees median error). Distance is taken from it only as weak evidence,
+because its confidence there is genuinely low and the language model was already
+accurate (+0.2 km median). On the first case tested it answered north-east at
+probability 0.95 against a true bearing of 62 degrees -- and reported confidence
+0.26 on the distance it got wrong, which is calibration behaving as advertised.
+
+It is also roughly twenty times faster: 0.35 seconds against 5 to 15, and about
+800 tokens per decision.
+
 ### Significance
 
 The arms run on identical scenarios, so they are paired and an unpaired interval

@@ -53,12 +53,14 @@ def main() -> int:
     path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "runs/experiment_full.json")
     by_arm = load(path)
 
+    treatment = sys.argv[2] if len(sys.argv) > 2 else (
+        "llm" if "llm" in by_arm else "jev")
     metrics = {
         "find rate": lambda r: float(r["found"]),
         "localised": lambda r: float(r["periods_to_localize"] is not None),
     }
     labels = {"none": "library only", "heuristic": "blind relocation",
-              "llm": "case-file nomination"}
+              "llm": "case-file nomination", "jev": "System One"}
 
     print(f"paired on scenarios, repeats averaged within scenario")
     print(f"resampling unit: scenario (not run)\n")
@@ -66,17 +68,19 @@ def main() -> int:
     for kind, title in (("B", "Type B -- wrong about WHERE"),
                         ("A", "Type A -- premise correct (the null)"),
                         ("C", "Type C -- wrong about WHO")):
-        if "llm" not in by_arm or kind not in by_arm["llm"]:
+        if treatment not in by_arm or kind not in by_arm[treatment]:
             continue
-        n_scen = len(by_arm["llm"][kind])
+        n_scen = len(by_arm[treatment][kind])
         print(f"{title}   ({n_scen} scenarios)")
         for name, field in metrics.items():
             for base in ("none", "heuristic"):
+                if base == treatment:
+                    continue
                 a = per_scenario(by_arm[base][kind], field)
-                b = per_scenario(by_arm["llm"][kind], field)
+                b = per_scenario(by_arm[treatment][kind], field)
                 d, (lo, hi), p = paired_bootstrap(a, b)
                 sig = "significant" if lo > 0 or hi < 0 else "not significant"
-                print(f"  {name:<10} llm vs {labels[base]:<21} "
+                print(f"  {name:<10} {treatment} vs {labels[base]:<21} "
                       f"{100 * d:+6.1f}pp  95% CI [{100 * lo:+5.1f}, {100 * hi:+5.1f}]  "
                       f"p={p:.3f}  {sig}")
         print()
