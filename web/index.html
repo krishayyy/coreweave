@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Search Loop</title>
+<link rel="stylesheet" href="src/style.css" />
+<div id="app">
+  <header id="bar">
+    <div class="left">
+      <span id="op">—</span>
+      <span class="sep"></span>
+      <span id="subject">—</span>
+    </div>
+    <div class="right">
+      <span id="status">STANDBY</span>
+      <span id="clock">P00</span>
+    </div>
+  </header>
+
+  <main id="stage">
+    <canvas id="map"></canvas>
+    <div id="revising"><span>REVISING</span></div>
+    <div id="verdict"></div>
+  </main>
+
+  <footer id="panels">
+    <section id="hyp">
+      <h2>Accounts of what happened</h2>
+      <ul id="hyp-list"></ul>
+    </section>
+    <section id="log">
+      <h2>Evidence</h2>
+      <ul id="log-list"></ul>
+    </section>
+  </footer>
+</div>
+<script type="module" src="src/main.js"></script>

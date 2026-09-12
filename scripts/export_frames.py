@@ -25,8 +25,13 @@ from searchloop.scenario import generate_suite, stable_seed          # noqa: E40
 from searchloop.terrain import hillshade, load_terrain  # noqa: E402
 
 
-def _to_png(field: np.ndarray, path: Path, gamma: float = 0.45) -> None:
-    """Quantise a field to 8-bit with a gamma lift so the tail stays visible."""
+def _to_png(field: np.ndarray, path: Path, gamma: float = 0.62) -> None:
+    """Quantise a field to 8-bit.
+
+    The gamma lift is deliberately mild. Probability mass here has a very long
+    tail, and lifting it enough to see everywhere destroys the thing the display
+    is for: showing where belief is *concentrated*.
+    """
     top = float(np.percentile(field, 99.9))
     norm = np.clip(field / top, 0.0, 1.0) ** gamma if top > 0 else np.zeros_like(field)
     Image.fromarray((norm * 255).astype(np.uint8), mode="L").save(path)
@@ -40,8 +45,12 @@ def _serpentine(cells: list[tuple[int, int]]) -> list[list[int]]:
     track: list[list[int]] = []
     for i, r in enumerate(sorted(by_row)):
         cols = sorted(by_row[r], reverse=bool(i % 2))
-        track.append([r, cols[0]])
-        track.append([r, cols[-1]])
+        # Sample along the lane rather than emitting only its endpoints, so the
+        # aircraft moves continuously instead of jumping lane to lane.
+        step = max(len(cols) // 8, 1)
+        track.extend([r, c] for c in cols[::step])
+        if cols:
+            track.append([r, cols[-1]])
     return track
 
 
