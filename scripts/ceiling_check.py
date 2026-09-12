@@ -23,7 +23,7 @@ from searchloop.grid import build_grid                # noqa: E402
 from searchloop.loop import run_scenario              # noqa: E402
 from searchloop.pod import pod_field                  # noqa: E402
 from searchloop.revision import Nomination            # noqa: E402
-from searchloop.scenario import generate_suite        # noqa: E402
+from searchloop.scenario import generate_suite, stable_seed        # noqa: E402
 from searchloop.terrain import load_terrain           # noqa: E402
 
 
@@ -54,7 +54,7 @@ def main() -> int:
     grid = build_grid(load_terrain(CFG.center_lat, CFG.center_lon, CFG.zoom,
                                    CFG.radius_tiles), CFG.grid_factor, CFG.treeline_m)
     pod = pod_field(grid, CFG.altitude_m)
-    suite = generate_suite(grid, 30, 20, seed=7)
+    suite = generate_suite(grid, 30, 24, 12, seed=7)
     type_b = [s for s in suite if s.kind == "B"]
 
     original = revision.nominate_heuristic
@@ -65,7 +65,7 @@ def main() -> int:
             revision.nominate_heuristic = oracle_factory(s, grid)
             import searchloop.loop as loop_mod
             loop_mod.nominate_heuristic = revision.nominate_heuristic
-            rng = np.random.default_rng(abs(hash(s.id)) % 2**32)
+            rng = np.random.default_rng(stable_seed(s.id))
             r = run_scenario(grid, pod, s, "heuristic", CFG, rng)
             found += int(r.found)
             periods.append(r.periods_to_find if r.found else CFG.max_periods)
@@ -78,8 +78,13 @@ def main() -> int:
     print(f"oracle nomination on {len(type_b)} type B scenarios:")
     print(f"  found {found}/{len(type_b)} ({100 * found / len(type_b):.0f}%)")
     print(f"  mean periods (censored at {CFG.max_periods}): {np.mean(periods):.1f}")
-    print(f"\nbaseline for comparison was 40% -- the reachable ceiling is the "
-          f"number above.")
+    print(f"\nNote the sensor bound: mean POD is {pod.mean():.2f}, so sweeping the "
+          f"correct cell once\nfinds the subject about {100 * pod.mean():.0f}% of the "
+          f"time. The ceiling is close to that\nnumber because the search is already "
+          f"near-optimal given a correct account --\nwhat is missing is the account, "
+          f"not the searching.")
+    print("\nThis bounds what any reasoning quality could deliver on type B.")
+    print("A reported result above this number would indicate a leak, not a finding.")
     return 0
 
 

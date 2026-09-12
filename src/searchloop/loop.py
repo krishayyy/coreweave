@@ -44,6 +44,11 @@ class PeriodTrace:
     cells_swept: int
     track_km: float
     found: bool
+    # Where the true location sits within the belief field, as a percentile of
+    # cells carrying less mass. This measures whether the agent worked out where
+    # the subject was, independently of whether the sensor happened to catch
+    # them -- find-rate alone is capped by POD and mostly reports detection luck.
+    truth_percentile: float
     trigger_fired: bool
     trigger_reason: str
     nominations: list[dict[str, Any]] = field(default_factory=list)
@@ -61,6 +66,11 @@ class RunResult:
     periods_run: int
     area_swept_km2: float
     revisions: int
+    # First period at which the true location entered the top decile of belief.
+    # None if it never did. This is the reasoning metric: it moves when the agent
+    # reallocates belief correctly, and is unaffected by detection rolls.
+    periods_to_localize: int | None
+    peak_truth_percentile: float
     final_leader: str
     final_leader_origin: str
     true_distance_km: float
@@ -140,6 +150,9 @@ def run_scenario(
         position = segment[len(segment) // 2]
         belief.prune(cfg.prune_floor)
 
+        joint = belief.joint
+        truth_pct = float(100.0 * (joint < joint[scenario.true_rc]).mean())
+
         leader, weight = belief.leader
         trace.append(PeriodTrace(
             period=period + 1,
@@ -151,6 +164,7 @@ def run_scenario(
             cells_swept=len(segment),
             track_km=len(segment) * grid.cell_m / 1000.0,
             found=found,
+            truth_percentile=truth_pct,
             trigger_fired=trigger.fired,
             trigger_reason=trigger.reason,
             nominations=accepted,
@@ -165,6 +179,8 @@ def run_scenario(
 
     leader, _ = belief.leader
     swept = sum(t.cells_swept for t in trace)
+    localized = next((t.period for t in trace if t.truth_percentile >= 90.0), None)
+    peak_pct = max((t.truth_percentile for t in trace), default=0.0)
     dist = float(np.hypot(
         scenario.true_rc[0] - scenario.ipp_rc[0],
         scenario.true_rc[1] - scenario.ipp_rc[1],
@@ -180,6 +196,8 @@ def run_scenario(
         periods_run=len(trace),
         area_swept_km2=swept * (grid.cell_m / 1000.0) ** 2,
         revisions=revisions,
+        periods_to_localize=localized,
+        peak_truth_percentile=peak_pct,
         final_leader=leader.label,
         final_leader_origin=leader.origin,
         true_distance_km=dist,

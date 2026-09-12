@@ -35,7 +35,16 @@ from .hypotheses import PROFILES, build_prior_field
 
 TYPE_A_PROFILES = ["hiker", "hiker_route", "hunter", "despondent", "dementia", "child", "angler"]
 
-B_KINDS = ["transported", "deliberate_deviation", "miscategorised", "wrong_ipp"]
+# Displacement failures: the subject started somewhere other than the planning
+# point. No profile in the library can reach them, because every library
+# hypothesis is anchored at the planning point.
+B_KINDS = ["transported", "deliberate_deviation", "wrong_ipp"]
+
+# Category failure: the planning point is right but the behaviour profile was
+# misjudged. The library already contains the correct profile at a low base
+# rate, so ordinary Bayesian search can recover this on its own -- which is
+# exactly why it is reported separately rather than blended into type B.
+C_KINDS = ["miscategorised"]
 
 
 @dataclass
@@ -50,7 +59,7 @@ class Evidence:
 @dataclass
 class Scenario:
     id: str
-    kind: str                      # "A" or "B"
+    kind: str                      # "A", "B" (displacement) or "C" (category)
     subkind: str
     ipp_rc: tuple[int, int]
     true_rc: tuple[int, int]
@@ -172,7 +181,8 @@ def _fill(template: str, rng: np.random.Generator) -> tuple[str, dict]:
 
 
 def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Generator) -> Scenario:
-    """One scenario. `kind` is "A" or "B"."""
+    """One scenario. `kind` is "A" (premise correct), "B" (wrong about where the
+    subject started) or "C" (right place, wrong behaviour category)."""
     rows, cols = grid.shape
     ipp = (int(rng.integers(rows // 4, 3 * rows // 4)), int(rng.integers(cols // 4, 3 * cols // 4)))
 
@@ -183,7 +193,7 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
         return Scenario(scenario_id, "A", key, ipp, true_rc, ipp, key,
                         f"Subject behaved as a {PROFILES[key].label}.", text)
 
-    subkind = str(rng.choice(B_KINDS))
+    subkind = str(rng.choice(B_KINDS if kind == "B" else C_KINDS))
     opening, late_text, account = _B_TEMPLATES[subkind]
     text, ctx = _fill(opening, rng)
     late = _fill(late_text, rng)[0].format(**ctx) if "{" in late_text else late_text
@@ -199,13 +209,30 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
 
     true_rc = _sample_from_field(build_prior_field(grid, PROFILES[true_key], true_anchor), rng)
     return Scenario(
-        scenario_id, "B", subkind, ipp, true_rc, true_anchor, true_key, account, text,
+        scenario_id, kind, subkind, ipp, true_rc, true_anchor, true_key, account, text,
         late_evidence=[Evidence(period=int(rng.integers(2, 5)), text=late)],
     )
 
 
-def generate_suite(grid: SearchGrid, n_a: int = 30, n_b: int = 20, seed: int = 0) -> list[Scenario]:
+def generate_suite(
+    grid: SearchGrid, n_a: int = 30, n_b: int = 20, n_c: int = 12, seed: int = 0
+) -> list[Scenario]:
+    """A: premise correct. B: wrong about WHERE. C: wrong about WHO."""
     rng = np.random.default_rng(seed)
     suite = [generate(grid, f"A{i:03d}", "A", rng) for i in range(n_a)]
     suite += [generate(grid, f"B{i:03d}", "B", rng) for i in range(n_b)]
+    suite += [generate(grid, f"C{i:03d}", "C", rng) for i in range(n_c)]
     return suite
+
+
+def stable_seed(*parts: object) -> int:
+    """A seed that does not change between processes.
+
+    Python randomises str.__hash__ per process unless PYTHONHASHSEED is fixed,
+    so seeding from hash(scenario.id) silently reseeds every run and makes
+    results irreproducible. Hash explicitly instead.
+    """
+    import hashlib
+
+    digest = hashlib.sha256("|".join(str(p) for p in parts).encode()).digest()
+    return int.from_bytes(digest[:8], "big")

@@ -21,7 +21,7 @@ from searchloop.config import DEFAULT as CFG        # noqa: E402
 from searchloop.grid import build_grid              # noqa: E402
 from searchloop.loop import run_scenario            # noqa: E402
 from searchloop.pod import pod_field                # noqa: E402
-from searchloop.scenario import generate_suite      # noqa: E402
+from searchloop.scenario import generate_suite, stable_seed      # noqa: E402
 from searchloop.terrain import hillshade, load_terrain  # noqa: E402
 
 BELIEF_CMAP = LinearSegmentedColormap.from_list(
@@ -46,7 +46,7 @@ def main() -> int:
     pod = pod_field(grid, CFG.altitude_m)
     shade = hillshade(terrain)[::CFG.grid_factor, ::CFG.grid_factor][: grid.shape[0], : grid.shape[1]]
 
-    suite = generate_suite(grid, 30, 20, seed=args.seed)
+    suite = generate_suite(grid, 30, 24, 12, seed=args.seed)
     scenario = [s for s in suite if s.kind == args.kind][args.index]
 
     frames: list[tuple] = []
@@ -65,7 +65,7 @@ def main() -> int:
         import searchloop.loop as loop_mod
         loop_mod.nominate_heuristic = oracle_factory(scenario, grid)
 
-    rng = np.random.default_rng(abs(hash(scenario.id)) % 2**32)
+    rng = np.random.default_rng(stable_seed(scenario.id))
     result = run_scenario(grid, pod, scenario, args.arm, CFG, rng, on_period=capture)
 
     flip = next((i for i, f in enumerate(frames) if f[5]), None)

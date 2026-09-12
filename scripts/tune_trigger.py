@@ -25,7 +25,7 @@ from searchloop.config import DEFAULT as CFG          # noqa: E402
 from searchloop.grid import build_grid                # noqa: E402
 from searchloop.loop import run_scenario              # noqa: E402
 from searchloop.pod import pod_field                  # noqa: E402
-from searchloop.scenario import generate_suite        # noqa: E402
+from searchloop.scenario import generate_suite, stable_seed        # noqa: E402
 from searchloop.terrain import load_terrain           # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -41,7 +41,7 @@ def score(grid, pod, suite, cfg, arm, oracle=False):
         for s in suite:
             if oracle:
                 loop_mod.nominate_heuristic = oracle_factory(s, grid)
-            rng = np.random.default_rng(abs(hash(s.id)) % 2**32)
+            rng = np.random.default_rng(stable_seed(s.id))
             r = run_scenario(grid, pod, s, arm, cfg, rng)
             found += int(r.found)
             periods.append(r.periods_to_find if r.found else cfg.max_periods)
@@ -54,7 +54,7 @@ def main() -> int:
     grid = build_grid(load_terrain(CFG.center_lat, CFG.center_lon, CFG.zoom,
                                    CFG.radius_tiles), CFG.grid_factor, CFG.treeline_m)
     pod = pod_field(grid, CFG.altitude_m)
-    suite = [s for s in generate_suite(grid, 0, 24, seed=TUNING_SEED)]
+    suite = [s for s in generate_suite(grid, 0, 24, 0, seed=TUNING_SEED)]
 
     print(f"tuning suite: {len(suite)} type B scenarios, seed {TUNING_SEED}\n")
     print(f"{'trigger':>8} {'periods':>8} | {'baseline':>9} | {'oracle':>9} | {'headroom':>9}")

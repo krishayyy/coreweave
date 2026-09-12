@@ -21,7 +21,7 @@ from searchloop.config import DEFAULT as CFG            # noqa: E402
 from searchloop.grid import build_grid                  # noqa: E402
 from searchloop.loop import run_scenario                # noqa: E402
 from searchloop.pod import pod_field                    # noqa: E402
-from searchloop.scenario import generate_suite          # noqa: E402
+from searchloop.scenario import generate_suite, stable_seed          # noqa: E402
 from searchloop.terrain import hillshade, load_terrain  # noqa: E402
 
 
@@ -61,7 +61,7 @@ def main() -> int:
     terrain = load_terrain(CFG.center_lat, CFG.center_lon, CFG.zoom, CFG.radius_tiles)
     grid = build_grid(terrain, CFG.grid_factor, CFG.treeline_m)
     pod = pod_field(grid, CFG.altitude_m)
-    scenario = [s for s in generate_suite(grid, 30, 20, seed=args.seed)
+    scenario = [s for s in generate_suite(grid, 30, 24, 12, seed=args.seed)
                 if s.kind == args.kind][args.index]
 
     if args.oracle:
@@ -100,7 +100,7 @@ def main() -> int:
             ],
         })
 
-    rng = np.random.default_rng(abs(hash(scenario.id)) % 2**32)
+    rng = np.random.default_rng(stable_seed(scenario.id))
     result = run_scenario(grid, pod, scenario, args.arm, CFG, rng, on_period=capture)
 
     shade = hillshade(terrain)

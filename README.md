@@ -47,8 +47,7 @@ hypothesis simply fails to explain the evidence and dies.
 
 ## The experiment
 
-Three arms, run against the identical scenario suite with identical detection
-rolls, so nothing separating them can come from luck:
+Three arms, run against identical scenarios with identical detection rolls:
 
 | arm | revises? | reads the case file? |
 |---|---|---|
@@ -56,57 +55,77 @@ rolls, so nothing separating them can come from luck:
 | `heuristic` | yes | **no** -- relocates blindly toward unsearched mass |
 | `llm` | yes | yes |
 
-The `heuristic` arm is the one that makes the result meaningful. Without it,
-beating the baseline would only show that *trying somewhere else* helps. Beating
-`heuristic` is what shows the model is reading the evidence.
+The `heuristic` arm is what makes the result meaningful. Without it, beating the
+baseline would only show that *trying somewhere else* helps. Beating `heuristic`
+is what shows the model is reading the evidence.
 
-Scenarios come in two families. Type A: the obvious reading is correct. Type B:
-it is wrong, in one of the four documented ways real searches fail. **Type A is
-a null** -- revision should not help when the premise was right, and reporting
-that plainly is what makes the Type B result credible.
+Scenarios come in three families:
 
-    python scripts/experiment.py --n-a 30 --n-b 20
+- **A** -- the premise is correct. This is the null: revision should not help,
+  and if it never hurts here something is wrong with the experiment.
+- **B** -- wrong about **where** the subject started. They were transported,
+  deviated deliberately, or the planning point rests on a false premise. No
+  hypothesis in the library can reach them, because every library hypothesis is
+  anchored at the planning point.
+- **C** -- wrong about **who** they are. The planning point is right but the
+  behaviour category was misjudged. The library already contains the correct
+  profile at a low base rate.
 
-## Results on the held-out suite
+        python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 5
 
-30 type A and 20 type B scenarios, seed 7. Every arm sees identical scenarios and
-identical detection rolls.
+## Results
 
-    arm                                type    found   rate   periods*
-    library only (no revision)         A       24/30    80%       6.4
-    library only (no revision)         B        8/20    40%      12.7
-    blind relocation (no case file)    A       20/30    67%       7.2
-    blind relocation (no case file)    B        4/20    20%      13.1
+Held-out suite (seed 7), five independent detection-roll repeats per scenario,
+Wilson 95% intervals.
 
-    * mean periods to find, unfound runs censored at the 16-period budget
+    arm                           family   find rate        localised       to loc
+    library only (no revision)    A        78% [71-84]      81% [74-87]        2.1
+    library only (no revision)    B        31% [23-40]      46% [37-55]        6.7
+    library only (no revision)    C       100% [94-100]     97% [89-99]        1.0
+    blind relocation              A        66% [58-73]      78% [71-84]        1.6
+    blind relocation              B        22% [16-31]      27% [20-35]        3.2
+    blind relocation              C       100% [94-100]    100% [94-100]       1.1
 
-Two things worth stating plainly, because they are what make any later result
-credible:
+Two metrics, because they measure different things:
 
-**Revision is not free.** On type A, where the original premise was correct,
-revising *costs* 13 points. Abandoning a good hypothesis to chase a bad one is a
-real and expensive mistake, not a hypothetical one.
+**find rate** -- the subject was actually detected. Capped by sensor POD, so it
+partly reports detection luck rather than reasoning.
 
-**Moving the search is not the same as understanding why.** Blind relocation
-halves the type B find rate, from 40% to 20%. Anything that beats the baseline
-has to be doing more than deciding to look elsewhere.
+**localised** -- the true location reached the top decile of belief at any point.
+This moves only when the agent reallocates belief correctly and is unaffected by
+detection rolls. It is the reasoning metric.
+
+### What the baseline already does, and what it cannot do
+
+**Type C is solved at 100%.** Ordinary Bayesian search recovers a misjudged
+behaviour category on its own, because the correct profile was in the mixture the
+whole time and the evidence promotes it. The library is not a strawman.
+
+**Type B is where it fails, at 31%.** Every library hypothesis is anchored at the
+planning point, so when the subject started somewhere else there is no amount of
+evidence that can move the mixture to them. The premise is outside the
+hypothesis space.
+
+So the claim is narrow and specific: *conventional search already handles being
+wrong about **who** someone is. It cannot handle being wrong about **where** they
+started.*
+
+**Revision is not free.** On type A it costs 12 points -- abandoning a correct
+hypothesis to chase a bad one is a real and expensive mistake.
+
+**Moving the search is not understanding why.** Blind relocation drops type B
+from 31% to 22% and localisation from 46% to 27%.
 
 ### The reachable ceiling
 
-A diagnostic nominator with access to the withheld ground truth reaches **55%**
-on the same type B suite. That is the upper bound on what any reasoning quality
-could deliver here: the language model arm is competing for the band between
-40% and 55%, and a claim above 55% would indicate a leak, not a result.
+A diagnostic nominator with access to withheld ground truth reaches **79%** on
+type B. That bounds what any reasoning quality could deliver, and a reported
+result above it would indicate a leak rather than a finding.
 
 The revision threshold was selected on a separate tuning suite (seed 99) and
-applied unchanged to the suite reported above, so it is not fitted to these
-numbers.
-
-## Status
-
-Deterministic core, scenario suite, revision trigger and experiment harness
-complete and tested. The LLM arm is implemented and unit-tested against a test
-double; it needs credentials to run for real.
+applied unchanged here, so it is not fitted to these numbers. Seeding is
+explicit rather than derived from `hash()`, which Python randomises per process
+-- results reproduce exactly across runs.
 
 ## The demo scenario
 
