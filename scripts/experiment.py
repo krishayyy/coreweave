@@ -26,7 +26,8 @@ from searchloop.terrain import load_terrain                  # noqa: E402
 ARM_LABELS = {
     "none": "library only (no revision)",
     "heuristic": "blind relocation (no case file)",
-    "llm": "nomination from the case file",
+    "llm": "language model writes accounts",
+    "jev": "System One calibrated distribution",
 }
 
 
@@ -95,7 +96,7 @@ def main() -> int:
     ap.add_argument("--n-b", type=int, default=20)
     ap.add_argument("--n-c", type=int, default=12)
     ap.add_argument("--seed", type=int, default=7)
-    ap.add_argument("--arms", default="none,heuristic,llm")
+    ap.add_argument("--arms", default="none,heuristic,llm,jev")
     ap.add_argument("--repeats", type=int, default=5,
                     help="independent detection-roll repeats per scenario; "
                          "n=20 scenarios is small, so a single pass is noisy")
@@ -103,6 +104,11 @@ def main() -> int:
     args = ap.parse_args()
 
     arms = [a.strip() for a in args.arms.split(",") if a.strip()]
+    if "jev" in arms:
+        from searchloop import jev as jev_mod
+        if not jev_mod.available():
+            print("! no TYPESAFE_API_KEY -- skipping the 'jev' arm.\n")
+            arms = [a for a in arms if a != "jev"]
     if "llm" in arms and not llm.available():
         print("! no LLM credentials found -- skipping the 'llm' arm.")
         print("  set GROQ_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY / WANDB_API_KEY / TYPESAFE_API_KEY\n")

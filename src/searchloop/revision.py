@@ -185,6 +185,62 @@ def nominate_heuristic(
     )]
 
 
+# -- system one arm --------------------------------------------------------
+
+def nominate_jev(
+    belief: Belief, grid: SearchGrid, briefing: str, trigger: RevisionTrigger,
+    ipp_rc: tuple[int, int], precedent: str = "",
+) -> list[Nomination]:
+    """Nominate from a calibrated distribution rather than from written accounts.
+
+    Every compass direction carrying meaningful probability becomes a hypothesis,
+    with that probability as its prior. There is no selection step and nothing to
+    rank -- the distribution is the mixture. That is the point: the measured
+    failure of the language model arm was not that its best proposal was bad, but
+    that it could not tell which of its proposals was the best one.
+    """
+    from . import jev
+
+    state = (
+        f"SEARCH AND RESCUE CASE FILE\n{briefing}\n\n"
+        f"{_terrain_summary(grid, ipp_rc)}\n\n"
+        + (f"{precedent}\n\n" if precedent else "")
+        + f"SEARCH TO DATE\n{_coverage_summary(belief, grid, ipp_rc)}\n"
+        f"{trigger.reason}. The subject therefore did not start where the search "
+        f"assumed. The question is where they actually began."
+    )
+    reading = jev.ask(state, {k: p.narrative for k, p in PROFILES.items()})
+
+    profile_key = max(reading.profile_probs, key=reading.profile_probs.get) \
+        if reading.profile_probs else "hiker"
+    if profile_key not in PROFILES:
+        profile_key = "hiker"
+    distance_km = reading.expected_distance_km()
+
+    out: list[Nomination] = []
+    for name, probability in sorted(reading.direction_probs.items(),
+                                    key=lambda kv: -kv[1]):
+        # Below this a direction contributes nothing but dilution.
+        if probability < 0.05 or len(out) >= 3:
+            continue
+        out.append(Nomination(
+            label=f"Started to the {name}",
+            narrative=(f"The evidence places the subject's starting point "
+                       f"{distance_km:.1f} km to the {name} of the planning point."),
+            profile_key=profile_key,
+            anchor_bearing_deg=jev.COMPASS[name],
+            anchor_distance_km=float(np.clip(distance_km, 1.0, 13.0)),
+            # The model's own probability, capped like any other nomination.
+            prior=float(np.clip(probability * MAX_NOMINATION_PRIOR / 0.95,
+                                0.02, MAX_NOMINATION_PRIOR)),
+            rationale=(f"System One direction confidence "
+                       f"{reading.direction_confidence:.2f}; distance confidence "
+                       f"{reading.distance_confidence:.2f}."),
+            origin="jev",
+        ))
+    return out
+
+
 # -- llm arm ---------------------------------------------------------------
 
 _SYSTEM = """You are assisting a search and rescue incident commander.

@@ -21,6 +21,7 @@ from .revision import (
     Nomination,
     RevisionTrigger,
     nominate_heuristic,
+    nominate_jev,
     nominate_llm,
     should_revise,
     to_hypothesis,
@@ -28,7 +29,7 @@ from .revision import (
 from .scenario import Scenario
 from . import tracing
 
-Arm = Literal["none", "heuristic", "llm"]
+Arm = Literal["none", "heuristic", "llm", "jev"]
 
 # Instructions the agent has written for itself and that survived validation.
 # Set by the self-improvement driver; empty by default, so an untrained run is
@@ -120,6 +121,15 @@ def run_scenario(
             try:
                 if arm == "heuristic":
                     noms = nominate_heuristic(belief, grid, scenario.ipp_rc, rng)
+                elif arm == "jev":
+                    precedent = ""
+                    if ACTIVE_MEMORY is not None:
+                        evidence = (scenario.late_evidence[0].text
+                                    if scenario.late_evidence else scenario.case_file)
+                        precedent = ACTIVE_MEMORY.prompt_section(
+                            evidence, scenario.case_file)
+                    noms = nominate_jev(belief, grid, scenario.briefing(period),
+                                        trigger, scenario.ipp_rc, precedent)
                 else:
                     precedent = ""
                     if ACTIVE_MEMORY is not None:
