@@ -145,8 +145,26 @@ route will reach him.
 
 Run it:
 
-    python scripts/render_run.py --kind B --index 5 --oracle
-    python scripts/export_frames.py --kind B --index 5 --oracle
+    export GROQ_API_KEY=...        # or ANTHROPIC_ / WANDB_ / TYPESAFE_
+    python scripts/demo.py         # the model in the loop
+    python scripts/demo.py --oracle  # diagnostic: what a correct account looks like
+
+    python3 -m http.server 5173 --directory web   # the display
+
+`demo.py` streams the reasoning to the terminal as it happens -- evidence
+arriving, the premise failing, each proposed account with the fragment of the
+case file it cites -- and refreshes the display when it finishes.
+
+## Reproducing
+
+    python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
+    python scripts/ceiling_check.py      # the diagnostic upper bound
+    python scripts/tune_trigger.py       # threshold sweep, tuning suite only
+    python scripts/tune_revisions.py     # revision cap sweep, tuning suite only
+    python -m pytest tests/
+
+Every arm is seeded from an explicit digest rather than `hash()`, and model
+responses are cached by prompt, so all three arms reproduce exactly.
 
 ## Observability
 
