@@ -13,6 +13,7 @@ arms cannot be attributed to it.
 from __future__ import annotations
 
 import heapq
+import math
 
 import numpy as np
 
@@ -22,7 +23,7 @@ from .pod import sweep_width
 _NEIGHBOURS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 
-def segment_capacity(grid: SearchGrid, endurance_km: float, altitude_m: float = 90.0) -> int:
+def segment_capacity(grid: SearchGrid, endurance_km: float, altitude_m: float = 100.0) -> int:
     """How many cells a sortie can actually mow.
 
     Serpentine coverage lays down `endurance_km` of track at a lane spacing of
@@ -77,3 +78,71 @@ def sortie_pos(joint: np.ndarray, pod: np.ndarray, cells: list[tuple[int, int]])
     rows = np.array([c[0] for c in cells])
     cols = np.array([c[1] for c in cells])
     return float(np.sum(joint[rows, cols] * pod[rows, cols]))
+
+
+def plan_sortie_adaptive(
+    grid: SearchGrid,
+    joint: np.ndarray,
+    start_rc: tuple[int, int],
+    endurance_km: float,
+    altitude_m: float | None = None,
+    transit_penalty: float = 0.35,
+) -> tuple[list[tuple[int, int]], np.ndarray, float, float]:
+    """Allocate effort where it pays, instead of sweeping everything equally.
+
+    Mowing a segment at uniform spacing spends the same effort on a cell holding
+    a tenth of the belief as on one holding a thousandth. Koopman showed the
+    optimal allocation for exponential detection is not uniform: with a fixed
+    amount of search effort the marginal return must be equal everywhere, which
+    gives
+
+        effort(cell) = max(0, ln(P(cell) / lambda))
+
+    with lambda set so the total meets the budget. Ground below the threshold
+    gets nothing -- it is not worth the lane -- and the effort saved is spent
+    thickening coverage where belief actually is.
+
+    This is where the loop searches better rather than believing better, and it
+    is arithmetic: no model is consulted, and the same allocation runs for every
+    experimental arm.
+
+    Returns the segment, the per-cell detection field the allocation produced,
+    the mean effort actually applied, and the expected probability of success.
+    """
+    from .pod import REFERENCE_ALT_M, sweep_width
+
+    altitude = altitude_m if altitude_m is not None else REFERENCE_ALT_M
+    width_m = sweep_width(grid, altitude)
+
+    # Budget expressed as total effort: one unit is coverage 1.0 over one cell.
+    swept_area_m2 = endurance_km * 1000.0 * float(np.median(width_m))
+    budget = swept_area_m2 / grid.cell_m**2
+
+    # Transit discount, so the aircraft does not chase isolated specks.
+    rows, cols = grid.shape
+    rr, cc = np.mgrid[0:rows, 0:cols]
+    transit_km = np.hypot(rr - start_rc[0], cc - start_rc[1]) * grid.cell_m / 1000.0
+    value = joint * np.exp(-transit_penalty * transit_km)
+    # Terrain that resists detection needs more effort for the same return.
+    value = value * np.clip(width_m / float(np.median(width_m)), 0.25, 1.4)
+
+    # Solve for lambda by bisection: effort is monotone decreasing in lambda.
+    positive = value[value > 0]
+    if positive.size == 0:
+        return [], np.zeros(grid.shape), 0.0, 0.0
+    lo, hi = float(positive.min()) * 1e-6, float(positive.max())
+    for _ in range(60):
+        mid = math.sqrt(lo * hi)
+        effort = np.maximum(0.0, np.log(np.maximum(value, 1e-300) / mid))
+        if effort.sum() > budget:
+            lo = mid
+        else:
+            hi = mid
+    effort = np.maximum(0.0, np.log(np.maximum(value, 1e-300) / math.sqrt(lo * hi)))
+
+    pod = np.clip(1.0 - np.exp(-effort), 0.0, 0.98)
+    segment = [(int(r), int(c)) for r, c in zip(*np.nonzero(effort > 0.01))]
+    if not segment:
+        return [], pod, 0.0, 0.0
+    pos = sortie_pos(joint, pod, segment)
+    return segment, pod, float(effort[effort > 0].mean()), pos

@@ -141,17 +141,38 @@ belief mixture already consumes. There is no selection step because nothing
 needs selecting.
 
     arm                                family   find rate        localised
-    library only (no revision)         B        43% [32-55]      54% [43-65]
-    blind relocation                   B        31% [21-42]      47% [36-59]
-    language model writes accounts     B        60% [48-70]      75% [64-84]
-    System One calibrated distribution B        65% [54-75]      76% [65-85]
+    library only (no revision)         B        40% [30-52]      67% [55-76]
+    blind relocation                   B        38% [27-49]      57% [45-68]
+    System One calibrated distribution B        61% [50-72]      82% [72-89]
 
     paired, 24 scenarios               delta      95% CI            p
-    find      vs library only         +22.2pp   [ +9.7, +34.7]   0.000
-    find      vs blind relocation     +34.7pp   [+19.4, +51.4]   0.000
-    localised vs blind relocation     +29.2pp   [+12.5, +47.2]   0.000
-    localised vs library only         +22.2pp   [ -0.0, +43.1]   0.052  not significant
-    type A (the null)                  -4.4pp   [-10.0,  +0.0]   0.088  no significant harm
+    find      vs library only         +20.8pp   [ +5.6, +36.1]   0.004  significant
+    find      vs blind relocation     +23.6pp   [+11.1, +37.5]   0.000  significant
+    localised vs blind relocation     +25.0pp   [ +9.7, +41.7]   0.000  significant
+    localised vs library only         +15.3pp   [ -5.6, +36.1]   0.174  not significant
+
+### Revision is not free, and the cost is now measurable
+
+    paired, 30 scenarios, type A       delta      95% CI            p
+    find      vs library only          -8.9pp   [-16.7,  -2.2]   0.002  significant
+
+When the original premise was already correct, revising costs nearly nine
+points, and unlike earlier measurements that cost is now significant rather
+than suggestive. Abandoning a good hypothesis to chase a bad one is a real and
+quantified mistake.
+
+So the honest claim is a trade-off, not an improvement:
+
+    premise wrong  ->  +20.8 pp
+    premise right  ->   -8.9 pp
+    break-even     ->  revision pays when more than 30% of searches
+                       start from a wrong premise
+
+Thirty percent is the number a deployment decision turns on, and it is not
+zero. The failure modes this addresses -- the subject was transported, deviated
+deliberately, or the planning point rests on a false premise -- are not rare in
+real search, but whether they clear thirty percent is an empirical question
+about a particular search organisation, not something this suite can answer.
 
 The gains concentrate where they should. On `wrong_ipp` -- the failure mode that
 defeated two separate attempts at writing an abstract rule, one by a human and
@@ -239,6 +260,41 @@ not in the story.
 
 **Type C is unaffected**, as it should be: the library already solves it and
 there is nothing for revision to add.
+
+### Searching better, as distinct from believing better
+
+The planner is held fixed across arms so differences cannot be attributed to
+routing. That invites a fair question: does the loop ever get better at
+*searching*, or only at *believing*? Three attempts, and the answer is that
+there is very little there to get.
+
+**Adaptive altitude.** Height widens the field of view and costs resolution, so
+effective sweep width has an interior maximum -- and under canopy the optimum
+moves down, since seeing through a gap needs a steeper look. Real trade-off,
+but no adaptive signal: the optimum sits at the same altitude whether belief is
+concentrated or diffuse, because coverage and detection both scale with sweep
+width. There is nothing to choose.
+
+**Choosing how thoroughly to sweep.** A fixed track budget buys a small area
+searched well or a large area searched poorly: swept area is
+(track x sweep width) / c and detection within it is 1 - exp(-c). Plausibly this
+should depend on concentration. It does not -- c = 1 won in every regime tested,
+from the full library mixture down to a profile with a 0.8 km median radius.
+
+**Koopman's optimal effort allocation.** The classical result: for exponential
+detection the optimum is not uniform but `effort = max(0, ln(P / lambda))`, with
+lambda set to the budget. Implemented and measured against uniform mowing:
+-6%, -8%, +1% on diffuse, moderate and tight beliefs respectively.
+
+    belief                     POS uniform   POS optimal    change
+    diffuse (whole library)        0.310        0.291         -6%
+    moderate (hiker profile)       0.191        0.176         -8%
+    tight (dementia profile)       0.480        0.484         +1%
+
+Break-even at best, because greedily taking the highest-value cells at uniform
+coverage is already a close approximation to the optimum. So the fixed planner
+was not a limitation being papered over -- the search tactics were already near
+their ceiling, and all the available headroom is in the premise.
 
 ### Things that did not work
 
