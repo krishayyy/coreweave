@@ -36,6 +36,11 @@ class Config:
     # the joint spreads across a dozen competing accounts and the search stops
     # committing to any of them. Swept on the tuning suite.
     max_revisions: int = 2
+    # Evidence arriving mid-search reopens the question immediately rather than
+    # waiting for the exhaustion threshold -- but only once the current account
+    # is at least this far ruled out. Reconsidering a premise nothing has
+    # contradicted is churn, not responsiveness.
+    evidence_trigger_floor: float = 0.15
     max_periods: int = 16
 
     prune_floor: float = 1e-4

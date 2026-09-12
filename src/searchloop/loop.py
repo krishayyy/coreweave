@@ -113,7 +113,10 @@ def run_scenario(
 
     for period in range(cfg.max_periods):
         # --- outer loop: is the premise still holding up? ---
-        trigger = should_revise(belief, cfg, period, last_revision)
+        # Evidence that became available this period, if any.
+        arriving = next((e.text for e in scenario.late_evidence
+                         if e.period == period), None)
+        trigger = should_revise(belief, cfg, period, last_revision, arriving)
         accepted: list[dict[str, Any]] = []
         rejected: list[dict[str, Any]] = []
 

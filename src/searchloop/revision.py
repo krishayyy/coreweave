@@ -61,21 +61,42 @@ class RevisionTrigger:
     leader_exhaustion: float = 0.0
 
 
-@tracing.op
 def should_revise(
-    belief: Belief, cfg: Config, period: int, last_revision_period: int | None
+    belief: Belief, cfg: Config, period: int, last_revision_period: int | None,
+    new_evidence: str | None = None,
 ) -> RevisionTrigger:
-    """Fire when the leading account has been substantially ruled out.
+    """Fire when the premise is in doubt -- from exhaustion, or from evidence.
 
-    Never on an iteration count. The quantity used is P(no contact so far | H)
-    for the current leader -- literally "how much of what this story predicted
-    have we now covered and come up empty".
+    Two independent reasons to reconsider, and they are genuinely different.
+
+    Exhaustion is the slow one: P(no contact so far | H) for the current leader,
+    literally "how much of what this story predicted have we covered and come up
+    empty". Never an iteration count.
+
+    Evidence is the fast one. A witness statement that arrives at period three
+    should not wait for the search to grind through to period six before anyone
+    reconsiders. In a real search the planning meeting is called when the
+    evidence lands, not when the schedule says so, and an account that was
+    already weak plus a new fact is exactly the moment to reconsider.
     """
     leader, _ = belief.leader
     idx = belief.hypotheses.index(leader)
     exhaustion = float(belief.exhaustion[idx])
 
-    if last_revision_period is not None and period - last_revision_period < cfg.min_periods_between_revisions:
+    cooling = (last_revision_period is not None
+               and period - last_revision_period < cfg.min_periods_between_revisions)
+
+    # New evidence overrides the cooldown but not the sanity floor: reconsidering
+    # a premise nothing has yet contradicted would just be churn.
+    if new_evidence and exhaustion >= cfg.evidence_trigger_floor:
+        return RevisionTrigger(
+            True,
+            f"new evidence arrived while '{leader.label}' was already "
+            f"{100 * exhaustion:.0f}% ruled out",
+            leader.label, exhaustion,
+        )
+
+    if cooling:
         return RevisionTrigger(False, "cooling down since last revision", leader.label, exhaustion)
     if exhaustion < cfg.exhaustion_trigger:
         return RevisionTrigger(
