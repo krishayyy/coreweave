@@ -142,14 +142,16 @@ needs selecting.
 
     arm                                family   find rate        localised
     library only (no revision)         B        43% [32-55]      54% [43-65]
-    blind relocation                   B        35% [25-46]      54% [43-65]
+    blind relocation                   B        31% [21-42]      47% [36-59]
     language model writes accounts     B        60% [48-70]      75% [64-84]
-    System One calibrated distribution B        65% [54-75]      71% [59-80]
+    System One calibrated distribution B        65% [54-75]      76% [65-85]
 
-    paired, 24 scenarios              delta      95% CI            p
-    find   System One vs baseline    +22.2pp   [+11.1, +34.7]   0.000
-    find   System One vs relocation  +30.6pp   [+15.3, +47.2]   0.000
-    localised vs baseline            +16.7pp   [ -4.2, +37.5]   0.135  not significant
+    paired, 24 scenarios               delta      95% CI            p
+    find      vs library only         +22.2pp   [ +9.7, +34.7]   0.000
+    find      vs blind relocation     +34.7pp   [+19.4, +51.4]   0.000
+    localised vs blind relocation     +29.2pp   [+12.5, +47.2]   0.000
+    localised vs library only         +22.2pp   [ -0.0, +43.1]   0.052  not significant
+    type A (the null)                  -4.4pp   [-10.0,  +0.0]   0.088  no significant harm
 
 The gains concentrate where they should. On `wrong_ipp` -- the failure mode that
 defeated two separate attempts at writing an abstract rule, one by a human and
@@ -166,6 +168,32 @@ probability 0.95 against a true bearing of 62 degrees -- and reported confidence
 
 It is also roughly twenty times faster: 0.35 seconds against 5 to 15, and about
 800 tokens per decision.
+
+### Revision reacts to evidence, not only to exhaustion
+
+A witness statement arriving at period three should not wait for the search to
+grind to period six before anyone reconsiders. Real searches call the planning
+meeting when the evidence lands. So the premise reopens for either reason: slow
+disconfirmation, or new information.
+
+On the same suite, that changed what the loop is good at rather than how often
+it succeeds:
+
+    Type B                     exhaustion only    + evidence trigger
+    find rate                       65%                65%
+    localised                       71%                76%
+    periods to localise             6.5                5.1
+    localised vs blind control    p = 0.065          p = 0.000
+
+It does not find more people. It works out where they are faster and more
+reliably, and the comparison against the blind control crosses from
+inconclusive to significant.
+
+**The control is what makes this mean something.** The same trigger applied to
+the arm that relocates without reading anything makes it *worse* -- type B find
+falls from 35% to 31%. Reacting faster to evidence helps only if you can read
+it, which is the same claim the whole project rests on, arriving from a
+different direction.
 
 ### Significance
 
