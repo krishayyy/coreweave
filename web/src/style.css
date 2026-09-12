@@ -119,11 +119,11 @@ html, body {
 /* evidence rows */
 #log-list li {
   font-family: var(--mono); font-size: 10.5px; line-height: 1.5;
-  color: #a7aebb; margin-bottom: 9px;
+  color: #c3cad6; margin-bottom: 9px;
   opacity: 0; transform: translateY(3px);
   animation: enter 420ms ease forwards;
 }
-#log-list li .t { color: var(--faint); margin-right: 8px; }
+#log-list li .t { color: #7c8698; margin-right: 8px; }
 #log-list li.new { color: var(--text); }
 #log-list li.new .t { color: var(--cold); }
 #log-list li.rev { color: var(--alert); }
