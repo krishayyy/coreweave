@@ -28,19 +28,30 @@ from . import tracing
 
 ENDPOINT = "https://api.typesafe.ai/v1/systemone"
 
-# Sixteen points would be finer, but each choice must be described distinctly
-# and eight already resolves direction to within 22.5 degrees -- well inside the
-# accuracy the search needs, and far inside what the language model achieved.
+# Sixteen points, not eight. Eight-point bins are 45 degrees wide, so asking
+# for one of eight puts a floor of about 22 degrees on the answer -- and the
+# measured error was 19 degrees, which is the model answering as precisely as
+# the question allowed rather than as precisely as it could. Halving the bin
+# halves that floor.
 COMPASS = {
-    "north": 0.0, "north-east": 45.0, "east": 90.0, "south-east": 135.0,
-    "south": 180.0, "south-west": 225.0, "west": 270.0, "north-west": 315.0,
+    "north": 0.0, "north-north-east": 22.5, "north-east": 45.0,
+    "east-north-east": 67.5, "east": 90.0, "east-south-east": 112.5,
+    "south-east": 135.0, "south-south-east": 157.5, "south": 180.0,
+    "south-south-west": 202.5, "south-west": 225.0, "west-south-west": 247.5,
+    "west": 270.0, "west-north-west": 292.5, "north-west": 315.0,
+    "north-north-west": 337.5,
 }
 
+# Likewise finer: the expected distance is a probability-weighted average over
+# these midpoints, so coarse bands quantise the answer before it is used.
 DISTANCE_BANDS = [
-    ("under 2 km from the planning point", 1.0),
-    ("2 to 5 km from the planning point", 3.5),
-    ("5 to 8 km from the planning point", 6.5),
-    ("8 to 11 km from the planning point", 9.5),
+    ("under 1.5 km from the planning point", 0.8),
+    ("1.5 to 3 km from the planning point", 2.2),
+    ("3 to 4.5 km from the planning point", 3.8),
+    ("4.5 to 6 km from the planning point", 5.2),
+    ("6 to 7.5 km from the planning point", 6.8),
+    ("7.5 to 9 km from the planning point", 8.2),
+    ("9 to 11 km from the planning point", 10.0),
     ("more than 11 km from the planning point", 12.5),
 ]
 
@@ -94,9 +105,9 @@ def ask(state: str, profiles: dict[str, str], model: str | None = None,
                     "a direction, that statement is the strongest evidence available."
                 ),
                 "criteria": {
-                    name: f"The subject actually started to the {name} of the "
-                          f"planning point."
-                    for name in COMPASS
+                    name: f"The subject actually started to the {name} "
+                          f"(bearing {int(deg)} degrees) of the planning point."
+                    for name, deg in COMPASS.items()
                 },
             },
             "start_distance": {

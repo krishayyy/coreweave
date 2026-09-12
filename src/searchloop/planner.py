@@ -109,7 +109,8 @@ def plan_sortie_adaptive(
     Returns the segment, the per-cell detection field the allocation produced,
     the mean effort actually applied, and the expected probability of success.
     """
-    from .pod import REFERENCE_ALT_M, sweep_width
+    from .pod import sweep_width
+    REFERENCE_ALT_M = 90.0
 
     altitude = altitude_m if altitude_m is not None else REFERENCE_ALT_M
     width_m = sweep_width(grid, altitude)

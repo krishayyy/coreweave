@@ -141,80 +141,47 @@ belief mixture already consumes. There is no selection step because nothing
 needs selecting.
 
     arm                                family   find rate        localised
-    library only (no revision)         B        40% [30-52]      67% [55-76]
-    blind relocation                   B        38% [27-49]      57% [45-68]
-    System One calibrated distribution B        61% [50-72]      82% [72-89]
+    library only (no revision)         B        43% [32-55]      54% [43-65]
+    blind relocation                   B        31% [21-42]      47% [36-59]
+    System One calibrated distribution B        69% [58-79]      78% [67-86]
+    oracle -- told the true answer     B        83%              78%
 
     paired, 24 scenarios               delta      95% CI            p
-    find      vs library only         +20.8pp   [ +5.6, +36.1]   0.004  significant
-    find      vs blind relocation     +23.6pp   [+11.1, +37.5]   0.000  significant
-    localised vs blind relocation     +25.0pp   [ +9.7, +41.7]   0.000  significant
-    localised vs library only         +15.3pp   [ -5.6, +36.1]   0.174  not significant
-
-### Revision is not free, and the cost is now measurable
+    find      vs library only         +26.4pp   [+13.9, +38.9]   0.000  significant
+    find      vs blind relocation     +38.9pp   [+23.6, +54.2]   0.000  significant
+    localised vs library only         +23.6pp   [ +1.4, +45.8]   0.049  significant
+    localised vs blind relocation     +30.6pp   [+15.3, +47.2]   0.000  significant
 
     paired, 30 scenarios, type A       delta      95% CI            p
-    find      vs library only          -8.9pp   [-16.7,  -2.2]   0.002  significant
+    find      vs library only          -2.2pp   [ -8.9,  +3.3]   0.613  no harm
 
-When the original premise was already correct, revising costs nearly nine
-points, and unlike earlier measurements that cost is now significant rather
-than suggestive. Abandoning a good hypothesis to chase a bad one is a real and
-quantified mistake.
+43% to 69% against a ceiling of 83%: about two thirds of the available headroom,
+with both metrics significant and no measurable cost on cases where the premise
+was already right.
 
-So the honest claim is a trade-off, not an improvement:
+### Two ceilings that were mine, not the model's
 
-    premise wrong  ->  +20.8 pp
-    premise right  ->   -8.9 pp
-    break-even     ->  revision pays when more than 30% of searches
-                       start from a wrong premise
+The gap to the oracle closed in two steps, and neither was a better model.
 
-Thirty percent is the number a deployment decision turns on, and it is not
-zero. The failure modes this addresses -- the subject was transported, deviated
-deliberately, or the planning point rests on a false premise -- are not rare in
-real search, but whether they clear thirty percent is an empirical question
-about a particular search organisation, not something this suite can answer.
+**The question was too coarse.** Direction was asked as a choice among eight
+compass points -- 45 degree bins -- so the answer could not be better than about
+22 degrees, and the measured error was 19. That is a model answering as
+precisely as the question allows, not as precisely as it can. Sixteen points
+took bearing error from 19 degrees to 11, and the share within 20 degrees from
+51% to 88%.
 
-The gains concentrate where they should. On `wrong_ipp` -- the failure mode that
-defeated two separate attempts at writing an abstract rule, one by a human and
-one by the agent -- it reaches 73% find and 76% localise against a 48%/55%
-baseline.
+**The confidence was being discarded.** Up to three directions were admitted
+whenever they cleared a fixed threshold, regardless of how sure the model was.
+The tell was that the oracle localises the subject *less* often than this arm
+does -- 78% against 82% -- and still finds more of them, because it commits to
+one account and the search concentrates while three accounts split the sweep
+three ways. Hedging in proportion to actual doubt, rather than always, gained
+five points on type B and recovered four on type A.
 
-**The division of labour follows the measurements, not the marketing.** Direction
-comes from the System One model, which is where the language model was worst
-(52 degrees median error). Distance is taken from it only as weak evidence,
-because its confidence there is genuinely low and the language model was already
-accurate (+0.2 km median). On the first case tested it answered north-east at
-probability 0.95 against a true bearing of 62 degrees -- and reported confidence
-0.26 on the distance it got wrong, which is calibration behaving as advertised.
-
-It is also roughly twenty times faster: 0.35 seconds against 5 to 15, and about
-800 tokens per decision.
-
-### Revision reacts to evidence, not only to exhaustion
-
-A witness statement arriving at period three should not wait for the search to
-grind to period six before anyone reconsiders. Real searches call the planning
-meeting when the evidence lands. So the premise reopens for either reason: slow
-disconfirmation, or new information.
-
-On the same suite, that changed what the loop is good at rather than how often
-it succeeds:
-
-    Type B                     exhaustion only    + evidence trigger
-    find rate                       65%                65%
-    localised                       71%                76%
-    periods to localise             6.5                5.1
-    localised vs blind control    p = 0.065          p = 0.000
-
-It does not find more people. It works out where they are faster and more
-reliably, and the comparison against the blind control crosses from
-inconclusive to significant.
-
-**The control is what makes this mean something.** The same trigger applied to
-the arm that relocates without reading anything makes it *worse* -- type B find
-falls from 35% to 31%. Reacting faster to evidence helps only if you can read
-it, which is the same claim the whole project rests on, arriving from a
-different direction.
+Both were ceilings imposed by how the system asked, and the second one is the
+sharper lesson: the whole reason to use a calibrated model is to act on the
+calibration. Reading the probability and then ignoring it gives up most of what
+it is for.
 
 ### Significance
 

@@ -239,12 +239,25 @@ def nominate_jev(
         profile_key = "hiker"
     distance_km = reading.expected_distance_km()
 
+    # Hedge in proportion to doubt, and no further. The oracle localises the
+    # subject LESS often than this arm does and still finds them more, because
+    # it commits to one account and the search concentrates, while spreading
+    # belief over three directions splits the sweep three ways. The model
+    # already reports how sure it is; using that is the whole point of a
+    # calibrated output. Take directions in descending probability until they
+    # account for most of the belief, then stop.
+    ranked = sorted(reading.direction_probs.items(), key=lambda kv: -kv[1])
+    keep: list[tuple[str, float]] = []
+    cumulative = 0.0
+    for name, probability in ranked:
+        if keep and (cumulative >= 0.85 or probability < 0.08 or len(keep) >= 3):
+            break
+        keep.append((name, probability))
+        cumulative += probability
+
     out: list[Nomination] = []
-    for name, probability in sorted(reading.direction_probs.items(),
-                                    key=lambda kv: -kv[1]):
-        # Below this a direction contributes nothing but dilution.
-        if probability < 0.05 or len(out) >= 3:
-            continue
+    total = sum(p for _, p in keep) or 1.0
+    for name, probability in keep:
         out.append(Nomination(
             label=f"Started to the {name}",
             narrative=(f"The evidence places the subject's starting point "
@@ -252,8 +265,9 @@ def nominate_jev(
             profile_key=profile_key,
             anchor_bearing_deg=jev.COMPASS[name],
             anchor_distance_km=float(np.clip(distance_km, 1.0, 13.0)),
-            # The model's own probability, capped like any other nomination.
-            prior=float(np.clip(probability * MAX_NOMINATION_PRIOR / 0.95,
+            # Share of the retained belief, so a single confident direction
+            # receives the full allowance rather than a third of it.
+            prior=float(np.clip((probability / total) * MAX_NOMINATION_PRIOR,
                                 0.02, MAX_NOMINATION_PRIOR)),
             rationale=(f"System One direction confidence "
                        f"{reading.direction_confidence:.2f}; distance confidence "
