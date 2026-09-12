@@ -95,11 +95,23 @@ def build_grid(terrain: Terrain, factor: int = 4, treeline_m: float = 1800.0) ->
     drain = np.log1p(accum)
     drain = (drain - drain.min()) / max(float(np.ptp(drain)), 1e-9)
 
-    # Canopy proxy: dense below treeline, falling off above it. Real vegetation
-    # rasters exist but need auth; this is monotone in the variable that matters
-    # for detection and is honest about being a proxy.
-    canopy = np.clip(1.0 - (elev - treeline_m) / 600.0, 0.0, 1.0)
-    canopy *= np.clip(1.0 - (slope - 35.0) / 30.0, 0.25, 1.0)  # cliffs hold less cover
+    # Canopy proxy. Real vegetation rasters exist but need authentication, so
+    # this is derived from terrain -- honest about being a proxy, but shaped by
+    # the things that actually break up forest cover in this range:
+    #   * elevation relative to treeline
+    #   * steep ground, which goes to talus and cliff rather than timber
+    #   * locally rugged ground, which is rockier and more broken
+    # A uniform "everything below treeline is closed canopy" is the unrealistic
+    # option: it erases meadows, talus, burn scars and rock.
+    canopy = np.clip(1.0 - (elev - treeline_m + 250.0) / 750.0, 0.0, 1.0)
+    canopy *= np.clip(1.0 - (slope - 28.0) / 22.0, 0.15, 1.0)
+
+    # Local relief over a 5-cell window: rugged ground carries less timber.
+    pad = np.pad(elev, 2, mode="edge")
+    windows = np.lib.stride_tricks.sliding_window_view(pad, (5, 5))
+    roughness = windows.std(axis=(-2, -1))
+    rough_n = roughness / max(float(np.percentile(roughness, 95)), 1e-9)
+    canopy *= np.clip(1.0 - 0.55 * rough_n, 0.30, 1.0)
 
     ns, ew = terrain.cell_size_m
     return SearchGrid(

@@ -45,6 +45,44 @@ hypothesis simply fails to explain the evidence and dies.
       planner.py      segment selection
       config.py       shared operating parameters
 
+## The experiment
+
+Three arms, run against the identical scenario suite with identical detection
+rolls, so nothing separating them can come from luck:
+
+| arm | revises? | reads the case file? |
+|---|---|---|
+| `none` | no | -- |
+| `heuristic` | yes | **no** -- relocates blindly toward unsearched mass |
+| `llm` | yes | yes |
+
+The `heuristic` arm is the one that makes the result meaningful. Without it,
+beating the baseline would only show that *trying somewhere else* helps. Beating
+`heuristic` is what shows the model is reading the evidence.
+
+Scenarios come in two families. Type A: the obvious reading is correct. Type B:
+it is wrong, in one of the four documented ways real searches fail. **Type A is
+a null** -- revision should not help when the premise was right, and reporting
+that plainly is what makes the Type B result credible.
+
+    python scripts/experiment.py --n-a 30 --n-b 20
+
+## Results so far (no LLM arm yet)
+
+    arm                                type    found   rate   periods*
+    library only (no revision)         A       23/30    77%       6.2
+    library only (no revision)         B        8/20    40%      12.8
+    blind relocation (no case file)    A       23/30    77%       6.4
+    blind relocation (no case file)    B        6/20    30%      13.0
+
+    * mean periods to find, unfound runs censored at the 16-period budget
+
+Revision is neutral on Type A, as it should be. On Type B, blind relocation is
+*worse than not revising at all* -- moving the search without understanding why
+costs more than it recovers. That is the bar the language model arm has to clear.
+
 ## Status
 
-Deterministic core complete and validated. Revision loop in progress.
+Deterministic core, scenario suite, revision trigger and experiment harness
+complete and tested. The LLM arm is implemented and unit-tested against a test
+double; it needs credentials to run for real.
