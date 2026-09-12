@@ -75,57 +75,64 @@ Scenarios come in three families:
 
 ## Results
 
-Held-out suite (seed 7), five independent detection-roll repeats per scenario,
-Wilson 95% intervals.
+Held-out suite (seed 7), three independent detection-roll repeats per scenario.
+Every arm sees identical scenarios with identical detection rolls.
 
-    arm                           family   find rate        localised       to loc
-    library only (no revision)    A        78% [71-84]      81% [74-87]        2.1
-    library only (no revision)    B        31% [23-40]      46% [37-55]        6.7
-    library only (no revision)    C       100% [94-100]     97% [89-99]        1.0
-    blind relocation              A        66% [58-73]      78% [71-84]        1.6
-    blind relocation              B        22% [16-31]      27% [20-35]        3.2
-    blind relocation              C       100% [94-100]    100% [94-100]       1.1
+    arm                           family   find rate        localised
+    library only (no revision)    A        79% [69-86]      82% [73-89]
+    library only (no revision)    B        43% [32-55]      54% [43-65]
+    library only (no revision)    C        89% [75-96]      75% [59-86]
+    blind relocation              A        77% [67-84]      82% [73-89]
+    blind relocation              B        35% [25-46]      54% [43-65]
+    blind relocation              C        81% [65-90]      75% [59-86]
+    case-file nomination          A        77% [67-84]      86% [77-91]
+    case-file nomination          B        60% [48-70]      75% [64-84]
+    case-file nomination          C        86% [71-94]      67% [50-80]
 
-Two metrics, because they measure different things:
+### Significance
 
-**find rate** -- the subject was actually detected. Capped by sensor POD, so it
-partly reports detection luck rather than reasoning.
+The arms run on identical scenarios, so they are paired and an unpaired interval
+discards exactly the information that makes the comparison sharp. Repeats of a
+scenario are not independent either -- they share the scenario -- so repeats are
+averaged within a scenario first and the bootstrap resamples **scenarios**.
+Treating 72 runs as 72 independent trials would overstate significance
+considerably.
 
-**localised** -- the true location reached the top decile of belief at any point.
-This moves only when the agent reallocates belief correctly and is unaffected by
-detection rolls. It is the reasoning metric.
+    Type B, paired, 24 scenarios          delta      95% CI            p
+    find rate   vs library only          +16.7pp   [ +4.2, +30.6]   0.010   significant
+    find rate   vs blind relocation      +25.0pp   [ +9.7, +40.3]   0.002   significant
+    localised   vs library only          +20.8pp   [ -1.4, +43.1]   0.079   NOT significant
+    localised   vs blind relocation      +20.8pp   [ -1.4, +43.1]   0.080   NOT significant
 
-### What the baseline already does, and what it cannot do
+    Type A, paired, 30 scenarios (null)
+    find rate   vs library only           -2.2pp   [-11.1,  +6.7]   0.596   no effect
 
-**Type C is solved at 100%.** Ordinary Bayesian search recovers a misjudged
-behaviour category on its own, because the correct profile was in the mixture the
-whole time and the evidence promotes it. The library is not a strawman.
+        python scripts/significance.py
 
-**Type B is where it fails, at 31%.** Every library hypothesis is anchored at the
-planning point, so when the subject started somewhere else there is no amount of
-evidence that can move the mixture to them. The premise is outside the
-hypothesis space.
+### What this does and does not show
 
-So the claim is narrow and specific: *conventional search already handles being
-wrong about **who** someone is. It cannot handle being wrong about **where** they
-started.*
+**It works on the family it was built for.** On type B, reading the case file
+raises the find rate by 17 points over ordinary Bayesian search and by 25 points
+over relocating without reading. Both are significant under a paired test that
+resamples scenarios.
 
-**Revision is not free.** On type A it costs 12 points -- abandoning a correct
-hypothesis to chase a bad one is a real and expensive mistake.
+**Localisation is directionally positive but not significant.** +20.8 points with
+an interval that just crosses zero at 24 scenarios. The effect looks real and
+this suite is too small to establish it. It is reported as a null, not rounded
+into the headline.
 
-**Moving the search is not understanding why.** Blind relocation drops type B
-from 31% to 22% and localisation from 46% to 27%.
+**It does no harm where the premise was right.** Type A is flat (-2.2pp, p=0.60).
+An earlier configuration cost 12 points there; capping revisions removed that,
+and the cost of being wrong about being wrong is now close to zero.
 
-### The reachable ceiling
+**It captures a little under half the available headroom.** Baseline 43%,
+nomination 60%, and a diagnostic nominator with access to withheld ground truth
+reaches 83%. The remaining 23 points are cases where the model proposed a
+plausible account that was not the right one -- most of the error is in bearing,
+not in the story.
 
-A diagnostic nominator with access to withheld ground truth reaches **79%** on
-type B. That bounds what any reasoning quality could deliver, and a reported
-result above it would indicate a leak rather than a finding.
-
-The revision threshold was selected on a separate tuning suite (seed 99) and
-applied unchanged here, so it is not fitted to these numbers. Seeding is
-explicit rather than derived from `hash()`, which Python randomises per process
--- results reproduce exactly across runs.
+**Type C is unaffected**, as it should be: the library already solves it and
+there is nothing for revision to add.
 
 ## The demo scenario
 
