@@ -337,8 +337,15 @@ def nominate_llm(
     briefing: str,
     trigger: RevisionTrigger,
     ipp_rc: tuple[int, int] | None = None,
+    lessons: str = "",
 ) -> list[Nomination]:
-    """Ask the model for new accounts. Raises NoProviderError without a key."""
+    """Ask the model for new accounts. Raises NoProviderError without a key.
+
+    `lessons` carries instructions the agent previously wrote for itself after
+    reviewing its own record. Empty when nothing has been learned, so an
+    untrained agent's prompt is byte-identical to what it always was -- which is
+    what makes the before-and-after comparison meaningful.
+    """
     extent_km = grid.shape[0] * grid.cell_m / 1000.0
     # The reach of the existing mixture: the widest distance model in the
     # library is what bounds where the current hypotheses can put mass.
@@ -351,6 +358,8 @@ def nominate_llm(
         "near": max(reach_km, extent_km * 0.28),
         "far": extent_km * 0.55,
     }
+    if lessons:
+        system = f"{system}\n\n{lessons}"
     coverage = _coverage_summary(belief, grid, ipp_rc) if ipp_rc else ""
     terrain = _terrain_summary(grid, ipp_rc) if ipp_rc else ""
     user = (

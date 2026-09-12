@@ -30,6 +30,11 @@ from . import tracing
 
 Arm = Literal["none", "heuristic", "llm"]
 
+# Instructions the agent has written for itself and that survived validation.
+# Set by the self-improvement driver; empty by default, so an untrained run is
+# exactly the run it always was.
+ACTIVE_LESSONS = ""
+
 
 @dataclass
 class PeriodTrace:
@@ -113,7 +118,7 @@ def run_scenario(
                     noms = nominate_heuristic(belief, grid, scenario.ipp_rc, rng)
                 else:
                     noms = nominate_llm(belief, grid, scenario.briefing(period), trigger,
-                                        scenario.ipp_rc)
+                                        scenario.ipp_rc, lessons=ACTIVE_LESSONS)
             except Exception as exc:            # a failed nomination must not end the search
                 noms = []
                 rejected.append({"error": f"{type(exc).__name__}: {exc}"})
