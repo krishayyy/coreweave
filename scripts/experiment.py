@@ -105,7 +105,7 @@ def main() -> int:
     arms = [a.strip() for a in args.arms.split(",") if a.strip()]
     if "llm" in arms and not llm.available():
         print("! no LLM credentials found -- skipping the 'llm' arm.")
-        print("  set ANTHROPIC_API_KEY / OPENAI_API_KEY / WANDB_API_KEY / TYPESAFE_API_KEY\n")
+        print("  set GROQ_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY / WANDB_API_KEY / TYPESAFE_API_KEY\n")
         arms = [a for a in arms if a != "llm"]
 
     grid = build_grid(

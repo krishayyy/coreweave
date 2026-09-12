@@ -134,6 +134,28 @@ not in the story.
 **Type C is unaffected**, as it should be: the library already solves it and
 there is nothing for revision to add.
 
+### Things that did not work
+
+**Spreading a nomination over an arc of bearings.** Most of the remaining error
+is angular: the model identifies *what* happened more reliably than *which
+direction*. Representing that honestly -- as an arc rather than a committed
+bearing -- looked like the obvious fix. Tested against a nominator with a
+controlled bearing error, so the error was a variable rather than a confound:
+
+    bearing err | sigma=0   | sigma=15  | sigma=30  | sigma=45
+           0deg |  72%/ 62% |  69%/ 69% |  60%/ 65% |  53%/ 39%
+          15deg |  58%/ 53% |  62%/ 56% |  57%/ 50% |  53%/ 46%
+          30deg |  47%/ 42% |  54%/ 43% |  46%/ 46% |  51%/ 43%
+          45deg |  43%/ 40% |  43%/ 42% |  47%/ 39% |  46%/ 43%
+
+Matching the declared uncertainty to the real error gains 4-7 points, which is
+inside the noise at 24 scenarios, and it costs 3 points when the bearing was
+good. Not adopted. The capability is in the code and defaults to off; taking a
+change on evidence this thin is the same overfitting the rest of the method
+avoids.
+
+        python scripts/tune_bearing_arc.py
+
 ## The demo scenario
 
 `B005` -- *deliberate deviation*. What the incident commander has at hour zero:

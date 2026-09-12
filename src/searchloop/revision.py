@@ -43,6 +43,11 @@ class Nomination:
     anchor_bearing_deg: float
     anchor_distance_km: float
     prior: float
+    # Angular uncertainty on the bearing. A proposal like "they were driven
+    # somewhere north-east" is an arc, not a point, and committing the whole
+    # prior to one exact bearing throws away the fact that the account itself
+    # is only directional.
+    anchor_bearing_sigma_deg: float = 0.0
     rationale: str = ""
     evidence_cited: tuple[str, ...] = ()
     origin: str = "llm"
@@ -85,6 +90,16 @@ def should_revise(
     )
 
 
+def _anchor_at(grid: SearchGrid, ipp_rc: tuple[int, int],
+               bearing_deg: float, distance_km: float) -> tuple[int, int]:
+    rows, cols = grid.shape
+    cells = distance_km * 1000.0 / grid.cell_m
+    theta = math.radians(bearing_deg)
+    r = int(round(ipp_rc[0] - cells * math.cos(theta)))   # bearing 0 = north = -row
+    c = int(round(ipp_rc[1] + cells * math.sin(theta)))
+    return int(np.clip(r, 0, rows - 1)), int(np.clip(c, 0, cols - 1))
+
+
 def to_hypothesis(
     nom: Nomination, grid: SearchGrid, ipp_rc: tuple[int, int], period: int
 ) -> Hypothesis | None:
@@ -93,17 +108,34 @@ def to_hypothesis(
     This is the only path from a proposal into the belief, and it runs the same
     `build_prior_field` the published library uses. A malformed or unknown
     profile is rejected here rather than being coerced into something plausible.
+
+    When the nomination carries angular uncertainty, the prior is spread over an
+    arc of anchors rather than committed to one bearing.
     """
     profile = PROFILES.get(nom.profile_key)
     if profile is None:
         return None
 
-    rows, cols = grid.shape
-    cells = float(nom.anchor_distance_km) * 1000.0 / grid.cell_m
-    theta = math.radians(float(nom.anchor_bearing_deg))
-    r = int(round(ipp_rc[0] - cells * math.cos(theta)))   # bearing 0 = north = -row
-    c = int(round(ipp_rc[1] + cells * math.sin(theta)))
-    anchor = (int(np.clip(r, 0, rows - 1)), int(np.clip(c, 0, cols - 1)))
+    anchor = _anchor_at(grid, ipp_rc, float(nom.anchor_bearing_deg),
+                        float(nom.anchor_distance_km))
+
+    sigma = float(nom.anchor_bearing_sigma_deg)
+    if sigma > 1.0:
+        offsets = np.array([-1.5, -0.75, 0.0, 0.75, 1.5])
+        weights = np.exp(-0.5 * offsets**2)
+        weights /= weights.sum()
+        field = np.zeros(grid.shape)
+        for off, w in zip(offsets, weights):
+            a = _anchor_at(grid, ipp_rc, nom.anchor_bearing_deg + off * sigma,
+                           nom.anchor_distance_km)
+            field += w * build_prior_field(grid, profile, a)
+        field /= field.sum()
+        return Hypothesis(
+            id=f"nom-p{period}-{nom.profile_key}-{int(nom.anchor_bearing_deg)}",
+            label=nom.label, narrative=nom.narrative, profile=profile,
+            anchor_rc=anchor, prior_field=field, origin="nominated",
+            born_iteration=period, rationale=nom.rationale,
+        )
 
     return Hypothesis(
         id=f"nom-p{period}-{nom.profile_key}-{int(nom.anchor_bearing_deg)}",
