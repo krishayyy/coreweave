@@ -26,7 +26,11 @@ class Config:
 
     # Revision fires when the leading hypothesis has been substantially ruled out
     # and nothing has replaced it. Never on a fixed iteration count.
-    exhaustion_trigger: float = 0.55
+    # The threshold was selected on a separate tuning suite (seed 99) against the
+    # oracle nominator, and applied unchanged to the reported held-out suite --
+    # see scripts/tune_trigger.py. Choosing it on the reported scenarios would be
+    # fitting the test set.
+    exhaustion_trigger: float = 0.40
     min_periods_between_revisions: int = 2
     max_periods: int = 16
 

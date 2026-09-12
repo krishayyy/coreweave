@@ -67,19 +67,40 @@ that plainly is what makes the Type B result credible.
 
     python scripts/experiment.py --n-a 30 --n-b 20
 
-## Results so far (no LLM arm yet)
+## Results on the held-out suite
+
+30 type A and 20 type B scenarios, seed 7. Every arm sees identical scenarios and
+identical detection rolls.
 
     arm                                type    found   rate   periods*
-    library only (no revision)         A       23/30    77%       6.2
-    library only (no revision)         B        8/20    40%      12.8
-    blind relocation (no case file)    A       23/30    77%       6.4
-    blind relocation (no case file)    B        6/20    30%      13.0
+    library only (no revision)         A       24/30    80%       6.4
+    library only (no revision)         B        8/20    40%      12.7
+    blind relocation (no case file)    A       20/30    67%       7.2
+    blind relocation (no case file)    B        4/20    20%      13.1
 
     * mean periods to find, unfound runs censored at the 16-period budget
 
-Revision is neutral on Type A, as it should be. On Type B, blind relocation is
-*worse than not revising at all* -- moving the search without understanding why
-costs more than it recovers. That is the bar the language model arm has to clear.
+Two things worth stating plainly, because they are what make any later result
+credible:
+
+**Revision is not free.** On type A, where the original premise was correct,
+revising *costs* 13 points. Abandoning a good hypothesis to chase a bad one is a
+real and expensive mistake, not a hypothetical one.
+
+**Moving the search is not the same as understanding why.** Blind relocation
+halves the type B find rate, from 40% to 20%. Anything that beats the baseline
+has to be doing more than deciding to look elsewhere.
+
+### The reachable ceiling
+
+A diagnostic nominator with access to the withheld ground truth reaches **55%**
+on the same type B suite. That is the upper bound on what any reasoning quality
+could deliver here: the language model arm is competing for the band between
+40% and 55%, and a claim above 55% would indicate a leak, not a result.
+
+The revision threshold was selected on a separate tuning suite (seed 99) and
+applied unchanged to the suite reported above, so it is not fitted to these
+numbers.
 
 ## Status
 

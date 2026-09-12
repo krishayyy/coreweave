@@ -54,6 +54,10 @@ class Scenario:
     subkind: str
     ipp_rc: tuple[int, int]
     true_rc: tuple[int, int]
+    # Where the subject actually began. For Type A this is the planning point;
+    # for Type B it is displaced, and recovering it is what the outer loop is
+    # really doing -- a hypothesis names a starting point, not a destination.
+    true_anchor_rc: tuple[int, int]
     true_profile_key: str
     true_account: str              # withheld from the searcher; for scoring only
     case_file: str                 # what the searcher sees at hour zero
@@ -176,7 +180,7 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
         key = str(rng.choice(TYPE_A_PROFILES))
         text, ctx = _fill(_A_TEMPLATES[key], rng)
         true_rc = _sample_from_field(build_prior_field(grid, PROFILES[key], ipp), rng)
-        return Scenario(scenario_id, "A", key, ipp, true_rc, key,
+        return Scenario(scenario_id, "A", key, ipp, true_rc, ipp, key,
                         f"Subject behaved as a {PROFILES[key].label}.", text)
 
     subkind = str(rng.choice(B_KINDS))
@@ -195,7 +199,7 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
 
     true_rc = _sample_from_field(build_prior_field(grid, PROFILES[true_key], true_anchor), rng)
     return Scenario(
-        scenario_id, "B", subkind, ipp, true_rc, true_key, account, text,
+        scenario_id, "B", subkind, ipp, true_rc, true_anchor, true_key, account, text,
         late_evidence=[Evidence(period=int(rng.integers(2, 5)), text=late)],
     )
 
