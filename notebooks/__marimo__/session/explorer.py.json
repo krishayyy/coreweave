@@ -1,0 +1,165 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.24.2",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "c1febf7f8501b0438389757f16e83452",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "03bbdc1708f313a7050c05f1a02a7ffb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"search-loop-case-explorer\">Search loop \u2014 case explorer</h1>\n<span class=\"paragraph\">Conventional search optimises <em>inside</em> an assumption. When the subject\nnever started where the search assumed, no amount of evidence moves the\nbelief to them \u2014 every hypothesis is anchored at the planning point.</span>\n<span class=\"paragraph\">Pick a run, a case and an operational period. Everything below reacts.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "02bd992b63f146d7d3299102df7877ee",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='vblA-0' random-id='26f1336b-dbe1-129a-10db-64c49724cf82'><marimo-dropdown data-initial-value='[&quot;experiment_jev.json&quot;]' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003eexperiment&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-options='[&quot;experiment.json&quot;,&quot;experiment_fixed.json&quot;,&quot;experiment_full.json&quot;,&quot;experiment_jev.json&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false' data-disabled='false'></marimo-dropdown></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "f0cef6f001b41c28b5621d06c6387cc8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "66d4023e71f67f029447e4f32130e5c9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='lEQa-0' random-id='90e0357b-ab1d-9929-4ced-fe590e34b4e3'><marimo-dropdown data-initial-value='[&quot;library only (no revision)&quot;]' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003earm&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-options='[&quot;blind relocation (reads nothing)&quot;,&quot;System One calibrated distribution&quot;,&quot;library only (no revision)&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false' data-disabled='false'></marimo-dropdown></marimo-ui-element><marimo-ui-element object-id='lEQa-1' random-id='87b1b5b5-d686-fab1-725c-a1b76d5d6878'><marimo-dropdown data-initial-value='[&quot;B \u2014 wrong about WHERE they started&quot;]' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003efailure family&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-options='[&quot;B \u2014 wrong about WHERE they started&quot;,&quot;A \u2014 premise correct (the null)&quot;,&quot;C \u2014 wrong about WHO they are&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false' data-disabled='false'></marimo-dropdown></marimo-ui-element></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "82a25148c761c3e0e95359629035a518",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='PKri-0' random-id='38ae473c-f476-8a3e-3a23-6f2df34e794e'><marimo-dropdown data-initial-value='[&quot;B000  [wrong_ipp]  not found&quot;]' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003ecase&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-options='[&quot;B000  [wrong_ipp]  not found&quot;,&quot;B001  [transported]  FOUND p16&quot;,&quot;B002  [deliberate_deviation]  FOUND p3&quot;,&quot;B003  [deliberate_deviation]  not found&quot;,&quot;B004  [wrong_ipp]  FOUND p10&quot;,&quot;B005  [deliberate_deviation]  not found&quot;,&quot;B006  [wrong_ipp]  not found&quot;,&quot;B007  [wrong_ipp]  FOUND p9&quot;,&quot;B008  [deliberate_deviation]  FOUND p4&quot;,&quot;B009  [deliberate_deviation]  FOUND p5&quot;,&quot;B010  [transported]  not found&quot;,&quot;B011  [wrong_ipp]  FOUND p8&quot;,&quot;B012  [wrong_ipp]  not found&quot;,&quot;B013  [wrong_ipp]  not found&quot;,&quot;B014  [wrong_ipp]  FOUND p16&quot;,&quot;B015  [wrong_ipp]  FOUND p11&quot;,&quot;B016  [transported]  FOUND p6&quot;,&quot;B017  [transported]  not found&quot;,&quot;B018  [deliberate_deviation]  not found&quot;,&quot;B019  [wrong_ipp]  FOUND p9&quot;,&quot;B020  [wrong_ipp]  not found&quot;,&quot;B021  [transported]  not found&quot;,&quot;B022  [deliberate_deviation]  FOUND p4&quot;,&quot;B023  [deliberate_deviation]  not found&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false' data-disabled='false'></marimo-dropdown></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "2489f7b14520e42a0a35c940cabc003f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='Xref-0' random-id='12639021-ed8a-aebe-a020-b452e2e780e2'><marimo-slider data-initial-value='1' data-label='&quot;&#92;u003cspan class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&#92;u003e&#92;u003cspan class=&#92;&quot;paragraph&#92;&quot;&#92;u003eoperational period&#92;u003c/span&#92;u003e&#92;u003c/span&#92;u003e&quot;' data-start='1' data-stop='16' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='true'></marimo-slider></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "138aa522d8c56c92fe6760827f1fad83",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"period-1\">Period 1</h3>\n<span class=\"paragraph\">Leading account: <strong>Lost hiker, down-drainage</strong> \u2014 posterior\n0.51, <strong>22% of what it\npredicted has been covered with no contact</strong>.</span>\n<span class=\"paragraph\">Swept 294 km this period. Probability the subject would\nhave been found by now if any current account were right:\n32%.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "401d46e05c490b4145adea5563ca5d87",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><em>no hypothesis snapshot in this run</em></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "d14e5df719fb4980fcdf4a32deae2319",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "27c20721eb43fe160c302c02569e8964",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<span class=\"paragraph\"><strong>Outcome.</strong> The subject was <strong>7.6 km</strong> from the\nplanning point. Not found within the period budget. Revisions: 0.\nFinal account: <em>Lost hiker, down-drainage</em> (library).</span>\n<span class=\"paragraph\">The searcher never saw the true location. It is shown here only so the\noutcome can be read.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "e0d3a9c014533fbbd50082a8bf6b0cd8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"across-the-whole-suite\">Across the whole suite</h3>\n<table>\n<thead>\n<tr>\n<th>arm</th>\n<th>type B find</th>\n<th>type B localised</th>\n<th>type A find (the null)</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heuristic</td>\n<td>35%</td>\n<td>54%</td>\n<td>77%</td>\n</tr>\n<tr>\n<td>jev</td>\n<td>65%</td>\n<td>71%</td>\n<td>74%</td>\n</tr>\n<tr>\n<td>none</td>\n<td>43%</td>\n<td>54%</td>\n<td>79%</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\"><em>Type A is the control: revision should not help when the premise was already right.</em></span></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

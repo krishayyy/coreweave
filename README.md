@@ -351,6 +351,20 @@ worse and had more room to regress toward the mean. The paired comparison is the
 correct analysis and is the one used everywhere else in this project; it simply
 was not applied here at first.
 
+## Exploring it
+
+    marimo run notebooks/explorer.py
+
+A judging table is a conversation, not a screening. People walk up mid-sentence
+and want to poke at the thing: show me one where it fails; what was it running
+on at period six; what happens if the witness had not named a direction. A
+recorded demo answers none of that.
+
+The explorer is reactive -- change the experiment, the arm, the case or the
+operational period and everything below recomputes. Every run is already
+serialised with per-period leaders, disconfirmation and the nominations that
+fired, so this is wiring rather than new machinery.
+
 ## Reproducing
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
