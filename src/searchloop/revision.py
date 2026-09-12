@@ -158,32 +158,47 @@ def nominate_heuristic(
 _SYSTEM = """You are assisting a search and rescue incident commander.
 
 A search has been running for several operational periods and has found nothing. \
-Every account of what happened that was considered at the outset has now been \
-substantially ruled out by that lack of contact. Your task is to propose \
-DIFFERENT accounts of what happened.
+Every account considered at the outset has now been substantially ruled out by \
+that lack of contact. Propose DIFFERENT accounts of what happened.
 
-You are not estimating where the subject is. You are proposing what occurred. \
-Each proposal is converted into a spatial prediction by the planning system and \
-scored against the same evidence as every other hypothesis, so a proposal that \
-does not explain the evidence will simply be eliminated.
+You are not estimating where the subject is now. You are proposing what \
+occurred, and specifically WHERE THE SUBJECT ACTUALLY BEGAN. The planning \
+system takes your starting point and applies the behaviour profile's own \
+distance model to it, so you name an origin, not a destination.
 
-Ground every proposal in specific details of the case file. Do not propose a \
-variation of an account that has already been ruled out. The documented ways a \
-search goes wrong are: the subject was transported away from the planning point; \
-the subject deliberately went somewhere other than what they told people; the \
-subject's behaviour category was misjudged; or the planning point itself is \
-based on a false premise.
+THE CRITICAL CONSTRAINT. Every hypothesis already under consideration is \
+anchored at the planning point, and between them they cover the ground within \
+roughly %(reach).0f km of it -- which is the area that has just been searched \
+without contact. An account that puts the subject's start within a few \
+kilometres of the planning point therefore predicts ground already ruled out \
+and adds nothing. To be worth anything, a new account must place the start \
+somewhere the existing ones cannot reach. In practice that means \
+%(near).0f-%(far).0f km from the planning point.
+
+Scale: the operating area is %(extent).0f km across, so a displacement of \
+1-2 km is negligible here and 6-10 km is the difference between the near and \
+far side of the massif. Read distance cues in the case file literally -- \
+"the back side", "a different access point", "a lift" all imply crossing the \
+terrain, not stepping off the trail.
+
+Ground every proposal in specific details of the case file, and do not restate \
+an account that has already been ruled out. The documented ways a search goes \
+wrong: the subject was transported away from the planning point; deliberately \
+went somewhere other than what they told people; their behaviour category was \
+misjudged; or the planning point itself rests on a false premise.
+
+Bearings are compass degrees: 0 = north, 90 = east, 180 = south, 270 = west.
 
 Available behaviour profiles (choose the one whose movement pattern fits):
-%s
+%(profiles)s
 
 Return ONLY a JSON array of 2-3 objects:
 [{"label": "short name for this account",
   "narrative": "one or two sentences: what you think happened",
   "profile_key": "one of the keys above",
-  "anchor_bearing_deg": 0-360 compass bearing from the planning point to where \
-this account says the subject actually started,
-  "anchor_distance_km": how far from the planning point that is,
+  "anchor_bearing_deg": compass bearing from the planning point to where this \
+account says the subject ACTUALLY STARTED,
+  "anchor_distance_km": how far from the planning point that start was,
   "prior": 0.05-0.35 how much belief this account deserves,
   "rationale": "which specific detail of the case file supports this",
   "evidence_cited": ["quoted fragment from the case file"]}]"""
@@ -192,6 +207,22 @@ this account says the subject actually started,
 def _profile_menu() -> str:
     return "\n".join(
         f"  {k}: {p.label} -- {p.narrative}" for k, p in PROFILES.items()
+    )
+
+
+def _coverage_summary(belief: Belief, grid: SearchGrid, ipp_rc: tuple[int, int]) -> str:
+    """Where the search has actually been, in terms the model can reason about."""
+    if not belief.history:
+        return "No ground swept yet."
+    dists = []
+    for record in belief.history:
+        for r, c in record.cells:
+            dists.append(np.hypot(r - ipp_rc[0], c - ipp_rc[1]))
+    km = np.asarray(dists) * grid.cell_m / 1000.0
+    return (
+        f"Ground swept so far lies between {km.min():.1f} and {km.max():.1f} km "
+        f"of the planning point, concentrated around {np.median(km):.1f} km. "
+        f"All of it came up empty."
     )
 
 
@@ -215,16 +246,33 @@ def _history_summary(belief: Belief, grid: SearchGrid) -> str:
 
 @tracing.op
 def nominate_llm(
-    belief: Belief, grid: SearchGrid, briefing: str, trigger: RevisionTrigger
+    belief: Belief,
+    grid: SearchGrid,
+    briefing: str,
+    trigger: RevisionTrigger,
+    ipp_rc: tuple[int, int] | None = None,
 ) -> list[Nomination]:
     """Ask the model for new accounts. Raises NoProviderError without a key."""
+    extent_km = grid.shape[0] * grid.cell_m / 1000.0
+    # The reach of the existing mixture: the widest distance model in the
+    # library is what bounds where the current hypotheses can put mass.
+    reach_km = max(p.d50_km for p in PROFILES.values()) * 2.0
+
+    system = _SYSTEM % {
+        "profiles": _profile_menu(),
+        "extent": extent_km,
+        "reach": reach_km,
+        "near": max(reach_km, extent_km * 0.28),
+        "far": extent_km * 0.55,
+    }
+    coverage = _coverage_summary(belief, grid, ipp_rc) if ipp_rc else ""
     user = (
         f"CASE FILE\n{briefing}\n\n"
-        f"SEARCH TO DATE\n{_history_summary(belief, grid)}\n\n"
+        f"SEARCH TO DATE\n{_history_summary(belief, grid)}\n{coverage}\n\n"
         f"WHY YOU ARE BEING ASKED\n{trigger.reason}.\n\n"
         f"Propose 2-3 different accounts of what happened."
     )
-    raw = llm.complete(_SYSTEM % _profile_menu(), user, max_tokens=1600, temperature=0.8)
+    raw = llm.complete(system, user, max_tokens=3500, temperature=0.8)
     parsed = llm.extract_json(raw)
     if isinstance(parsed, dict):
         parsed = [parsed]

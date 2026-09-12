@@ -112,7 +112,8 @@ def run_scenario(
                 if arm == "heuristic":
                     noms = nominate_heuristic(belief, grid, scenario.ipp_rc, rng)
                 else:
-                    noms = nominate_llm(belief, grid, scenario.briefing(period), trigger)
+                    noms = nominate_llm(belief, grid, scenario.briefing(period), trigger,
+                                        scenario.ipp_rc)
             except Exception as exc:            # a failed nomination must not end the search
                 noms = []
                 rejected.append({"error": f"{type(exc).__name__}: {exc}"})

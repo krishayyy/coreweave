@@ -9,3 +9,4 @@ runs/
 node_modules/
 dist/
 .DS_Store
+data/llm_cache/
