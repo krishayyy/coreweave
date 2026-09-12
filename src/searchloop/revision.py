@@ -26,7 +26,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from . import llm
+from . import llm, tracing
 from .belief import Belief
 from .config import Config
 from .grid import SearchGrid
@@ -56,6 +56,7 @@ class RevisionTrigger:
     leader_exhaustion: float = 0.0
 
 
+@tracing.op
 def should_revise(
     belief: Belief, cfg: Config, period: int, last_revision_period: int | None
 ) -> RevisionTrigger:
@@ -119,6 +120,7 @@ def to_hypothesis(
 
 # -- heuristic arm ---------------------------------------------------------
 
+@tracing.op
 def nominate_heuristic(
     belief: Belief, grid: SearchGrid, ipp_rc: tuple[int, int], rng: np.random.Generator
 ) -> list[Nomination]:
@@ -211,6 +213,7 @@ def _history_summary(belief: Belief, grid: SearchGrid) -> str:
     )
 
 
+@tracing.op
 def nominate_llm(
     belief: Belief, grid: SearchGrid, briefing: str, trigger: RevisionTrigger
 ) -> list[Nomination]:

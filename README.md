@@ -107,3 +107,33 @@ numbers.
 Deterministic core, scenario suite, revision trigger and experiment harness
 complete and tested. The LLM arm is implemented and unit-tested against a test
 double; it needs credentials to run for real.
+
+## The demo scenario
+
+`B005` -- *deliberate deviation*. What the incident commander has at hour zero:
+
+> Tom Aldridge, 50, told family they were hiking the standard route from
+> Timberline. Vehicle at the trailhead. Overdue since 09:30.
+
+Three operational periods in, with nothing found, one more item arrives:
+
+> A message on their phone, sent at 06:40, reads: "heading over the back side
+> first, will loop round after" -- recipient unidentified.
+
+The subject crossed the divide before starting the hike he described. He is
+6.9 km from where everyone is looking, and no amount of searching the stated
+route will reach him.
+
+Run it:
+
+    python scripts/render_run.py --kind B --index 5 --oracle
+    python scripts/export_frames.py --kind B --index 5 --oracle
+
+## Observability
+
+Weave instrumentation is optional by construction -- absent credentials every
+decorator is a pass-through and the loop is unchanged. What is traced is the
+revision rather than the search: what the evidence had ruled out, what was
+proposed in response, and what was refused. The rejected proposals are the
+informative rows, because they show the mixture declining a bad account instead
+of absorbing it.

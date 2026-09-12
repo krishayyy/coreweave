@@ -26,6 +26,7 @@ from .revision import (
     to_hypothesis,
 )
 from .scenario import Scenario
+from . import tracing
 
 Arm = Literal["none", "heuristic", "llm"]
 
@@ -71,6 +72,7 @@ class RunResult:
         return d
 
 
+@tracing.op
 def run_scenario(
     grid: SearchGrid,
     pod: np.ndarray,
@@ -115,6 +117,12 @@ def run_scenario(
             if accepted:
                 revisions += 1
                 last_revision = period
+            tracing.log("revision", {
+                "scenario": scenario.id, "period": period + 1, "arm": arm,
+                "trigger": trigger.reason,
+                "leader_ruled_out": trigger.leader_exhaustion,
+                "accepted": accepted, "rejected": rejected,
+            })
 
         # --- inner loop: sweep a segment ---
         segment = plan_sortie(grid, belief.joint, pod, position, budget_cells=capacity)

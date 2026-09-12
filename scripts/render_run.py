@@ -32,6 +32,9 @@ BELIEF_CMAP = LinearSegmentedColormap.from_list(
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", default="heuristic")
+    ap.add_argument("--oracle", action="store_true",
+                    help="diagnostic: nominate from withheld ground truth, to see "
+                         "what a correct revision looks like")
     ap.add_argument("--kind", default="B")
     ap.add_argument("--index", type=int, default=0)
     ap.add_argument("--seed", type=int, default=7)
@@ -55,6 +58,12 @@ def main() -> int:
         frames.append((trace.period, belief.joint.copy(), swept.copy(),
                        trace.leader_label, trace.leader_exhaustion,
                        bool(trace.nominations), trace.found))
+
+    if args.oracle:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from ceiling_check import oracle_factory
+        import searchloop.loop as loop_mod
+        loop_mod.nominate_heuristic = oracle_factory(scenario, grid)
 
     rng = np.random.default_rng(abs(hash(scenario.id)) % 2**32)
     result = run_scenario(grid, pod, scenario, args.arm, CFG, rng, on_period=capture)
