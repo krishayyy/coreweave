@@ -187,6 +187,7 @@ def nominate_heuristic(
 
 # -- system one arm --------------------------------------------------------
 
+@tracing.op
 def nominate_jev(
     belief: Belief, grid: SearchGrid, briefing: str, trigger: RevisionTrigger,
     ipp_rc: tuple[int, int], precedent: str = "",

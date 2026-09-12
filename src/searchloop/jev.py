@@ -24,6 +24,8 @@ from typing import Any
 
 import requests
 
+from . import tracing
+
 ENDPOINT = "https://api.typesafe.ai/v1/systemone"
 
 # Sixteen points would be finer, but each choice must be described distinctly
@@ -72,6 +74,7 @@ class Reading:
         return total or self.distance_km
 
 
+@tracing.op
 def ask(state: str, profiles: dict[str, str], model: str | None = None,
         timeout: int = 45) -> Reading:
     """One evaluation: which direction, how far, and what kind of subject."""
