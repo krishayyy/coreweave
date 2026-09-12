@@ -15,7 +15,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from searchloop import llm                                   # noqa: E402
+from searchloop import llm, tracing                          # noqa: E402
 from searchloop.config import DEFAULT as CFG                 # noqa: E402
 from searchloop.grid import build_grid                       # noqa: E402
 from searchloop.loop import run_scenario                     # noqa: E402
@@ -102,6 +102,10 @@ def main() -> int:
                          "n=20 scenarios is small, so a single pass is noisy")
     ap.add_argument("--out", default="runs/experiment.json")
     args = ap.parse_args()
+
+    # Without this the suite runs untraced, which is how the arm producing the
+    # headline result ended up being the one arm invisible in Weave.
+    tracing.init()
 
     arms = [a.strip() for a in args.arms.split(",") if a.strip()]
     if "jev" in arms:
