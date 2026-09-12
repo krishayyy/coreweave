@@ -326,6 +326,7 @@ def nominate_llm(
     trigger: RevisionTrigger,
     ipp_rc: tuple[int, int] | None = None,
     lessons: str = "",
+    precedent: str = "",
 ) -> list[Nomination]:
     """Ask the model for new accounts. Raises NoProviderError without a key.
 
@@ -353,6 +354,8 @@ def nominate_llm(
     user = (
         f"CASE FILE\n{briefing}\n\n"
         f"{terrain}\n\n"
+        + (f"{precedent}\n\n" if precedent else "")
+        +
         f"SEARCH TO DATE\n{_history_summary(belief, grid)}\n{coverage}\n\n"
         f"WHY YOU ARE BEING ASKED\n{trigger.reason}.\n\n"
         f"Propose 2-3 different accounts of what happened."

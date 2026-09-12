@@ -35,6 +35,10 @@ Arm = Literal["none", "heuristic", "llm"]
 # exactly the run it always was.
 ACTIVE_LESSONS = ""
 
+# Resolved searches the agent can draw on. Set by the learning-curve driver;
+# None means no experience, which is how every run behaved before this existed.
+ACTIVE_MEMORY = None
+
 
 @dataclass
 class PeriodTrace:
@@ -117,8 +121,15 @@ def run_scenario(
                 if arm == "heuristic":
                     noms = nominate_heuristic(belief, grid, scenario.ipp_rc, rng)
                 else:
+                    precedent = ""
+                    if ACTIVE_MEMORY is not None:
+                        evidence = (scenario.late_evidence[0].text
+                                    if scenario.late_evidence else scenario.case_file)
+                        precedent = ACTIVE_MEMORY.prompt_section(
+                            evidence, scenario.case_file)
                     noms = nominate_llm(belief, grid, scenario.briefing(period), trigger,
-                                        scenario.ipp_rc, lessons=ACTIVE_LESSONS)
+                                        scenario.ipp_rc, lessons=ACTIVE_LESSONS,
+                                        precedent=precedent)
             except Exception as exc:            # a failed nomination must not end the search
                 noms = []
                 rejected.append({"error": f"{type(exc).__name__}: {exc}"})
