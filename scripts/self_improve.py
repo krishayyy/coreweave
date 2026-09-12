@@ -22,6 +22,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from typing import Any
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +38,7 @@ from searchloop.pod import pod_field                  # noqa: E402
 from searchloop.revision import _SYSTEM, _profile_menu  # noqa: E402
 from searchloop.scenario import generate_suite, stable_seed  # noqa: E402
 from searchloop.selfimprove import (                  # noqa: E402
-    LessonBook, analyse, propose_lesson, validate,
+    LessonBook, analyse, propose_lessons, validate,
 )
 from searchloop.terrain import load_terrain           # noqa: E402
 
@@ -55,6 +57,8 @@ def main() -> int:
     ap.add_argument("--rounds", type=int, default=1)
     ap.add_argument("--train", type=int, default=10)
     ap.add_argument("--validate", type=int, default=8)
+    ap.add_argument("--candidates", type=int, default=3,
+                    help="distinct instructions proposed per round, each validated")
     ap.add_argument("--book", default=str(ROOT / "data" / "lessons.json"))
     args = ap.parse_args()
 
@@ -100,33 +104,44 @@ def main() -> int:
         report = analyse(runs, suite, grid)
         print(report.render())
 
-        rule(f"ROUND {round_no} — 3. PROPOSE  (the agent writes its own instruction)")
-        lesson = propose_lesson(report, book, base_instructions)
-        if lesson is None:
-            print(f"{RED}  no usable proposal returned{RESET}")
+        rule(f"ROUND {round_no} — 3. PROPOSE  ({args.candidates} candidate instructions)")
+        candidates = propose_lessons(report, book, base_instructions, k=args.candidates)
+        if not candidates:
+            print(f"{RED}  no usable proposals returned{RESET}")
             continue
-        print(f"{AMBER}  \"{lesson.text}\"{RESET}")
-        print(f"{DIM}  rationale: {lesson.rationale}{RESET}")
-        print(f"{DIM}  predicted: {lesson.evidence.get('predicted_effect', '')}{RESET}")
+        for i, cand in enumerate(candidates, 1):
+            print(f"{AMBER}  {i}. \"{cand.text}\"{RESET}")
+            print(f"{DIM}     {cand.rationale[:180]}{RESET}")
 
-        rule(f"ROUND {round_no} — 4. VALIDATE  (on {len(holdout)} scenarios it did not learn from)")
-        result = validate(lesson, book, holdout, grid, pod, CFG)
-        lesson.validation = result.to_dict()
-        lesson.accepted = result.gain_deg >= 5.0
+        rule(f"ROUND {round_no} — 4. VALIDATE  (each, on {len(holdout)} scenarios "
+             f"it did not learn from)")
+        scored: list[tuple[float, Any]] = []
+        for i, cand in enumerate(candidates, 1):
+            result = validate(cand, book, holdout, grid, pod, CFG)
+            cand.validation = result.to_dict()
+            scored.append((result.gain_deg, cand))
+            state = (f"{GREEN}+{result.gain_deg:.0f} deg{RESET}" if result.gain_deg > 0
+                     else f"{RED}{result.gain_deg:+.0f} deg{RESET}")
+            print(f"  {i}. {result.bearing_before:5.1f} -> {result.bearing_after:5.1f} deg"
+                  f"   {state}   ({result.improved} better, {result.worsened} worse)",
+                  flush=True)
 
-        print(f"  bearing error without it : {result.bearing_before:5.1f} deg"
-              f"   ({100 * result.within20_before:.0f}% within 20)")
-        print(f"  bearing error with it    : {result.bearing_after:5.1f} deg"
-              f"   ({100 * result.within20_after:.0f}% within 20)")
-        print(f"  change                   : {result.gain_deg:+5.1f} deg\n")
-        if lesson.accepted:
-            print(f"{GREEN}  ACCEPTED — the instruction is kept and applies to all "
-                  f"future searches.{RESET}")
+        rule(f"ROUND {round_no} — 5. GATE")
+        scored.sort(key=lambda x: -x[0])
+        best_gain, best = scored[0]
+        best.accepted = best.validation["verdict"] == "accepted"
+        if best.accepted:
+            print(f"{GREEN}  ACCEPTED{RESET}  \"{best.text}\"")
+            print(f"  {best.validation['bearing_before']:.0f} -> "
+                  f"{best.validation['bearing_after']:.0f} deg on "
+                  f"{best.validation['n']} held-out scenarios; applies to every "
+                  f"future search.")
         else:
-            print(f"{RED}  REJECTED — {result.verdict}.{RESET}")
-            print(f"{DIM}  It is recorded so the agent does not propose it again.{RESET}")
+            print(f"{RED}  NOTHING ACCEPTED{RESET} — best candidate: "
+                  f"{best.validation['verdict']}.")
+            print(f"{DIM}  All candidates recorded so they are not proposed again.{RESET}")
 
-        book.lessons.append(lesson)
+        book.lessons += candidates
         book.save(Path(args.book))
 
     rule("LESSON BOOK")

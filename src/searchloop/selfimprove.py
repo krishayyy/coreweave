@@ -238,19 +238,53 @@ Return ONLY JSON:
 
 
 @tracing.op
+def propose_lessons(report: FailureReport, book: LessonBook,
+                    current_instructions: str, k: int = 3) -> list[Lesson]:
+    """Several candidate instructions, to be validated against each other.
+
+    One candidate per round is a poor search over instruction space: the first
+    thing a model says is not reliably its best, and a single rejection then
+    reads as "nothing can help" when it only means "that one did not". Asking
+    for several distinct hypotheses and measuring each gives the gate something
+    to choose between.
+    """
+    out: list[Lesson] = []
+    for attempt in range(k):
+        lesson = propose_lesson(report, book, current_instructions,
+                                already=[x.text for x in out], variant=attempt)
+        if lesson is not None:
+            out.append(lesson)
+    return out
+
+
+@tracing.op
 def propose_lesson(report: FailureReport, book: LessonBook,
-                   current_instructions: str) -> Lesson | None:
+                   current_instructions: str,
+                   already: list[str] | None = None,
+                   variant: int = 0) -> Lesson | None:
     """Ask the agent what instruction would have prevented its own errors."""
     existing = "\n".join(f"  - {lesson.text}" for lesson in book.accepted) or "  (none yet)"
     tried = "\n".join(
         f"  - {lesson.text[:120]} (rejected: {lesson.validation.get('verdict', 'no gain')})"
         for lesson in book.rejected) or "  (none yet)"
 
+    siblings = "\n".join(f"  - {t[:140]}" for t in (already or [])) or "  (none)"
+    angles = [
+        "Focus on the single largest source of error.",
+        "Focus on a DIFFERENT mechanism from the obvious one. If the obvious "
+        "reading is that a cue was ignored, consider instead that it was read "
+        "but applied backwards, or applied to the wrong reference point.",
+        "Focus on what the categories you do WELL on have in common, and write "
+        "the rule that would extend that behaviour to the others.",
+    ]
     user = (
         f"YOUR RECORD\n{report.render()}\n\n"
         f"INSTRUCTIONS YOU ALREADY HAVE\n{current_instructions}\n\n"
         f"LESSONS ALREADY IN FORCE\n{existing}\n\n"
         f"LESSONS ALREADY TRIED AND REJECTED — do not propose these again\n{tried}\n\n"
+        f"CANDIDATES ALREADY WRITTEN THIS ROUND — propose something materially "
+        f"different\n{siblings}\n\n"
+        f"{angles[variant % len(angles)]}\n\n"
         f"Write one new instruction for yourself."
     )
     raw = llm.complete(_SYSTEM, user, max_tokens=700, temperature=0.7)
@@ -288,6 +322,8 @@ class Validation:
     gain_deg: float
     within20_before: float
     within20_after: float
+    improved: int
+    worsened: int
     verdict: str
 
     def to_dict(self) -> dict[str, Any]:
@@ -342,24 +378,51 @@ def validate(lesson: Lesson, book: LessonBook, scenarios: list[Scenario],
     trial = LessonBook(book.accepted + [lesson])
     trial_lessons = trial.prompt_section()
 
+    # Paired per scenario. Every proposal in a response is admitted to the
+    # mixture, so what matters is whether the response contained a good account
+    # at all -- the best proposal's error. Taking a median across all proposals
+    # from all scenarios instead mixes between-scenario variance into the
+    # comparison and buries an effect this size in noise.
     before: list[float] = []
     after: list[float] = []
-    for scenario in scenarios:
-        before += probe_bearing_error(scenario, grid, pod, cfg, base_lessons)
-        after += probe_bearing_error(scenario, grid, pod, cfg, trial_lessons)
+    all_before: list[float] = []
+    all_after: list[float] = []
 
-    if not before or not after:
-        return Validation(0, 0, 0, 0, 0, 0, "no data")
+    for scenario in scenarios:
+        b_errs = probe_bearing_error(scenario, grid, pod, cfg, base_lessons)
+        a_errs = probe_bearing_error(scenario, grid, pod, cfg, trial_lessons)
+        if not b_errs or not a_errs:
+            continue
+        before.append(min(b_errs))
+        after.append(min(a_errs))
+        all_before += b_errs
+        all_after += a_errs
+
+    if not before:
+        return Validation(0, 0, 0, 0, 0, 0, 0, 0, "no data")
 
     b = np.array(before)
     a = np.array(after)
-    gain = float(np.median(b) - np.median(a))
-    verdict = ("accepted" if gain >= MIN_BEARING_GAIN_DEG
-               else f"gain {gain:+.0f} deg below the {MIN_BEARING_GAIN_DEG:.0f} deg bar")
+    gain = float(np.mean(b) - np.mean(a))
+    improved = int((a < b - 1.0).sum())
+    worsened = int((a > b + 1.0).sum())
+
+    # Two conditions, because a mean can be carried by one scenario: the gain
+    # must clear the bar AND more scenarios must improve than worsen.
+    ok = gain >= MIN_BEARING_GAIN_DEG and improved > worsened
+    if ok:
+        verdict = "accepted"
+    elif gain < MIN_BEARING_GAIN_DEG:
+        verdict = f"gain {gain:+.0f} deg below the {MIN_BEARING_GAIN_DEG:.0f} deg bar"
+    else:
+        verdict = f"gain came from too few scenarios ({improved} better, {worsened} worse)"
+
     return Validation(
-        n=len(scenarios),
-        bearing_before=float(np.median(b)), bearing_after=float(np.median(a)),
+        n=len(before),
+        bearing_before=float(np.mean(b)), bearing_after=float(np.mean(a)),
         gain_deg=gain,
-        within20_before=float((b <= 20).mean()), within20_after=float((a <= 20).mean()),
+        within20_before=float((np.array(all_before) <= 20).mean()),
+        within20_after=float((np.array(all_after) <= 20).mean()),
+        improved=improved, worsened=worsened,
         verdict=verdict,
     )
