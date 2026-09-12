@@ -15,6 +15,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from pathlib import Path as _P                               # noqa: E402
 from searchloop import llm                                    # noqa: E402
 
 
@@ -96,3 +97,35 @@ def test_no_credentials_raises_a_named_error(monkeypatch):
     assert not llm.available()
     with pytest.raises(llm.NoProviderError):
         llm.complete("s", "u", use_cache=False)
+
+
+def test_tracing_never_prompts_without_credentials(monkeypatch):
+    """weave.init() blocks on stdin when unauthenticated.
+
+    During a live demo that is a frozen terminal, so init must decline before
+    ever calling it rather than relying on it to fail fast.
+    """
+    from searchloop import tracing
+
+    monkeypatch.setattr(tracing, "_INITIALISED", False)
+    monkeypatch.setattr(tracing, "_WEAVE", None)
+    monkeypatch.delenv("WANDB_API_KEY", raising=False)
+    monkeypatch.delenv("WANDB_MODE", raising=False)
+    monkeypatch.setattr(tracing, "_netrc_text", lambda: "")
+    monkeypatch.setattr(_P, "exists", lambda self: False)
+
+    called = {"n": 0}
+
+    def explode(*a, **k):
+        called["n"] += 1
+        raise AssertionError("weave.init must not be reached without credentials")
+
+    import sys as _sys
+    import types
+    fake = types.ModuleType("weave")
+    fake.init = explode
+    monkeypatch.setitem(_sys.modules, "weave", fake)
+
+    assert tracing.init("x") is False
+    assert called["n"] == 0
+    assert tracing.enabled() is False
