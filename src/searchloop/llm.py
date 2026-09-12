@@ -142,7 +142,7 @@ def complete(
         _throttle()
         try:
             resp = requests.post(provider.base_url, headers=headers,
-                                 json=payload, timeout=120)
+                                 json=payload, timeout=45)
         except requests.RequestException as exc:
             last = exc
             time.sleep(min(2**attempt, 20))
