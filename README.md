@@ -284,10 +284,13 @@ The floor is 0.40, chosen on the tuning fold: it blocks 60% of false leads
 while keeping 91% of the real displacements. A floor of 0.60 blocks 70% of
 false leads but discards a third of the cases the system exists to solve.
 
-This is also what removed most of the cost on correct-premise cases, taking it
-from -5.6pp to -3.3pp and out of significance, while *raising* the gain on the
-displaced cases -- a confident reading now earns a stronger nomination than a
-hesitant one, where before every reading was admitted at full strength.
+This is also what reduced the cost on correct-premise cases, from -5.6pp to
+-2.8pp, while *raising* the gain on the displaced ones -- a confident reading
+now earns a stronger nomination than a hesitant one, where before every reading
+was admitted at full strength. The remaining cost is small but, at 60
+correct-premise cases, statistically real (p=0.030); at half that sample it did
+not reach significance, which was a fact about the sample rather than about the
+system.
 
     arm                                family   find rate        localised
     library only (no revision)         A        98% [94-99]      96% [92-98]
@@ -507,8 +510,9 @@ took bearing error from 19 degrees to 11, and the share within 20 degrees from
 
 **The confidence was being discarded.** Up to three directions were admitted
 whenever they cleared a fixed threshold, regardless of how sure the model was.
-The tell was that the oracle localises the subject *less* often than this arm
-does -- 78% against 82% -- and still finds more of them, because it commits to
+The tell was that the oracle localised the subject *less* often than this arm
+did -- 78% against 82%, both measured before the doubt gate and the false leads
+existed -- and still found more of them, because it commits to
 one account and the search concentrates while three accounts split the sweep
 three ways. Hedging in proportion to actual doubt, rather than always, gained
 five points on type B and recovered four on type A.
@@ -799,6 +803,39 @@ prompt will always produce something that sounds like an improvement, and so
 will a person. Whether it is one is an empirical question, and the answer is
 often no. Self-improvement without a validation gate is not self-improvement;
 it is a prompt slowly filling with plausible noise.
+
+### The one accepted lesson did not survive confirmation
+
+The self-improvement loop accepted exactly one instruction, `lesson-003`, on a
+fold that showed +9.9 degrees of bearing improvement. Re-measured on a
+confirmation fold it had not been selected on:
+
+    before        70.0 deg
+    after         54.7 deg
+    gain         +15.3 deg   95% CI [-0.6, +39.2]   p = 0.070
+                 4 better, 2 worse, 6 bit-identical   (n = 12)
+
+The point estimate is larger than the selection fold's, and it still does not
+hold. **The median gain is zero** -- half the fold was unchanged to the degree,
+meaning the instruction did not alter the model's proposal at all. And one
+scenario, B011 at 134 degrees to 1 degree, carries the entire mean: remove it
+and +15.3 becomes +4.6, under the loop's own 5 degree bar.
+
+That is precisely the "carried by one case" failure the gate's
+improved-versus-worsened tie-break exists to catch, and it slipped through
+because 4 > 2. The lesson has been withdrawn -- `accepted` is now false, with
+the confirmation recorded against it so it is not re-proposed.
+
+So the honest standing of the self-improvement loop is: **the gate provably
+distinguishes candidates, and it has not yet accepted an instruction that
+survived confirmation.** Those are separate claims and only the first is
+established. The configuration change it found (`exhaustion_trigger` 0.7 to
+0.5) is a different mechanism and is unaffected -- it was measured on held-out
+cases and cleared by about two standard errors.
+
+Lessons are injected only into the prose language-model nomination path. The
+calibrated System One arm, which produces every headline figure, never reads
+them, so nothing in the results table depends on this.
 
 ### Learning from precedent instead of rules
 
