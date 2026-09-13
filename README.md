@@ -3,10 +3,11 @@
 An autonomous search agent that changes its mind about what happened.
 
 **On the cases where the initial premise is wrong, standard search doctrine
-finds the subject 31% of the time. This finds them 81% of the time.**
+finds the subject 32% of the time. This finds them 83% of the time.**
 
-    +50.0 points, paired on the same 24 scenarios, p < 0.001
-    an oracle told the true answer outright reaches 88%
+    +51.4 points, paired on the same 24 scenarios, p < 0.001
+    and no measurable cost on the cases where the premise was right,
+    even when those cases are actively baited with false leads
 
 That baseline is not a strawman and it is worth being precise about what it is.
 The control arm implements what a trained incident commander actually does:
@@ -28,8 +29,15 @@ its posterior forever and only grows more confident about the wrong valley.
 The cases in the type B suite are the documented ways this happens: the subject
 was transported out of the area, deviated deliberately, or the planning point
 itself was wrong. On the cases where the premise *was* right, this system is
-within noise of doctrine (-5.6pp, p=0.281) — it does not buy the hard cases by
-breaking the easy ones.
+within noise of doctrine (-3.3pp, p=0.255) — and those cases each carry a false
+lead, so the suite is actively trying to bait it into moving. It does not buy
+the hard cases by breaking the easy ones.
+
+Because the gain is conditional on the premise being wrong, the honest question
+is how often that has to happen for the system to be worth running. The answer
+is computable from the same run: **above a 6.1% premise-error rate it is net
+positive**, down from 10.0% before the doubt gate, and demonstrably positive
+above about 20%.
 
 Every decision takes **4 ms** on a 21 km box and 10 ms on a 48 km county, which
 is about five orders of magnitude faster than the flight it is planning.
@@ -180,32 +188,69 @@ distribution over compass points -- and a distribution is exactly what the
 belief mixture already consumes. There is no selection step because nothing
 needs selecting.
 
+### Knowing when *not* to change your mind
+
+A system willing to revise its premise is a system that can be talked out of a
+correct search. Real case files are mostly false leads -- a sighting traced to
+another party, a vehicle belonging to someone unrelated, a dog alert that did
+not develop -- and every correct-premise case in this suite now carries one,
+so the suite can fail a system for being too willing to move.
+
+The first version failed it. The reason was the question, not the model. Every
+question in the System One payload presupposed displacement -- *"in which
+compass direction did the subject actually begin?"* -- so no answer was
+available meaning "where you already think". It was structurally obliged to
+nominate a relocation every time it was consulted.
+
+It is now asked the prior question first, and every relocation is gated and
+scaled by the answer: P(the subject began somewhere other than the planning
+point). A half-convinced model moves half as much belief; below a floor it
+moves none.
+
+Measured on a tuning fold held separate from everything above:
+
+    premise RIGHT, with a false lead    median P(wrong)  0.34
+    premise WRONG                       median P(wrong)  0.69
+    separation                          AUC 0.813
+
+The comparison that matters is against the trigger this replaces. **Exhaustion
+-- the fraction of the predicted area covered without contact, which is how
+Bayesian search systems conventionally decide to doubt themselves -- fired at a
+median of 0.67 on both families. That is an AUC of 0.5: chance.** Coverage
+cannot answer "am I wrong", because coming up empty happens just as often when
+you are looking in exactly the right place. Asking the question directly
+carries information; inferring it from how much ground you have covered does
+not.
+
+The floor is 0.40, chosen on the tuning fold: it blocks 60% of false leads
+while keeping 91% of the real displacements. A floor of 0.60 blocks 70% of
+false leads but discards a third of the cases the system exists to solve.
+
+This is also what removed most of the cost on correct-premise cases, taking it
+from -5.6pp to -3.3pp and out of significance, while *raising* the gain on the
+displaced cases -- a confident reading now earns a stronger nomination than a
+hesitant one, where before every reading was admitted at full strength.
+
     arm                                family   find rate        localised
-    library only (no revision)         A        96% [89-98]      93% [86-97]
-    library only (no revision)         B        31% [21-42]      46% [35-57]
-    library only (no revision)         C        97% [86-100]    100% [90-100]
-    blind relocation (reads nothing)   A        96% [89-98]      93% [86-97]
-    blind relocation (reads nothing)   B        17% [10-27]      46% [35-57]
-    blind relocation (reads nothing)   C       100% [90-100]    100% [90-100]
-    language model writes prose        A        74% [65-82]      86% [77-91]
-    language model writes prose        B        57% [45-68]      62% [51-73]
-    language model writes prose        C        81% [65-90]      64% [48-78]
-    System One calibrated distribution A        90% [82-95]      92% [85-96]
-    System One calibrated distribution B        81% [70-88]      76% [65-85]
-    System One calibrated distribution C        94% [82-98]     100% [90-100]
-    oracle -- told the true answer     B        88%
+    library only (no revision)         A        97% [91-99]      96% [89-98]
+    library only (no revision)         B        32% [22-43]      42% [31-53]
+    library only (no revision)         C       100% [90-100]    100% [90-100]
+    blind relocation (reads nothing)   A        96% [89-98]      91% [83-95]
+    blind relocation (reads nothing)   B        19% [12-30]      29% [20-41]
+    blind relocation (reads nothing)   C        97% [86-100]    100% [90-100]
+    System One calibrated distribution A        93% [86-97]      98% [92-99]
+    System One calibrated distribution B        83% [73-90]      92% [83-96]
+    System One calibrated distribution C       100% [90-100]    100% [90-100]
 
     paired, 24 scenarios               delta      95% CI            p
-    find      vs library only         +50.0pp   [+34.7, +65.3]   0.000  significant
-    find      vs blind relocation     +63.9pp   [+48.6, +77.8]   0.000  significant
-    find      vs language model prose +23.6pp   [ +4.2, +43.1]   0.020  significant
-    localised vs library only         +30.6pp   [ +9.7, +51.4]   0.007  significant
-    localised vs blind relocation     +30.6pp   [ +9.7, +51.4]   0.007  significant
-    localised vs language model prose +13.9pp   [ -9.7, +36.1]   0.234  NOT significant
+    find      vs library only         +51.4pp   [+36.1, +66.7]   0.000  significant
+    find      vs blind relocation     +63.9pp   [+47.2, +79.2]   0.000  significant
+    localised vs library only         +50.0pp   [+29.2, +70.8]   0.000  significant
+    localised vs blind relocation     +62.5pp   [+41.7, +79.2]   0.000  significant
 
     paired, 30 scenarios, type A       delta      95% CI            p
-    find      vs library only          -5.6pp   [-16.7,  +5.6]   0.281  no significant harm
-    find      vs language model prose +15.6pp   [ +5.6, +27.8]   0.001  significant
+    find      vs library only          -3.3pp   [ -8.9,  +0.0]   0.255  no significant harm
+    localised vs library only          +2.2pp   [ -5.6, +11.1]   0.706  no significant harm
 
 The type A row is the one worth pausing on. Prose revision does help on type B
 -- 57% against the library's 31% -- so the language model is not useless at
@@ -217,10 +262,16 @@ separated than the difference on type B. Being unable to rank your own
 hypotheses does not only cost you the wins; it costs you the cases you had
 already won.
 
-Every figure comes from `runs/experiment_headline.json`, and the prose arm from
-`runs/experiment_llm_current.json` under an identical config and seed: 30 type
-A, 24 type B and 12 type C scenarios, three detection-roll repeats, Wilson 95%
+Every figure comes from `runs/experiment_headline_gated.json`: 30 type A, 24
+type B and 12 type C scenarios, three detection-roll repeats, Wilson 95%
 intervals.
+
+The prose language-model arm is not in this table. It was measured before the
+false leads and the doubt gate existed (`runs/experiment_llm_current.json`,
+57% on type B against the calibrated arm's 81%, and 74% on type A against 90%)
+and running it against a suite it has never seen would be comparing two
+different experiments. Its result is reported in the section above rather than
+placed in a table that would imply it was run under these conditions.
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
     python scripts/significance.py runs/experiment_headline.json \
