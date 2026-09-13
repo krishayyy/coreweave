@@ -46,6 +46,33 @@
       },
       "accepted": true,
       "verdict": "objective +0.023 \u00b1 0.011, find rate +0 pp"
+    },
+    {
+      "id": "trial-002",
+      "parameter": "direction_mass_cutoff",
+      "was": 0.98,
+      "now": 0.9,
+      "rationale": "The current high cutoff of 0.98 causes the system to hedge across almost all directions, diluting focus and slowing progress; lowering it should sharpen the sweep and improve both locate rate and speed score.",
+      "predicted": "Higher locate rate and faster search (improved speed score) at the possible cost of slightly reduced coverage of unlikely directions, which may marginally lower true\u2011location top\u2011decile probability.",
+      "at": "2026-09-13T01:57:30+00:00",
+      "before": {
+        "find_rate": 0.5,
+        "localise_rate": 0.5138888888888888,
+        "mean_peak": 74.1546630859375,
+        "objective": 0.3298611111111111,
+        "n": 12,
+        "repeats": 6
+      },
+      "after": {
+        "find_rate": 0.5,
+        "localise_rate": 0.5694444444444444,
+        "mean_peak": 74.54114372347607,
+        "objective": 0.3307291666666667,
+        "n": 12,
+        "repeats": 6
+      },
+      "accepted": false,
+      "verdict": "objective +0.001 \u00b1 0.003, below the 0.015 bar"
     }
   ]
 }

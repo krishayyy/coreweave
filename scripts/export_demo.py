@@ -71,6 +71,7 @@ def run_arm(grid, pod, scenario, arm, out, prefix):
             "revised": bool(trace.nominations),
             "leader": trace.leader_label,
             "truth_percentile": trace.truth_percentile,
+            "track_km": trace.track_km,
             "trigger_reason": trace.trigger_reason,
             "nominations": trace.nominations,
         })
