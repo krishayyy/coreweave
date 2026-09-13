@@ -163,8 +163,10 @@ html, body {
   /* Nearly opaque on purpose. This sits over a bright satellite basemap and it
    * is the one frame a viewer has to be able to read at a glance. */
   background: color-mix(in srgb, var(--ground) 94%, transparent);
+  /* Elevation declared once. The border carries it, and it is the alert hue
+   * because this is the alert moment; a soft shadow underneath as well would
+   * be the same separation stated twice. */
   border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
   font-family: var(--mono); font-size: 12px; line-height: 1.5;
 }
 .revswap dt { color: var(--label); letter-spacing: 0.18em; font-weight: 600; }
@@ -316,8 +318,14 @@ html, body {
   .verdict { width: calc(100% - 36px); left: 18px; }
   .verdict:not(.right) { bottom: calc(50% + 200px); }
   .verdict.right { right: auto; left: 18px; }
-  #deck { grid-template-columns: 1fr; grid-template-rows: auto minmax(92px, 1fr);
-    height: 218px; row-gap: 12px; }
+  /* Three children now, not two. The per-case percentile chart is the one
+     that gives way: on a narrow screen the measurement across the suite is
+     worth more than the trace of the single case already playing above it. */
+  #deck { grid-template-columns: 1fr; grid-template-rows: auto auto;
+    height: 236px; row-gap: 12px; }
+  #graphwrap { display: none; }
+  #aggregate { padding-left: 0; border-left: 0; padding-top: 12px;
+    border-top: 1px solid var(--rule); }
   .metric .v { font-size: 20px; }
 }
 
