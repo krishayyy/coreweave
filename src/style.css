@@ -152,10 +152,32 @@ html, body {
 .revising { position: absolute; inset: 0; display: grid; place-items: center;
   pointer-events: none; opacity: 0; transition: opacity 320ms var(--ease); z-index: 2; }
 .revising.on { opacity: 1; }
+.revbox { display: grid; justify-items: center; gap: 10px; }
+/* The abandoned account and the one replacing it, named. Without this the
+ * moment reads as a status light rather than as the system saying what it
+ * had been assuming and what it now believes instead. */
+.revswap {
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  gap: 3px 12px; margin: 0; max-width: 460px;
+  padding: 12px 16px;
+  /* Nearly opaque on purpose. This sits over a bright satellite basemap and it
+   * is the one frame a viewer has to be able to read at a glance. */
+  background: color-mix(in srgb, var(--ground) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  font-family: var(--mono); font-size: 12px; line-height: 1.5;
+}
+.revswap dt { color: var(--label); letter-spacing: 0.18em; font-weight: 600; }
+.revswap dd { margin: 0; }
+#revWas { color: #9aa4b2; text-decoration: line-through;
+          text-decoration-color: var(--alert); text-decoration-thickness: 1px; }
+#revNow { color: var(--warm); font-weight: 600; }
+
 .revising span {
   position: relative; font-family: var(--mono); font-size: 11px; font-weight: 500;
   letter-spacing: 0.44em; text-indent: 0.44em; color: var(--alert);
-  padding: 10px 18px; background: color-mix(in srgb, var(--ground) 60%, transparent);
+  font-size: 12px;
+  padding: 10px 18px; background: color-mix(in srgb, var(--ground) 82%, transparent);
   backdrop-filter: blur(4px);
 }
 .revising span::before, .revising span::after {

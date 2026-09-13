@@ -194,7 +194,22 @@ class Pane {
     if (showTruth) this.marker(x, y, scale, scenario.truth, "#ff5a52", "x", phase);
 
     const rev = this.root.querySelector(".revising");
-    if (rev) rev.classList.toggle("on", revising && phase < 0.6);
+    if (rev) {
+      const on = revising && phase < 0.6;
+      rev.classList.toggle("on", on);
+      if (on && frame) {
+        // Name the account being abandoned and the one taking its place. The
+        // trigger reason already carries the old account in quotes and how
+        // much of it was swept for nothing.
+        const m = /'([^']+)'/.exec(frame.trigger_reason || "");
+        const pct = /(\d+)%/.exec(frame.trigger_reason || "");
+        const was = m ? m[1] : (frame.leader || "the original account");
+        const nom = (frame.nominations || [])[0];
+        const w = el("revWas"), n = el("revNow");
+        if (w) w.textContent = pct ? `${was} — ${pct[1]}% swept, no contact` : was;
+        if (n) n.textContent = nom ? (nom.label || nom.narrative) : "re-planning";
+      }
+    }
   }
 
   aircraft(track, x, y, scale, phase) {
