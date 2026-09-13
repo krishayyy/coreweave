@@ -81,6 +81,9 @@ def _compass(deg: float) -> str:
 class CaseMemory:
     """Resolved searches, retrievable by how much their evidence resembles a new one."""
 
+    # Tuned by the self-improvement loop; instance calls may still override.
+    DEFAULT_K: int = 3
+
     cases: list[CaseRecord] = field(default_factory=list)
 
     @classmethod
@@ -136,14 +139,14 @@ class CaseMemory:
         scored.sort(key=lambda x: -x[0])
         return [case for score, case in scored[:k] if score > 0.05]
 
-    def prompt_section(self, evidence: str, opening: str, k: int = 3) -> str:
+    def prompt_section(self, evidence: str, opening: str, k: int | None = None) -> str:
         """Retrieved precedent, rendered for the nomination prompt.
 
         Empty when nothing has been resolved yet, so the first search runs on
         exactly the prompt it always ran on -- which is what makes a learning
         curve measurable rather than asserted.
         """
-        hits = self.retrieve(evidence, opening, k)
+        hits = self.retrieve(evidence, opening, k if k is not None else self.DEFAULT_K)
         if not hits:
             return ""
         lines = [

@@ -34,6 +34,11 @@ from .hypotheses import PROFILES, Hypothesis, build_prior_field
 
 MAX_NOMINATION_PRIOR = 0.35
 
+# How much of the direction distribution to act on, and the smallest slice worth
+# admitting. Module-level because the self-improvement loop tunes them.
+DIRECTION_MASS_CUTOFF = 0.85
+DIRECTION_MIN_PROBABILITY = 0.08
+
 
 @dataclass
 class Nomination:
@@ -260,7 +265,8 @@ def nominate_jev(
     keep: list[tuple[str, float]] = []
     cumulative = 0.0
     for name, probability in ranked:
-        if keep and (cumulative >= 0.85 or probability < 0.08 or len(keep) >= 3):
+        if keep and (cumulative >= DIRECTION_MASS_CUTOFF
+                     or probability < DIRECTION_MIN_PROBABILITY or len(keep) >= 3):
             break
         keep.append((name, probability))
         cumulative += probability

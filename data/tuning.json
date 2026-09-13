@@ -1,0 +1,39 @@
+{
+  "settings": {
+    "exhaustion_trigger": 0.7,
+    "max_revisions": 1,
+    "min_periods_between_revisions": 4,
+    "evidence_trigger_floor": 0.4,
+    "direction_mass_cutoff": 0.98,
+    "direction_min_probability": 0.03,
+    "max_nomination_prior": 0.2,
+    "precedent_count": 0
+  },
+  "trials": [
+    {
+      "id": "trial-001",
+      "parameter": "exhaustion_trigger",
+      "was": 0.7,
+      "now": 0.4,
+      "rationale": "Overall located rate is only 50% and the system rarely revises (mean revisions 0.8 with cap 1), suggesting it is waiting too long before abandoning a premise; lowering the trigger to 0.4 will prompt earlier reconsideration of the leading account.",
+      "predicted": "Increased likelihood of finding the subject in cases where the initial premise is wrong, potentially raising the located rate above 50%, but may also cause premature abandonment of good hypotheses, slightly reducing the top\u2011decile belief success.",
+      "at": "2026-09-13T01:08:46+00:00",
+      "before": {
+        "find_rate": 0.4791666666666667,
+        "localise_rate": 0.4791666666666667,
+        "mean_peak": 78.59039306640625,
+        "objective": 0.3033854166666667,
+        "n": 12
+      },
+      "after": {
+        "find_rate": 0.4166666666666667,
+        "localise_rate": 0.4375,
+        "mean_peak": 75.22481282552083,
+        "objective": 0.2799479166666667,
+        "n": 12
+      },
+      "accepted": false,
+      "verdict": "objective -0.023, below the 0.01 bar"
+    }
+  ]
+}
