@@ -82,6 +82,21 @@ class Scenario:
         return "\n".join(parts)
 
 
+def _sample_truth(grid: SearchGrid, profile_key: str, anchor: tuple[int, int],
+                  rng: np.random.Generator, local=None) -> tuple[int, int]:
+    """Sample where the subject actually ended up.
+
+    `local` is the county's REAL behaviour, which is not what the searcher
+    believes. Passing None means this county is exactly the national average,
+    and is the null case the experiment needs. The searcher's library is built
+    from the published profile either way -- it never sees this.
+    """
+    field_ = build_prior_field(grid, PROFILES[profile_key], anchor)
+    if local is not None:
+        field_ = local.adjust(field_, grid, anchor)
+    return _sample_from_field(field_, rng)
+
+
 def _sample_from_field(field_: np.ndarray, rng: np.random.Generator) -> tuple[int, int]:
     flat = field_.ravel().astype(np.float64)
     flat = np.clip(flat, 0, None)
@@ -211,16 +226,22 @@ def _fill(template: str, rng: np.random.Generator) -> tuple[str, dict]:
     return template.format(**ctx), ctx
 
 
-def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Generator) -> Scenario:
+def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Generator,
+             local=None) -> Scenario:
     """One scenario. `kind` is "A" (premise correct), "B" (wrong about where the
-    subject started) or "C" (right place, wrong behaviour category)."""
+    subject started) or "C" (right place, wrong behaviour category).
+
+    `local` is this county's real deviation from the published behaviour model.
+    It shapes where the subject is actually found and is never shown to the
+    searcher. None means the county matches the literature exactly.
+    """
     rows, cols = grid.shape
     ipp = (int(rng.integers(rows // 4, 3 * rows // 4)), int(rng.integers(cols // 4, 3 * cols // 4)))
 
     if kind == "A":
         key = str(rng.choice(TYPE_A_PROFILES))
         text, ctx = _fill(_A_TEMPLATES[key], rng)
-        true_rc = _sample_from_field(build_prior_field(grid, PROFILES[key], ipp), rng)
+        true_rc = _sample_truth(grid, key, ipp, rng, local)
         return Scenario(scenario_id, "A", key, ipp, true_rc, ipp, key,
                         f"Subject behaved as a {PROFILES[key].label}.", text)
 
@@ -250,7 +271,7 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
     ctx["direction"] = _compass(bearing) if bearing is not None else "unknown"
     late = late_text.format(**ctx)
 
-    true_rc = _sample_from_field(build_prior_field(grid, PROFILES[true_key], true_anchor), rng)
+    true_rc = _sample_truth(grid, true_key, true_anchor, rng, local)
     return Scenario(
         scenario_id, kind, subkind, ipp, true_rc, true_anchor, true_key, account, text,
         late_evidence=[Evidence(period=int(rng.integers(2, 5)), text=late)],
@@ -258,7 +279,8 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
 
 
 def generate_suite(
-    grid: SearchGrid, n_a: int = 30, n_b: int = 20, n_c: int = 12, seed: int = 0
+    grid: SearchGrid, n_a: int = 30, n_b: int = 20, n_c: int = 12, seed: int = 0,
+    local=None
 ) -> list[Scenario]:
     """A: premise correct. B: wrong about WHERE. C: wrong about WHO.
 
@@ -274,7 +296,7 @@ def generate_suite(
         for i in range(count):
             sid = f"{prefix}{i:03d}"
             rng = np.random.default_rng(stable_seed(seed, sid))
-            out.append(generate(grid, sid, kind, rng))
+            out.append(generate(grid, sid, kind, rng, local))
         return out
 
     return make("A", "A", n_a) + make("B", "B", n_b) + make("C", "C", n_c)
