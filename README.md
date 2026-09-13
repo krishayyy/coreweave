@@ -142,12 +142,11 @@ nominations, stated confidence ranked them at **56% concordance**, where 50% is
 no signal. Its top pick averaged 4.7 km from the truth; the best pick in the
 same response averaged 2.2 km.
 
-That measurement is the reason for everything that follows, and it does not
-depend on the configuration it was taken under. The language model arm's
-*headline numbers* were measured before the evidence trigger, the sixteen-point
-compass and the distance conditioning, so they are not comparable to the table
-above and are deliberately not quoted here rather than presented as a
-side-by-side that would mislead.
+That measurement is the reason for everything that follows. It has since been
+re-run under the current configuration -- the evidence trigger, the
+sixteen-point compass and the distance conditioning -- against the identical 66
+scenarios and the same seed, so the two arms are paired run for run and appear
+side by side below.
 
 TypeSafe's System One model removes that problem rather than mitigating it. It
 does not write. You define the shape of the answer and it returns a probability
@@ -163,6 +162,9 @@ needs selecting.
     blind relocation (reads nothing)   A        96% [89-98]      93% [86-97]
     blind relocation (reads nothing)   B        17% [10-27]      46% [35-57]
     blind relocation (reads nothing)   C       100% [90-100]    100% [90-100]
+    language model writes prose        A        74% [65-82]      86% [77-91]
+    language model writes prose        B        57% [45-68]      62% [51-73]
+    language model writes prose        C        81% [65-90]      64% [48-78]
     System One calibrated distribution A        90% [82-95]      92% [85-96]
     System One calibrated distribution B        81% [70-88]      76% [65-85]
     System One calibrated distribution C        94% [82-98]     100% [90-100]
@@ -171,16 +173,33 @@ needs selecting.
     paired, 24 scenarios               delta      95% CI            p
     find      vs library only         +50.0pp   [+34.7, +65.3]   0.000  significant
     find      vs blind relocation     +63.9pp   [+48.6, +77.8]   0.000  significant
+    find      vs language model prose +23.6pp   [ +4.2, +43.1]   0.020  significant
     localised vs library only         +30.6pp   [ +9.7, +51.4]   0.007  significant
     localised vs blind relocation     +30.6pp   [ +9.7, +51.4]   0.007  significant
+    localised vs language model prose +13.9pp   [ -9.7, +36.1]   0.234  NOT significant
 
     paired, 30 scenarios, type A       delta      95% CI            p
     find      vs library only          -5.6pp   [-16.7,  +5.6]   0.281  no significant harm
+    find      vs language model prose +15.6pp   [ +5.6, +27.8]   0.001  significant
 
-Every figure comes from `runs/experiment_headline.json`: 30 type A, 24 type B
-and 12 type C scenarios, three detection-roll repeats, Wilson 95% intervals.
+The type A row is the one worth pausing on. Prose revision does help on type B
+-- 57% against the library's 31% -- so the language model is not useless at
+this. But it pays for that help by damaging the cases where the premise was
+correct all along, dropping type A from 90% to 74%, because it argues itself
+into relocating a search that was already pointed at the subject. The
+calibrated arm does not, and the difference on the null is larger and better
+separated than the difference on type B. Being unable to rank your own
+hypotheses does not only cost you the wins; it costs you the cases you had
+already won.
+
+Every figure comes from `runs/experiment_headline.json`, and the prose arm from
+`runs/experiment_llm_current.json` under an identical config and seed: 30 type
+A, 24 type B and 12 type C scenarios, three detection-roll repeats, Wilson 95%
+intervals.
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
+    python scripts/significance.py runs/experiment_headline.json \
+        runs/experiment_llm_current.json jev
 
 ### The simulation was not implementing the literature it cites
 

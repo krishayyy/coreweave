@@ -19,13 +19,20 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def load(path: Path):
-    data = json.loads(path.read_text())
+def load(*paths: Path):
+    """Merge runs from one or more experiment files, keyed by arm.
+
+    Arms measured in separate files are still paired as long as the files were
+    produced under the same config and seed, because the scenario id is derived
+    from the seed -- the pairing is checked in main() rather than assumed.
+    """
     by_arm: dict[str, dict[str, dict[str, list]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(list)))
-    for run in data["runs"]:
-        cell = by_arm[run["arm"]][run["scenario_kind"]]
-        cell[run["scenario_id"]].append(run)
+    for path in paths:
+        data = json.loads(path.read_text())
+        for run in data["runs"]:
+            cell = by_arm[run["arm"]][run["scenario_kind"]]
+            cell[run["scenario_id"]].append(run)
     return by_arm
 
 
@@ -50,17 +57,22 @@ def paired_bootstrap(a: dict[str, float], b: dict[str, float], n: int = 20000,
 
 
 def main() -> int:
-    path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "runs/experiment_full.json")
-    by_arm = load(path)
+    args = sys.argv[1:]
+    paths = [ROOT / a for a in args if a.endswith(".json")]
+    if not paths:
+        paths = [ROOT / "runs/experiment_full.json"]
+    rest = [a for a in args if not a.endswith(".json")]
+    by_arm = load(*paths)
 
-    treatment = sys.argv[2] if len(sys.argv) > 2 else (
-        "llm" if "llm" in by_arm else "jev")
+    treatment = rest[0] if rest else ("llm" if "llm" in by_arm else "jev")
     metrics = {
         "find rate": lambda r: float(r["found"]),
         "localised": lambda r: float(r["periods_to_localize"] is not None),
     }
     labels = {"none": "library only", "heuristic": "blind relocation",
-              "llm": "case-file nomination", "jev": "System One"}
+              "llm": "language model prose", "jev": "System One"}
+    baselines = [a for a in ("none", "heuristic", "llm", "jev") if
+                 a in by_arm and a != treatment]
 
     print(f"paired on scenarios, repeats averaged within scenario")
     print(f"resampling unit: scenario (not run)\n")
@@ -73,10 +85,13 @@ def main() -> int:
         n_scen = len(by_arm[treatment][kind])
         print(f"{title}   ({n_scen} scenarios)")
         for name, field in metrics.items():
-            for base in ("none", "heuristic"):
-                if base == treatment:
+            for base in baselines:
+                if kind not in by_arm[base]:
                     continue
                 a = per_scenario(by_arm[base][kind], field)
+                if set(a) != set(per_scenario(by_arm[treatment][kind], field)):
+                    print(f"  {base}: scenario sets differ -- not paired, skipped")
+                    continue
                 b = per_scenario(by_arm[treatment][kind], field)
                 d, (lo, hi), p = paired_bootstrap(a, b)
                 sig = "significant" if lo > 0 or hi < 0 else "not significant"

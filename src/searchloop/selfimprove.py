@@ -92,14 +92,24 @@ class LessonBook:
         exactly the prompt it always was -- which is what makes the before and
         after comparable.
         """
-        if not self.accepted:
+        return self.render(self.accepted)
+
+    @staticmethod
+    def render(lessons: list["Lesson"]) -> str:
+        """Render an explicit list, regardless of each lesson's accepted flag.
+
+        Validation needs this: the candidate it is about to measure is by
+        definition not accepted yet, so rendering via `accepted` would drop it
+        and hand the trial arm the baseline prompt.
+        """
+        if not lessons:
             return ""
         lines = [
             "LESSONS FROM PREVIOUS SEARCHES. These were derived by reviewing "
             "your own past proposals against what turned out to be true, and "
             "each one measurably improved accuracy when tested:",
         ]
-        lines += [f"  {i}. {lesson.text}" for i, lesson in enumerate(self.accepted, 1)]
+        lines += [f"  {i}. {lesson.text}" for i, lesson in enumerate(lessons, 1)]
         return "\n".join(lines)
 
 
@@ -296,7 +306,10 @@ def propose_lesson(report: FailureReport, book: LessonBook,
 
     text = str(parsed["lesson"]).strip()
     return Lesson(
-        id=f"lesson-{len(book.lessons) + 1:03d}",
+        # Count the siblings already written this round as well. The book is
+        # not extended until the round ends, so numbering off it alone gives
+        # every candidate in a round the same id.
+        id=f"lesson-{len(book.lessons) + len(already or []) + 1:03d}",
         text=text[:400],
         learned_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         rationale=str(parsed.get("rationale", ""))[:400],
@@ -354,8 +367,14 @@ def probe_bearing_error(
     for period in range(cfg.max_periods):
         trigger = should_revise(belief, cfg, period, None)
         if trigger.fired:
-            noms = nominate_llm(belief, grid, scenario.briefing(period), trigger,
-                                scenario.ipp_rc, lessons=lessons)
+            try:
+                noms = nominate_llm(belief, grid, scenario.briefing(period), trigger,
+                                    scenario.ipp_rc, lessons=lessons)
+            except ValueError:
+                # An unparseable or empty completion. validate() already skips
+                # scenarios with no data on either arm, which is the right
+                # outcome -- losing one probe is not worth losing the round.
+                return []
             return [abs((n.anchor_bearing_deg - true_bearing + 180) % 360 - 180)
                     for n in noms]
         segment = plan_sortie(grid, belief.joint, pod, position, budget_cells=capacity)
@@ -375,8 +394,11 @@ def validate(lesson: Lesson, book: LessonBook, scenarios: list[Scenario],
     the prompt.
     """
     base_lessons = book.prompt_section()
-    trial = LessonBook(book.accepted + [lesson])
-    trial_lessons = trial.prompt_section()
+    # Render the candidate explicitly. It is not accepted yet -- that is what
+    # this function decides -- so going through prompt_section(), which filters
+    # to accepted lessons, silently handed the trial arm the baseline prompt and
+    # produced a measured gain of exactly zero for every candidate ever tested.
+    trial_lessons = LessonBook.render(book.accepted + [lesson])
 
     # Paired per scenario. Every proposal in a response is admitted to the
     # mixture, so what matters is whether the response contained a good account
@@ -413,7 +435,7 @@ def validate(lesson: Lesson, book: LessonBook, scenarios: list[Scenario],
     if ok:
         verdict = "accepted"
     elif gain < MIN_BEARING_GAIN_DEG:
-        verdict = f"gain {gain:+.0f} deg below the {MIN_BEARING_GAIN_DEG:.0f} deg bar"
+        verdict = f"gain {gain:+.1f} deg below the {MIN_BEARING_GAIN_DEG:.0f} deg bar"
     else:
         verdict = f"gain came from too few scenarios ({improved} better, {worsened} worse)"
 

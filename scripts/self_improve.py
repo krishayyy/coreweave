@@ -128,8 +128,22 @@ def main() -> int:
 
         rule(f"ROUND {round_no} — 5. GATE")
         scored.sort(key=lambda x: -x[0])
-        best_gain, best = scored[0]
-        best.accepted = best.validation["verdict"] == "accepted"
+        # Choose among the candidates that actually cleared the gate. Sorting by
+        # raw gain and then testing only the top one discards a candidate that
+        # passed in favour of one that did not: the largest mean gain is often
+        # the one carried by a single scenario, which is precisely what the
+        # improved > worsened condition exists to catch.
+        passed = [(g, c) for g, c in scored if c.validation["verdict"] == "accepted"]
+        best_gain, best = (passed or scored)[0]
+        best.accepted = bool(passed)
+        # One instruction is adopted per round, deliberately: lessons are added
+        # to the prompt one at a time so each one's effect stays attributable.
+        # Say so on the others that cleared the gate, rather than filing them
+        # under the same "rejected" as the candidates that actually failed.
+        for _, other in passed[1:]:
+            other.validation["verdict"] = (
+                f"{other.validation['verdict']} — passed the gate but not adopted "
+                f"this round; '{best.text[:40]}...' had the larger gain")
         if best.accepted:
             print(f"{GREEN}  ACCEPTED{RESET}  \"{best.text}\"")
             print(f"  {best.validation['bearing_before']:.0f} -> "

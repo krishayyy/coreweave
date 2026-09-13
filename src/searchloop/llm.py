@@ -35,7 +35,10 @@ CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "llm_cache"
 # nominations -- which looks like "the model had no ideas" rather than "the
 # request never arrived".
 _MIN_INTERVAL_S = float(os.getenv("LLM_MIN_INTERVAL", "0.35"))
-_MAX_RETRIES = 5
+# Configurable like every other knob here. The default suits a transient
+# per-minute limit; riding out an exhausted DAILY quota needs a much larger
+# number, because the budget refills over hours rather than seconds.
+_MAX_RETRIES = int(os.getenv("LLM_MAX_RETRIES", "5"))
 _MAX_BACKOFF_S = float(os.getenv("LLM_MAX_BACKOFF", "95"))
 # Rate limiting should be audible. A silent stall reads as a slow run.
 _VERBOSE = os.getenv("LLM_VERBOSE", "1") != "0"
@@ -163,9 +166,16 @@ def complete(
             delay = min(delay, _MAX_BACKOFF_S)
             last = requests.HTTPError(f"{resp.status_code} from {provider.name}")
             if _VERBOSE:
-                remaining = resp.headers.get("x-ratelimit-remaining-tokens", "?")
-                print(f"    [rate limited: {resp.status_code}, waiting {delay:.0f}s, "
-                      f"tokens left {remaining}]", flush=True)
+                # The per-minute bucket is the wrong thing to report when the
+                # limit that actually bit is the daily one: TPM reads full
+                # while every real request is refused. Say which limit it was.
+                try:
+                    detail = resp.json()["error"]["message"].split(". Please")[0]
+                except Exception:
+                    detail = (f"tokens left "
+                              f"{resp.headers.get('x-ratelimit-remaining-tokens', '?')}")
+                print(f"    [rate limited: {resp.status_code}, waiting {delay:.0f}s"
+                      f" -- {detail}]", flush=True)
             time.sleep(delay)
             continue
 
@@ -175,7 +185,9 @@ def complete(
                 if provider.style == "anthropic"
                 else body["choices"][0]["message"]["content"])
 
-        if use_cache:
+        # An empty completion is a transient provider failure, not an answer.
+        # Caching it makes the failure permanent for that prompt.
+        if use_cache and text.strip():
             CACHE_DIR.mkdir(parents=True, exist_ok=True)
             cached.write_text(json.dumps({"provider": provider.name,
                                           "model": provider.model, "text": text}))

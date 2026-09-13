@@ -1,0 +1,168 @@
+{
+  "lessons": [
+    {
+      "id": "lesson-001",
+      "text": "When a case file statement references a terrain feature such as \u201cback side,\u201d \u201csouth\u2011west access point,\u201d or a \u201clift from a vehicle that left heading north,\u201d interpret it as indicating the subject began on the opposite side of the massif from the planning point, not adjacent to it.",
+      "learned_at": "2026-09-13T03:46:09+00:00",
+      "rationale": "The data show a systematic mis\u2011interpretation of directional cues, leading to bearings that place the start too close to the planning point and opposite to the truth.",
+      "evidence": {
+        "n_nominations": 32,
+        "bearing_median": 82.43237913298655,
+        "bearing_within_20": 0.375,
+        "by_cue": {
+          "wrong_ipp": {
+            "bearing_median": 93.0,
+            "within_20": 0.2,
+            "n": 10.0
+          },
+          "transported": {
+            "bearing_median": 113.5,
+            "within_20": 0.0,
+            "n": 6.0
+          },
+          "deliberate_deviation": {
+            "bearing_median": 16.18920625702694,
+            "within_20": 0.625,
+            "n": 16.0
+          }
+        },
+        "predicted_effect": "Future proposals will correctly position starting points on the far side of the terrain, reducing bearing errors and improving overall accuracy."
+      },
+      "validation": {
+        "n": 12,
+        "bearing_before": 34.18277374363254,
+        "bearing_after": 28.197155588777946,
+        "gain_deg": 5.985618154854592,
+        "within20_before": 0.2,
+        "within20_after": 0.2222222222222222,
+        "improved": 4,
+        "worsened": 3,
+        "verdict": "accepted \u2014 passed the gate but not adopted this round; 'When a case file statement contains a di...' had the larger gain"
+      },
+      "accepted": false
+    },
+    {
+      "id": "lesson-002",
+      "text": "When a case file statement contains a directional cue such as \"back side\" or \"south\u2011west access point,\" explicitly determine which reference point (the planning point, the subject\u2019s current position, or the terrain feature) the cue refers to, and avoid automatically interpreting it as the opposite direction; instead, test both forward and reverse bearings before finalizing the anchor.",
+      "learned_at": "2026-09-13T03:46:09+00:00",
+      "rationale": "The observed failures stem from consistently taking cues like \"back side\" to mean the opposite of the intended direction, leading to bearings that are 140\u2013180 degrees off. By systematically checking the intended reference point, this misreading is prevented.",
+      "evidence": {
+        "n_nominations": 32,
+        "bearing_median": 82.43237913298655,
+        "bearing_within_20": 0.375,
+        "by_cue": {
+          "wrong_ipp": {
+            "bearing_median": 93.0,
+            "within_20": 0.2,
+            "n": 10.0
+          },
+          "transported": {
+            "bearing_median": 113.5,
+            "within_20": 0.0,
+            "n": 6.0
+          },
+          "deliberate_deviation": {
+            "bearing_median": 16.18920625702694,
+            "within_20": 0.625,
+            "n": 16.0
+          }
+        },
+        "predicted_effect": "Future proposals will have bearing errors reduced to within 20\u201330 degrees of the truth for cases involving directional references, improving overall accuracy of the starting-point hypothesis."
+      },
+      "validation": {
+        "n": 12,
+        "bearing_before": 34.18277374363254,
+        "bearing_after": 34.73103901585319,
+        "gain_deg": -0.5482652722206538,
+        "within20_before": 0.2,
+        "within20_after": 0.18181818181818182,
+        "improved": 4,
+        "worsened": 4,
+        "verdict": "gain -0.5 deg below the 5 deg bar"
+      },
+      "accepted": false
+    },
+    {
+      "id": "lesson-003",
+      "text": "When a case file statement contains a directional cue (e.g., \"back side\", \"south\u2011west access point\", \"lift from a vehicle that left heading north\"), explicitly identify the terrain feature or starting location it refers to and calculate the bearing from the planning point to that feature, rather than assuming the subject\u2019s own direction or a generic opposite direction.",
+      "learned_at": "2026-09-13T03:46:09+00:00",
+      "rationale": "The errors stemmed from misreading or ignoring explicit terrain\u2011based directional cues, leading to bearings that were the opposite or unrelated to the intended start location. By systematically mapping each cue to a specific geographic reference and deriving the bearing from the planning point to that reference, the proposals will align with the evidence.",
+      "evidence": {
+        "n_nominations": 32,
+        "bearing_median": 82.43237913298655,
+        "bearing_within_20": 0.375,
+        "by_cue": {
+          "wrong_ipp": {
+            "bearing_median": 93.0,
+            "within_20": 0.2,
+            "n": 10.0
+          },
+          "transported": {
+            "bearing_median": 113.5,
+            "within_20": 0.0,
+            "n": 6.0
+          },
+          "deliberate_deviation": {
+            "bearing_median": 16.18920625702694,
+            "within_20": 0.625,
+            "n": 16.0
+          }
+        },
+        "predicted_effect": "Future proposals will correctly place the subject\u2019s start in the direction indicated by the case file, reducing large bearing errors and improving overall accuracy of the starting point."
+      },
+      "validation": {
+        "n": 12,
+        "bearing_before": 34.18277374363254,
+        "bearing_after": 24.327287380628103,
+        "gain_deg": 9.855486363004434,
+        "within20_before": 0.2,
+        "within20_after": 0.21875,
+        "improved": 5,
+        "worsened": 1,
+        "verdict": "accepted"
+      },
+      "accepted": true
+    },
+    {
+      "id": "lesson-004",
+      "text": "When a case file statement uses a directional cue like \u201cback side,\u201d \u201csouth\u2011west access point,\u201d or \u201clift from a vehicle that left heading north,\u201d explicitly interpret that cue as pointing away from the planning point toward the opposite side of the terrain, not toward the same side.  Do not assume the cue refers to the side the subject is currently on.",
+      "learned_at": "2026-09-13T03:46:09+00:00",
+      "rationale": "All high\u2011error proposals misread these directional phrases as indicating a start near the planning point, leading to bearings opposite the truth.",
+      "evidence": {
+        "n_nominations": 32,
+        "bearing_median": 82.43237913298655,
+        "bearing_within_20": 0.375,
+        "by_cue": {
+          "wrong_ipp": {
+            "bearing_median": 93.0,
+            "within_20": 0.2,
+            "n": 10.0
+          },
+          "transported": {
+            "bearing_median": 113.5,
+            "within_20": 0.0,
+            "n": 6.0
+          },
+          "deliberate_deviation": {
+            "bearing_median": 16.18920625702694,
+            "within_20": 0.625,
+            "n": 16.0
+          }
+        },
+        "predicted_effect": "Future proposals will place start points on the correct far side of the massif, reducing bearing errors and aligning with the evidence."
+      },
+      "validation": {
+        "n": 12,
+        "bearing_before": 34.18277374363254,
+        "bearing_after": 31.5709673318177,
+        "gain_deg": 2.611806411814836,
+        "within20_before": 0.2,
+        "within20_after": 0.17142857142857143,
+        "improved": 6,
+        "worsened": 3,
+        "verdict": "gain +2.6 deg below the 5 deg bar"
+      },
+      "accepted": false
+    }
+  ]
+}
