@@ -58,7 +58,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--kind", default="B")
     ap.add_argument("--index", type=int, default=2)
-    ap.add_argument("--arm", default="heuristic")
+    ap.add_argument("--arm", default="jev")
+    ap.add_argument("--versus", default=None,
+                    help="second arm to run on the identical case, for a "
+                         "side-by-side. Both see the same detection rolls.")
     ap.add_argument("--oracle", action="store_true")
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out", default="web/public/run")
@@ -96,11 +99,13 @@ def main() -> int:
             "track": _serpentine(segment),
             "found": trace.found,
             "revised": bool(trace.nominations),
+            "leader": trace.leader_label,
             "trigger_fired": trace.trigger_fired,
             "trigger_reason": trace.trigger_reason,
             "nominations": trace.nominations,
             "rejected": trace.rejected_nominations,
             "cumulative_pos": trace.cumulative_pos,
+            "truth_percentile": trace.truth_percentile,
             "entropy": trace.entropy,
             "track_km": trace.track_km,
             "hypotheses": [
@@ -111,6 +116,36 @@ def main() -> int:
 
     rng = np.random.default_rng(stable_seed(scenario.id))
     result = run_scenario(grid, pod, scenario, args.arm, CFG, rng, on_period=capture)
+
+    # The comparison arm, on the identical case with the identical detection
+    # rolls. Anything that differs between the two panes is the method.
+    rival_frames: list[dict] = []
+    rival_result = None
+    if args.versus:
+        rival_swept = np.zeros(grid.shape, dtype=bool)
+
+        def capture_rival(trace, belief, segment):
+            for c in segment:
+                rival_swept[c] = True
+            idx = trace.period
+            _to_png(belief.joint, out / "fields" / f"rbelief_{idx:02d}.png")
+            Image.fromarray((rival_swept * 255).astype(np.uint8), mode="L").save(
+                out / "fields" / f"rswept_{idx:02d}.png")
+            rival_frames.append({
+                "period": idx,
+                "belief": f"fields/rbelief_{idx:02d}.png",
+                "swept": f"fields/rswept_{idx:02d}.png",
+                "track": _serpentine(segment),
+                "found": trace.found,
+                "revised": bool(trace.nominations),
+                "leader": trace.leader_label,
+                "cumulative_pos": trace.cumulative_pos,
+                "truth_percentile": trace.truth_percentile,
+            })
+
+        rival_result = run_scenario(
+            grid, pod, scenario, args.versus, CFG,
+            np.random.default_rng(stable_seed(scenario.id)), on_period=capture_rival)
 
     shade = hillshade(terrain)
     Image.fromarray((np.clip(shade, 0, 1) * 255).astype(np.uint8), mode="L").save(
@@ -139,6 +174,12 @@ def main() -> int:
             "oracle": bool(args.oracle),
         },
         "frames": frames,
+        "versus": ({
+            "arm": args.versus,
+            "found": rival_result.found,
+            "periods_to_find": rival_result.periods_to_find,
+            "frames": rival_frames,
+        } if args.versus else None),
     }, indent=2))
 
     print(f"{scenario.id} [{scenario.subkind}] -> {out}/run.json")

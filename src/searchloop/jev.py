@@ -18,8 +18,11 @@ the language model was already accurate at it.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -27,6 +30,11 @@ import requests
 from . import tracing
 
 ENDPOINT = "https://api.typesafe.ai/v1/systemone"
+
+# Cached by request digest, for the same reason the language model calls are:
+# every other arm reproduces exactly, and an arm that does not is the one whose
+# numbers cannot be checked. Repeats of a scenario also recur identically.
+CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "jev_cache"
 
 # Sixteen points, not eight. Eight-point bins are 45 degrees wide, so asking
 # for one of eight puts a floor of about 22 degrees on the answer -- and the
@@ -127,13 +135,21 @@ def ask(state: str, profiles: dict[str, str], model: str | None = None,
         },
     }
 
-    resp = requests.post(
-        ENDPOINT,
-        headers={"Authorization": f"Bearer {key}", "content-type": "application/json"},
-        json=payload, timeout=timeout,
-    )
-    resp.raise_for_status()
-    body = resp.json()
+    digest = hashlib.sha256(
+        json.dumps(payload, sort_keys=True).encode()).hexdigest()
+    cached = CACHE_DIR / f"{digest}.json"
+    if cached.exists():
+        body = json.loads(cached.read_text())
+    else:
+        resp = requests.post(
+            ENDPOINT,
+            headers={"Authorization": f"Bearer {key}", "content-type": "application/json"},
+            json=payload, timeout=timeout,
+        )
+        resp.raise_for_status()
+        body = resp.json()
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        cached.write_text(json.dumps(body))
     answers = body["answers"]
 
     direction = answers["start_direction"]

@@ -5,32 +5,27 @@
 <link rel="stylesheet" href="src/style.css" />
 <div id="app">
   <header id="bar">
-    <div class="left">
-      <span id="op">—</span>
-      <span class="sep"></span>
-      <span id="subject">—</span>
-    </div>
-    <div class="right">
-      <span id="status">STANDBY</span>
-      <span id="clock">P00</span>
-    </div>
+    <div class="left"><span id="op">—</span><span class="sep"></span><span id="subject">—</span></div>
+    <div class="right"><span id="status">STANDBY</span><span id="clock">P00</span></div>
   </header>
 
   <main id="stage">
-    <canvas id="map"></canvas>
-    <div id="revising"><span>REVISING</span></div>
-    <div id="verdict"></div>
+    <section class="pane" id="paneA">
+      <h2>Conventional search<em>optimises inside its assumption</em></h2>
+      <canvas class="map"></canvas>
+      <div class="verdict"></div>
+    </section>
+    <section class="pane" id="paneB">
+      <h2>This system<em>can abandon the assumption</em></h2>
+      <canvas class="map"></canvas>
+      <div class="revising"><span>PREMISE FAILING</span></div>
+      <div class="verdict"></div>
+    </section>
   </main>
 
-  <footer id="panels">
-    <section id="hyp">
-      <h2>Accounts of what happened</h2>
-      <ul id="hyp-list"></ul>
-    </section>
-    <section id="log">
-      <h2>Evidence</h2>
-      <ul id="log-list"></ul>
-    </section>
+  <footer id="chart">
+    <div class="label">How highly each system ranks the subject&rsquo;s actual location</div>
+    <canvas id="graph"></canvas>
   </footer>
 </div>
 <script type="module" src="src/main.js"></script>
