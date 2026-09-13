@@ -157,96 +157,69 @@ belief mixture already consumes. There is no selection step because nothing
 needs selecting.
 
     arm                                family   find rate        localised
-    library only (no revision)         A        79% [69-86]      82% [73-89]
-    library only (no revision)         B        43% [32-55]      54% [43-65]
-    library only (no revision)         C        89% [75-96]      75% [59-86]
-    blind relocation (reads nothing)   A        77% [67-84]      82% [73-89]
-    blind relocation (reads nothing)   B        31% [21-42]      47% [36-59]
-    blind relocation (reads nothing)   C        78% [62-88]      58% [42-73]
-    System One calibrated distribution A        76% [66-83]      78% [68-85]
-    System One calibrated distribution B        69% [58-79]      86% [76-92]
-    System One calibrated distribution C        81% [65-90]      67% [50-80]
-    oracle -- told the true answer     B        83%              78%
+    library only (no revision)         A        96% [89-98]      93% [86-97]
+    library only (no revision)         B        31% [21-42]      46% [35-57]
+    library only (no revision)         C        97% [86-100]    100% [90-100]
+    blind relocation (reads nothing)   A        96% [89-98]      93% [86-97]
+    blind relocation (reads nothing)   B        17% [10-27]      46% [35-57]
+    blind relocation (reads nothing)   C       100% [90-100]    100% [90-100]
+    System One calibrated distribution A        90% [82-95]      92% [85-96]
+    System One calibrated distribution B        81% [70-88]      76% [65-85]
+    System One calibrated distribution C        94% [82-98]     100% [90-100]
+    oracle -- told the true answer     B        88%
 
-Every figure on this page comes from `runs/experiment_headline.json`, one suite,
-one configuration: 30 type A, 24 type B and 12 type C scenarios, three
-independent detection-roll repeats each, Wilson 95% intervals. Regenerate with
+    paired, 24 scenarios               delta      95% CI            p
+    find      vs library only         +50.0pp   [+34.7, +65.3]   0.000  significant
+    find      vs blind relocation     +63.9pp   [+48.6, +77.8]   0.000  significant
+    localised vs library only         +30.6pp   [ +9.7, +51.4]   0.007  significant
+    localised vs blind relocation     +30.6pp   [ +9.7, +51.4]   0.007  significant
+
+    paired, 30 scenarios, type A       delta      95% CI            p
+    find      vs library only          -5.6pp   [-16.7,  +5.6]   0.281  no significant harm
+
+Every figure comes from `runs/experiment_headline.json`: 30 type A, 24 type B
+and 12 type C scenarios, three detection-roll repeats, Wilson 95% intervals.
 
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
 
-    paired, 24 scenarios               delta      95% CI            p
-    find      vs library only         +26.4pp   [+11.1, +43.1]   0.001  significant
-    find      vs blind relocation     +38.9pp   [+22.2, +55.6]   0.000  significant
-    localised vs library only         +31.9pp   [ +6.9, +55.6]   0.018  significant
-    localised vs blind relocation     +38.9pp   [+20.8, +58.3]   0.000  significant
+### The simulation was not implementing the literature it cites
 
-    paired, 30 scenarios, type A       delta      95% CI            p
-    find      vs library only          -3.3pp   [-10.0,  +2.2]   0.199  no harm
+Real incident data is not obtainable. ISRID is contribution-based rather than
+downloadable, and it explicitly excludes media reports -- the only source that
+could be scraped -- so reconstructing cases from news would use exactly the
+evidence its own maintainers reject.
 
+What could be checked is whether the simulated subjects move the way the
+published quantiles say real ones do, since those quantiles are what the
+profiles claim to implement. They did not:
 
-Localisation at 86% is above the oracle's 78%: the true location reaches the top
-decile of belief more often here than in a system handed the correct answer,
-because a distribution over directions covers ground a single point estimate
-does not. Find rate stays below the oracle's 83% for the opposite reason -- a
-point estimate concentrates the sweep, and detection is what converts belief
-into a rescue.
+    profile        published d50    generated (before)    generated (after)
+    hiker               1.9 km            5.2 km                2.5 km
+    dementia            0.8 km            2.2 km                0.8 km
+    child               0.9 km            2.6 km                1.0 km
+    angler              1.0 km            3.3 km                1.1 km
 
-### Everyone finds them eventually. The question is how long.
+Simulated subjects sat about 2.7 times too far from the planning point. The
+published figures are quantiles of *distance*, so the lognormal is a density in
+distance -- but the number of grid cells at radius r grows with r, so assigning
+each cell the density gives a radial marginal of pdf(r) x r, biased outward. A
+missing Jacobian.
 
-The headline is quoted at a sixteen-period budget -- eight days of twelve-hour
-operational periods. That budget is a choice, and one point off a curve invites
-the obvious question: is this better, or only faster?
+Corrected, the largest median deviation falls from 233% to 31%, and the
+remaining gap is accounted for: profiles whose published d95 exceeds the map
+half-width are truncated by the edge, and terrain affinity deliberately moves
+mass off a pure radial.
 
-    budget            conventional   this system   oracle
-     4 days                   21%           53%      60%
-     6 days                   33%           64%      72%
-     8 days                   43%           69%      83%
-    10 days                   56%           82%      85%
-    12 days                   67%           86%      85%
-    14 days                   75%           93%      92%
-    16 days                   83%           96%      94%
+**Every number on this page was re-measured afterwards.** The effect got larger
+rather than smaller: with subjects correctly placed near their starting point,
+a correct account is actually worth something, where before a right answer
+still left the subject scattered across the map.
 
-        python scripts/time_curve.py && python scripts/plot_time_curve.py
+        python scripts/validate_priors.py
 
-**Conventional search needs fourteen days to reach what this system reaches in
-eight.** Both get there in the end -- enough sweeping covers any finite area --
-so the difference is not whether the subject is found but when, and in search
-and rescue the budget is not really aircraft hours. It is how long a person
-survives outside.
-
-**From twelve days on, inferred belief matches being told the answer.** The
-oracle is handed the true starting point; this system has to work it out from a
-case file. By twelve days the curves cross, and beyond that this system is
-ahead -- a distribution over directions keeps covering ground after a point
-estimate has exhausted the one place it believed in.
-
-That also settles the earlier question of why the headline is not 83%. It is:
-at twelve days rather than eight.
-
-### The remaining failures, and which are fixable
-
-Two cases in the demo set fail, for reasons that are not the same.
-
-**Right, and the sensor missed.** In B001 a witness reports the vehicle leaving
-north-east. The system proposes north-east, and its ranking of the subject's
-true location reaches 100% at period five and stays there for eleven consecutive
-periods. It searched the correct ground for five and a half days and the sensor
-never caught her. No amount of reasoning fixes this one; it wants flight hours
-or a better payload.
-
-**Right direction, short distance.** In B020 a relative reports the subject was
-driven to the west side of the range. The system proposes west, correctly, at
-7.6 km -- against a true 10.6. Belief piled up short of him.
-
-The second one exposed a real defect. The distance estimate was a
-probability-weighted average across every band, *including bands the search had
-already swept and found empty*. Ground proven empty was still dragging the
-estimate inward. Conditioning on what the search has eliminated -- zeroing those
-bands and renormalising, which is Bayes on information already in hand -- moved
-type B localisation from 78% to 86% and localised about half a period sooner,
-with no cost to find rate or to the null.
-
-It did not rescue either case. It was still the right fix.
+This is not a test against real incidents. It checks that the simulation
+implements the literature it cites, which is a precondition for the result
+meaning anything, not a substitute for field data.
 
 ### Two ceilings that were mine, not the model's
 
