@@ -3,11 +3,11 @@
 An autonomous search agent that changes its mind about what happened.
 
 **On the cases where the initial premise is wrong, standard search doctrine
-finds the subject 32% of the time. This finds them 83% of the time.**
+finds the subject 35% of the time. This finds them 83% of the time.**
 
-    +51.4 points, paired on the same 24 scenarios, p < 0.001
-    and no measurable cost on the cases where the premise was right,
-    even when those cases are actively baited with false leads
+    +48.1 points, paired on the same 72 scenarios, p < 0.001
+    against a real but small cost of 2.8 points on the cases where the
+    premise was right, which each carry a false lead designed to bait it
 
 That baseline is not a strawman and it is worth being precise about what it is.
 The control arm implements what a trained incident commander actually does:
@@ -28,16 +28,24 @@ its posterior forever and only grows more confident about the wrong valley.
 
 The cases in the type B suite are the documented ways this happens: the subject
 was transported out of the area, deviated deliberately, or the planning point
-itself was wrong. On the cases where the premise *was* right, this system is
-within noise of doctrine (-3.3pp, p=0.255) — and those cases each carry a false
-lead, so the suite is actively trying to bait it into moving. It does not buy
-the hard cases by breaking the easy ones.
+itself was wrong. On the cases where the premise *was* right, this system costs
+**-2.8pp (p=0.030)**, and those cases each carry a false lead, so the suite is
+actively trying to bait it into moving.
+
+That cost is worth stating precisely, because at half this sample size it did
+not reach significance and an earlier version of this README called it "no
+measurable cost". Doubling the correct-premise cases from 30 to 60 made a small
+real effect detectable. It is small, it is not zero, and it is the price of
+being willing to doubt.
 
 Because the gain is conditional on the premise being wrong, the honest question
-is how often that has to happen for the system to be worth running. The answer
-is computable from the same run: **above a 6.1% premise-error rate it is net
-positive**, down from 10.0% before the doubt gate, and demonstrably positive
-above about 20%.
+is how often that has to happen for the system to be worth running:
+
+    break-even premise-error rate    5.5%   95% CI [1.0, 11.4]
+
+Above that the system is net positive across a whole caseload; below it, the
+cost of doubting outweighs the wins. It was 10.0% before the doubt gate. Net
+benefit is demonstrable from about a 15% error rate upward.
 
 Every decision takes **4 ms** on a 21 km box and 10 ms on a 48 km county, which
 is about five orders of magnitude faster than the flight it is planning.
@@ -232,25 +240,25 @@ displaced cases -- a confident reading now earns a stronger nomination than a
 hesitant one, where before every reading was admitted at full strength.
 
     arm                                family   find rate        localised
-    library only (no revision)         A        97% [91-99]      96% [89-98]
-    library only (no revision)         B        32% [22-43]      42% [31-53]
-    library only (no revision)         C       100% [90-100]    100% [90-100]
-    blind relocation (reads nothing)   A        96% [89-98]      91% [83-95]
-    blind relocation (reads nothing)   B        19% [12-30]      29% [20-41]
-    blind relocation (reads nothing)   C        97% [86-100]    100% [90-100]
-    System One calibrated distribution A        93% [86-97]      98% [92-99]
-    System One calibrated distribution B        83% [73-90]      92% [83-96]
-    System One calibrated distribution C       100% [90-100]    100% [90-100]
+    library only (no revision)         A        98% [94-99]      96% [92-98]
+    library only (no revision)         B        35% [29-41]      39% [33-46]
+    library only (no revision)         C       100% [95-100]    100% [95-100]
+    blind relocation (reads nothing)   A        97% [93-98]      94% [90-97]
+    blind relocation (reads nothing)   B        28% [22-34]      31% [26-38]
+    blind relocation (reads nothing)   C        99% [93-100]    100% [95-100]
+    System One calibrated distribution A        95% [91-97]      97% [94-99]
+    System One calibrated distribution B        83% [77-87]      87% [82-91]
+    System One calibrated distribution C       100% [95-100]    100% [95-100]
 
-    paired, 24 scenarios               delta      95% CI            p
-    find      vs library only         +51.4pp   [+36.1, +66.7]   0.000  significant
-    find      vs blind relocation     +63.9pp   [+47.2, +79.2]   0.000  significant
-    localised vs library only         +50.0pp   [+29.2, +70.8]   0.000  significant
-    localised vs blind relocation     +62.5pp   [+41.7, +79.2]   0.000  significant
+    paired, 72 scenarios               delta      95% CI            p
+    find      vs library only         +48.1pp   [+36.6, +59.3]   0.000  significant
+    find      vs blind relocation     +55.1pp   [+44.0, +65.7]   0.000  significant
+    localised vs library only         +48.1pp   [+36.1, +59.7]   0.000  significant
+    localised vs blind relocation     +55.6pp   [+44.4, +66.7]   0.000  significant
 
-    paired, 30 scenarios, type A       delta      95% CI            p
-    find      vs library only          -3.3pp   [ -8.9,  +0.0]   0.255  no significant harm
-    localised vs library only          +2.2pp   [ -5.6, +11.1]   0.706  no significant harm
+    paired, 60 scenarios, type A       delta      95% CI            p
+    find      vs library only          -2.8pp   [ -6.1,  -0.6]   0.030  a real cost
+    find      vs blind relocation      -1.7pp   [ -5.0,  +1.1]   0.286  not significant
 
 The type A row is the one worth pausing on. Prose revision does help on type B
 -- 57% against the library's 31% -- so the language model is not useless at
@@ -262,9 +270,11 @@ separated than the difference on type B. Being unable to rank your own
 hypotheses does not only cost you the wins; it costs you the cases you had
 already won.
 
-Every figure comes from `runs/experiment_headline_gated.json`: 30 type A, 24
-type B and 12 type C scenarios, three detection-roll repeats, Wilson 95%
-intervals.
+Every figure comes from `runs/experiment_large.json`: 60 type A, 72 type B and
+24 type C scenarios, three detection-roll repeats, Wilson 95% intervals. The
+suite was grown from 66 scenarios to 156; because scenario generation is
+append-only, the original 66 are bit-identical and the earlier run remains a
+valid subset rather than a superseded one.
 
 The prose language-model arm is not in this table. It was measured before the
 false leads and the doubt gate existed (`runs/experiment_llm_current.json`,
@@ -273,9 +283,8 @@ and running it against a suite it has never seen would be comparing two
 different experiments. Its result is reported in the section above rather than
 placed in a table that would imply it was run under these conditions.
 
-    python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
-    python scripts/significance.py runs/experiment_headline.json \
-        runs/experiment_llm_current.json jev
+    python scripts/experiment.py --n-a 60 --n-b 72 --n-c 24 --repeats 3
+    python scripts/significance.py runs/experiment_large.json jev
 
 ### What a county knows that its neighbour does not
 
