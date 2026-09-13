@@ -9,6 +9,26 @@ finds the subject 35% of the time. This finds them 83% of the time.**
     against a real but small cost of 2.8 points on the cases where the
     premise was right, which each carry a false lead designed to bait it
 
+**And it finds them while it still matters.** A search is not scored on whether
+it eventually succeeds; it is scored on whether it succeeds while the subject is
+alive. Restricted to the wrong-premise cases -- the ones still running after
+day one -- and measured by elapsed time rather than eventual outcome:
+
+    elapsed     doctrine    this system
+      24 h         2.8%          2.8%
+      48 h         5.1%         21.8%
+      72 h         6.0%         52.8%
+       5 d        17.1%         71.8%
+
+    paired at 48 h   +16.7pp   95% CI [ +9.3, +24.5]
+    paired at 72 h   +46.8pp   95% CI [+37.0, +56.5]
+
+At three days, conventional search has found six in a hundred of these and this
+has found fifty-three. The first day shows no difference at all, and that is
+honest: neither method has swept enough ground by then for the premise to
+matter. The gap opens exactly where a search stops being a rescue and starts
+becoming a recovery.
+
 That baseline is not a strawman and it is worth being precise about what it is.
 The control arm implements what a trained incident commander actually does:
 take the subject category, apply the published distance-from-planning-point
