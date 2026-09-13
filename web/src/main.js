@@ -159,7 +159,11 @@ class Pane {
 
     ctx.fillStyle = "#0d1015";
     ctx.fillRect(x, y, size, size);
-    ctx.globalAlpha = revising ? 0.55 : 1;
+    // The ground is context, not the subject. Held back so the belief field
+    // reads as the brightest thing on the panel -- before this the terrain and
+    // the data competed at the same weight and the two panes looked alike at a
+    // glance, which is the one thing this display cannot afford.
+    ctx.globalAlpha = revising ? 0.42 : 0.74;
     ctx.drawImage(this.a.hillshade, x, y, size, size);
     ctx.globalAlpha = 1;
 
@@ -181,11 +185,17 @@ class Pane {
     ctx.drawImage(this.a.swept[i], x, y, size, size);
     if (fade > 0) { ctx.globalAlpha = 0.85 * fade; ctx.drawImage(this.a.swept[next], x, y, size, size); }
 
+    // Belief is normalised to its own 99.9th percentile, so all but a small
+    // hotspot sits near black and the mid probabilities -- the part that
+    // actually moves when the premise changes -- were invisible. Lifted here
+    // rather than in the export so the underlying field is untouched.
     ctx.globalCompositeOperation = "screen";
+    ctx.filter = "brightness(1.5) saturate(1.15)";
     ctx.globalAlpha = (1 - fade) * dip;
     ctx.drawImage(this.a.belief[i], x, y, size, size);
     ctx.globalAlpha = fade * dip;
     ctx.drawImage(this.a.belief[next], x, y, size, size);
+    ctx.filter = "none";
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
 
