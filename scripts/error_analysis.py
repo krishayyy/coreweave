@@ -4,7 +4,7 @@ Decomposes every nomination the model made against the withheld truth. The
 headline number says how often the loop works; this says why it fails, which is
 the part that tells you what to fix next.
 
-    python scripts/error_analysis.py [runs/experiment_full.json]
+    python scripts/error_analysis.py [runs/experiment_llm_current.json]
 """
 from __future__ import annotations
 
@@ -33,7 +33,17 @@ CUES = {
 
 
 def main() -> int:
-    path = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "runs/experiment_full.json")
+    # This decomposes the prose arm's nominations, so it needs a run that
+    # contains one. Pointed at a calibrated-arm run it would print a table of
+    # nans and a concordance of zero, which reads like a finding rather than
+    # like the wrong input.
+    path = ROOT / (sys.argv[1] if len(sys.argv) > 1
+                   else "runs/experiment_llm_current.json")
+    if not path.exists():
+        print(f"no run at {path.relative_to(ROOT)}. Produce one first with:\n"
+              f"    python scripts/experiment.py --arms llm "
+              f"--out {path.relative_to(ROOT)}")
+        return 1
     grid = build_grid(load_terrain(CFG.center_lat, CFG.center_lon, CFG.zoom,
                                    CFG.radius_tiles), CFG.grid_factor, CFG.treeline_m)
     suite = {s.id: s for s in generate_suite(grid, 30, 24, 12, seed=7)}
@@ -75,6 +85,11 @@ def main() -> int:
             best_per_run.append(min(run_errors))
 
     b = np.array(bearing); d = np.array(distance); p = np.array(position)
+    if len(b) == 0:
+        print(f"{path.relative_to(ROOT)} contains no prose-arm nominations to "
+              f"analyse. This script decomposes the 'llm' arm; run it against a "
+              f"run produced with --arms llm.")
+        return 1
     print(f"{len(b)} nominations across {len(best_per_run)} type B runs\n")
 
     print("ERROR DECOMPOSITION")

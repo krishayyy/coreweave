@@ -920,9 +920,9 @@ fired, so this is wiring rather than new machinery.
 
 ## Reproducing
 
-    python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
+    python scripts/experiment.py --n-a 60 --n-b 72 --n-c 24 --repeats 3
     python scripts/self_improve.py --rounds 2    # the loop that persists
-    python scripts/error_analysis.py     # where the remaining error comes from
+    python scripts/error_analysis.py     # decomposes the prose arm's nominations
     python scripts/ceiling_check.py      # the diagnostic upper bound
     python scripts/tune_trigger.py       # threshold sweep, tuning suite only
     python scripts/tune_revisions.py     # revision cap sweep, tuning suite only

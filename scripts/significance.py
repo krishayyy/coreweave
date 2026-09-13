@@ -60,7 +60,14 @@ def main() -> int:
     args = sys.argv[1:]
     paths = [ROOT / a for a in args if a.endswith(".json")]
     if not paths:
-        paths = [ROOT / "runs/experiment_full.json"]
+        paths = [ROOT / "runs/experiment_large.json"]
+    missing = [p for p in paths if not p.exists()]
+    if missing:
+        names = ", ".join(str(p.relative_to(ROOT)) for p in missing)
+        print(f"no run at {names}. Produce one first with:\n"
+              f"    python scripts/experiment.py --n-a 60 --n-b 72 --n-c 24 --repeats 3")
+        return 1
+
     rest = [a for a in args if not a.endswith(".json")]
     by_arm = load(*paths)
 
