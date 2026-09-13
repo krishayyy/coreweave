@@ -1,9 +1,19 @@
 {
   "settings": {
+    "exhaustion_trigger": 0.5,
+    "max_revisions": 1,
+    "min_periods_between_revisions": 4,
+    "evidence_trigger_floor": 0.4,
+    "direction_mass_cutoff": 0.98,
+    "direction_min_probability": 0.03,
+    "max_nomination_prior": 0.2,
+    "precedent_count": 0
+  },
+  "baseline": {
     "exhaustion_trigger": 0.7,
     "max_revisions": 1,
     "min_periods_between_revisions": 4,
-    "evidence_trigger_floor": 0.25,
+    "evidence_trigger_floor": 0.4,
     "direction_mass_cutoff": 0.98,
     "direction_min_probability": 0.03,
     "max_nomination_prior": 0.2,
@@ -14,51 +24,28 @@
       "id": "trial-001",
       "parameter": "exhaustion_trigger",
       "was": 0.7,
-      "now": 0.3,
-      "rationale": "The high exhaustion_trigger (0.7) means the system waits until the leading account is almost ruled out before reconsidering, contributing to the 33% locate rate in deliberate_deviation failures. Lowering it to 0.3 will trigger premise reconsideration sooner, likely increasing overall locate rate and",
-      "predicted": "Improved locate rate and speed score; may increase the number of premature premise switches, potentially reducing precision in some searches.",
-      "at": "2026-09-13T01:33:42+00:00",
+      "now": 0.5,
+      "rationale": "The overall located rate is only 51% and the deliberate_deviation failure mode (39% located) indicates the system often persists too long on a wrong premise before reconsidering. Lowering exhaustion_trigger from 0.7 to 0.5 will trigger a premise reassessment earlier, potentially improving location s",
+      "predicted": "Expected improvement: higher located rate and better mean best ranking, especially for deliberate_deviation cases. Possible downside: increased risk of abandoning a still viable hypothesis prematurely, which could slightly reduce speed score if the system reconsiders too often.",
+      "at": "2026-09-13T01:50:44+00:00",
       "before": {
         "find_rate": 0.5,
         "localise_rate": 0.4861111111111111,
         "mean_peak": 78.77163357204861,
         "objective": 0.3072916666666667,
-        "n": 12
+        "n": 12,
+        "repeats": 6
       },
       "after": {
         "find_rate": 0.5,
-        "localise_rate": 0.5555555555555556,
-        "mean_peak": 76.59806616512346,
-        "objective": 0.2890625,
-        "n": 12
-      },
-      "accepted": false,
-      "verdict": "objective -0.018, below the 0.01 bar"
-    },
-    {
-      "id": "trial-002",
-      "parameter": "evidence_trigger_floor",
-      "was": 0.4,
-      "now": 0.25,
-      "rationale": "The current value (0.15) is low relative to the allowed range, which means new evidence can reopen the premise too readily. This can cause the system to thrash between accounts without committing, as seen by the overall low mean best ranking (85%) and moderate speed score (0.222). Raising the thresh",
-      "predicted": "It should increase subject locating rate and mean best ranking by reducing unnecessary revisions, but may slightly slow the speed score if the system takes a bit longer to reconsider a wrong premise.",
-      "at": "2026-09-13T01:40:22+00:00",
-      "before": {
-        "find_rate": 0.5,
-        "localise_rate": 0.4861111111111111,
-        "mean_peak": 78.77163357204861,
-        "objective": 0.3072916666666667,
-        "n": 12
-      },
-      "after": {
-        "find_rate": 0.4444444444444444,
         "localise_rate": 0.5138888888888888,
-        "mean_peak": 75.79673484519677,
-        "objective": 0.3350694444444444,
-        "n": 12
+        "mean_peak": 74.1546630859375,
+        "objective": 0.3298611111111111,
+        "n": 12,
+        "repeats": 6
       },
       "accepted": true,
-      "verdict": "objective +0.028, find rate -6 pp"
+      "verdict": "objective +0.023 \u00b1 0.011, find rate +0 pp"
     }
   ]
 }

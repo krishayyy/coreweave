@@ -272,6 +272,54 @@ sharper lesson: the whole reason to use a calibrated model is to act on the
 calibration. Reading the probability and then ignoring it gives up most of what
 it is for.
 
+### The strongest objection to all of this
+
+The evaluation is synthetic and I designed both sides of it. That is the
+attack a reviewer should lead with, so it belongs here rather than in a
+footnote.
+
+**The scenario families encode a theory.** Type B is built from four documented
+ways a search goes wrong -- the subject was transported, deviated deliberately,
+was mis-categorised, or the planning point rests on a false premise. The system
+is built to recover from exactly those. A result on a distribution I authored
+is weaker evidence than a result on one I did not, and no amount of statistical
+care inside the suite repairs that.
+
+What keeps it honest rather than circular:
+
+- The *behaviour* is not mine. Distance-from-planning-point distributions come
+  from the published lost-person literature, not from intuition, and the
+  detection model is the standard SAR formulation. I chose which failure modes
+  to simulate; I did not choose how subjects move once displaced.
+- The generator is procedural and seeded, and the true location is withheld
+  from every arm. Whatever advantage exists is not information leakage.
+- The baseline gets the same theory. Conventional Bayesian search is anchored
+  at the planning point *because that is what deployed systems do*, not because
+  it was handicapped. It solves type C outright at 89%, which is what a
+  non-strawman looks like.
+
+What would actually answer it: replaying documented historical searches, where
+the incident was authored by the world. That is the right next experiment and
+it is not in this repo.
+
+**One terrain.** Every scenario is Mt Hood. Drainage structure, treeline and
+canopy all differ elsewhere, and the drainage-following behaviour that the
+priors encode matters more in dissected terrain than on open tundra. The
+loading on terrain is unmeasured.
+
+**n = 24 carries the thesis.** Type B is the family the argument rests on, and
+twenty-four scenarios give intervals wide enough that the find-rate result
+(+26.4pp, p = 0.001) is solid while localisation (+23.6pp, p = 0.018) would be
+more comfortable at twice the size. Every interval on this page is reported
+rather than summarised for that reason.
+
+**The most robust finding is not in the arm tables.** Across 297 nominations
+the language model could not rank its own proposals -- 56% concordance where
+50% is chance, top pick 4.7 km from truth against 2.2 km for the best pick in
+the same response. That measurement survived every configuration change made
+since, and it is the reason the system asks for a distribution instead of
+prose. If one number here generalises beyond this suite, it is that one.
+
 ### Significance
 
 The arms run on identical scenarios, so they are paired and an unpaired interval
