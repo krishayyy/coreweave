@@ -93,6 +93,27 @@ class RunResult:
 
 
 @tracing.op
+def period_step(scenario: str, arm: str, period: int, leader: str,
+                confidence: float, ruled_out: float, cumulative_pos: float,
+                truth_percentile: float, revised: bool, found: bool) -> dict:
+    """One turn of the loop, recorded so the loop is visible rather than asserted.
+
+    Deliberately pure: it computes nothing and returns its arguments. Its only
+    job is to give each iteration a traced call of its own, so a trace shows a
+    search as N scored steps -- what the agent believed, how sure it was, how
+    much of that belief the sweep had already ruled out, and whether this was
+    the turn it changed its mind -- instead of one opaque call per scenario.
+    Being pure means it cannot affect a result.
+    """
+    return {
+        "scenario": scenario, "arm": arm, "period": period,
+        "leader": leader, "confidence": confidence, "ruled_out": ruled_out,
+        "cumulative_pos": cumulative_pos, "truth_percentile": truth_percentile,
+        "revised": revised, "found": found,
+    }
+
+
+@tracing.op
 def run_scenario(
     grid: SearchGrid,
     pod: np.ndarray,
@@ -190,6 +211,13 @@ def run_scenario(
         truth_pct = float(100.0 * (joint < joint[scenario.true_rc]).mean())
 
         leader, weight = belief.leader
+        period_step(
+            scenario=scenario.id, arm=arm, period=period + 1, leader=leader.label,
+            confidence=float(weight),
+            ruled_out=float(belief.exhaustion[belief.hypotheses.index(leader)]),
+            cumulative_pos=float(belief.cumulative_pos),
+            truth_percentile=truth_pct, revised=bool(accepted), found=found,
+        )
         trace.append(PeriodTrace(
             period=period + 1,
             leader_label=leader.label,
