@@ -242,9 +242,10 @@ html, body {
 
 #deck {
   left: 14px; right: 14px; bottom: 14px; height: 194px; border-radius: 6px;
-  display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 330px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
-  column-gap: 30px; padding: 15px 20px 13px; align-items: stretch;
+  column-gap: 26px; padding: 15px 20px 13px; align-items: stretch;
 }
 #readout { display: grid; grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(2, min-content); gap: 16px 24px; align-content: center; }
@@ -259,6 +260,29 @@ html, body {
 }
 .metric .v.dim { color: var(--dim); }
 .metric .v.warm { color: var(--warm); font-weight: 500; }
+
+/* The aggregate sits beside the single case on purpose: the anecdote and the
+ * measurement in the same glance, so neither has to be taken on trust. */
+#aggregate { display: grid; align-content: center; gap: 7px; min-width: 0;
+  padding-left: 26px; border-left: 1px solid var(--rule); }
+.agghead, .aggfoot {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--label); white-space: nowrap;
+}
+.aggfoot { text-transform: none; letter-spacing: 0.04em; color: var(--dim); }
+.aggrow { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr);
+  align-items: center; gap: 12px; }
+.agg { display: flex; align-items: baseline; gap: 9px; min-width: 0; }
+.aggk { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--label); }
+.aggv { font-family: var(--sans); font-size: 21px; font-weight: 500;
+  line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.aggv.dim { color: var(--dim); }
+.aggv.warm { color: var(--warm); }
+.aggbar { height: 4px; border-radius: 2px;
+  background: color-mix(in srgb, var(--rule) 80%, transparent); overflow: hidden; }
+.aggbar i { display: block; height: 100%; background: var(--dim); border-radius: 2px; }
+.aggbar.warm i { background: var(--warm); }
 
 #graphwrap { position: relative; min-height: 0; }
 /* A canvas is a replaced element: its width/height attributes are the backing
