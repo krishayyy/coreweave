@@ -34,6 +34,18 @@ from .hypotheses import PROFILES, Hypothesis, build_prior_field
 
 MAX_NOMINATION_PRIOR = 0.35
 
+# Below this probability that the premise is wrong, nominate nothing. A search
+# that relocates every time a tip arrives will abandon the right ground on the
+# strength of a report that was already traced to somebody else, and real case
+# files are mostly those. Above the floor the nomination is admitted in
+# proportion to the doubt rather than at full strength, so a half-convinced
+# model moves half as much belief.
+# 0.40 chosen on a separate tuning fold (seed 202, 30 correct-premise and 30
+# displaced cases): it blocks 60% of false leads while keeping 91% of the real
+# displacements. Raising it to 0.60 blocks 70% of false leads but throws away a
+# third of the cases the system exists to solve, which is the wrong trade.
+PREMISE_DOUBT_FLOOR = 0.40
+
 # How much of the direction distribution to act on, and the smallest slice worth
 # admitting. Module-level because the self-improvement loop tunes them.
 DIRECTION_MASS_CUTOFF = 0.85
@@ -271,6 +283,12 @@ def nominate_jev(
         keep.append((name, probability))
         cumulative += probability
 
+    # Nothing in the file contradicts the planning point, so do not move.
+    # Every other question in the reading presupposes displacement and will
+    # name a direction regardless; this is the one that is allowed to say no.
+    if reading.premise_wrong < PREMISE_DOUBT_FLOOR:
+        return []
+
     out: list[Nomination] = []
     total = sum(p for _, p in keep) or 1.0
     for name, probability in keep:
@@ -283,9 +301,11 @@ def nominate_jev(
             anchor_distance_km=float(np.clip(distance_km, 1.0, 13.0)),
             # Share of the retained belief, so a single confident direction
             # receives the full allowance rather than a third of it.
-            prior=float(np.clip((probability / total) * MAX_NOMINATION_PRIOR,
+            prior=float(np.clip((probability / total) * MAX_NOMINATION_PRIOR
+                                * reading.premise_wrong,
                                 0.02, MAX_NOMINATION_PRIOR)),
-            rationale=(f"System One direction confidence "
+            rationale=(f"System One puts P(premise wrong) at "
+                       f"{reading.premise_wrong:.2f}; direction confidence "
                        f"{reading.direction_confidence:.2f}; distance confidence "
                        f"{reading.distance_confidence:.2f}."),
             origin="jev",

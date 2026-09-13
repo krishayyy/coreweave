@@ -76,6 +76,13 @@ def available() -> bool:
 class Reading:
     """One System One evaluation of a case."""
 
+    # P(the subject began somewhere other than the planning point). This gates
+    # and scales every relocation: a calibrated model that is unconvinced by a
+    # tip produces a small number here, and the nomination it is obliged to
+    # give for direction and distance is admitted with correspondingly little
+    # weight, or not at all.
+    premise_wrong: float
+    premise_confidence: float
     direction_probs: dict[str, float]
     direction_confidence: float
     distance_km: float
@@ -127,6 +134,30 @@ def ask(state: str, profiles: dict[str, str], model: str | None = None,
         "model": model or os.getenv("TYPESAFE_MODEL", "jev-latest"),
         "state": state,
         "questions": {
+            # Asked first and deliberately: every other question here
+            # presupposes that the subject began somewhere other than the
+            # planning point, so without this one the model has no way to say
+            # that the original premise still holds. It was structurally
+            # required to nominate a relocation, which is exactly what a false
+            # lead exploits.
+            "premise_wrong": {
+                "type": "choice",
+                "instructions": (
+                    "Does the case file, including anything that arrived after "
+                    "the search began, indicate that the subject began their "
+                    "journey somewhere other than the planning point? Reports "
+                    "that were checked and traced to someone else, vehicles "
+                    "belonging to unrelated people, and alerts that did not "
+                    "develop are not evidence that the planning point is wrong."
+                ),
+                "criteria": {
+                    "displaced": "The subject began somewhere other than the "
+                                 "planning point, and the evidence says so.",
+                    "as_planned": "The planning point is still the best account "
+                                  "of where the subject began. Nothing in the "
+                                  "file contradicts it.",
+                },
+            },
             "start_direction": {
                 "type": "choice",
                 "instructions": (
@@ -174,11 +205,14 @@ def ask(state: str, profiles: dict[str, str], model: str | None = None,
         cached.write_text(json.dumps(body))
     answers = body["answers"]
 
+    premise = answers["premise_wrong"]
     direction = answers["start_direction"]
     distance = answers["start_distance"]
     profile = answers["subject_profile"]
 
     return Reading(
+        premise_wrong=float(premise["probabilities"].get("displaced", 1.0)),
+        premise_confidence=float(premise["confidence"]),
         direction_probs={k: float(v) for k, v in direction["probabilities"].items()},
         direction_confidence=float(direction["confidence"]),
         distance_km=float(distance["score"]),
