@@ -128,7 +128,7 @@ Scenarios come in three families:
   behaviour category was misjudged. The library already contains the correct
   profile at a low base rate.
 
-        python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 5
+        python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
 
 ## Results
 
@@ -168,7 +168,7 @@ needs selecting.
     System One calibrated distribution C        81% [65-90]      67% [50-80]
     oracle -- told the true answer     B        83%              78%
 
-Every figure on this page comes from `runs/experiment_best.json`, one suite,
+Every figure on this page comes from `runs/experiment_headline.json`, one suite,
 one configuration: 30 type A, 24 type B and 12 type C scenarios, three
 independent detection-roll repeats each, Wilson 95% intervals. Regenerate with
 

@@ -5,7 +5,15 @@ venv/
 .env
 .env.*
 data/tiles/
-runs/
+# Intermediate runs stay out; the records the README cites are committed, so a
+# clone can check the numbers instead of taking them on trust.
+runs/*
+!runs/README.md
+!runs/experiment_headline.json
+!runs/time_curve.json
+!runs/learning_curve.json
+!runs/time_curve.png
+!runs/learning_curve.png
 node_modules/
 dist/
 .DS_Store

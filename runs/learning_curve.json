@@ -1,0 +1,263 @@
+{
+  "seed": 123,
+  "with_memory": [
+    {
+      "i": 1,
+      "id": "B000",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 7.472459848343817,
+      "memory_size": 0
+    },
+    {
+      "i": 2,
+      "id": "B001",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 38.39516450324601,
+      "memory_size": 1
+    },
+    {
+      "i": 3,
+      "id": "B002",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 0.6160599083992224,
+      "memory_size": 2
+    },
+    {
+      "i": 4,
+      "id": "B003",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 18.781597235653635,
+      "memory_size": 3
+    },
+    {
+      "i": 5,
+      "id": "B004",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": null,
+      "memory_size": 4
+    },
+    {
+      "i": 6,
+      "id": "B005",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 1.2726017772002933,
+      "memory_size": 5
+    },
+    {
+      "i": 7,
+      "id": "B006",
+      "subkind": "transported",
+      "found": true,
+      "bearing_error": 66.50143432404792,
+      "memory_size": 6
+    },
+    {
+      "i": 8,
+      "id": "B007",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 11.48199135474809,
+      "memory_size": 7
+    },
+    {
+      "i": 9,
+      "id": "B008",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 16.876264616711182,
+      "memory_size": 8
+    },
+    {
+      "i": 10,
+      "id": "B009",
+      "subkind": "transported",
+      "found": false,
+      "bearing_error": 14.0,
+      "memory_size": 9
+    },
+    {
+      "i": 11,
+      "id": "B010",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 6.070202577939369,
+      "memory_size": 10
+    },
+    {
+      "i": 12,
+      "id": "B011",
+      "subkind": "transported",
+      "found": false,
+      "bearing_error": 31.390268104187783,
+      "memory_size": 11
+    },
+    {
+      "i": 13,
+      "id": "B012",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 9.019322431381681,
+      "memory_size": 12
+    },
+    {
+      "i": 14,
+      "id": "B013",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 11.57130719125459,
+      "memory_size": 13
+    },
+    {
+      "i": 15,
+      "id": "B014",
+      "subkind": "deliberate_deviation",
+      "found": false,
+      "bearing_error": 2.626233638669788,
+      "memory_size": 14
+    },
+    {
+      "i": 16,
+      "id": "B015",
+      "subkind": "transported",
+      "found": true,
+      "bearing_error": 1.7714697400340924,
+      "memory_size": 15
+    }
+  ],
+  "control": [
+    {
+      "i": 1,
+      "id": "B000",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 7.472459848343817,
+      "memory_size": 0
+    },
+    {
+      "i": 2,
+      "id": "B001",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 62.39516450324601,
+      "memory_size": 0
+    },
+    {
+      "i": 3,
+      "id": "B002",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 45.61605990839922,
+      "memory_size": 0
+    },
+    {
+      "i": 4,
+      "id": "B003",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 13.781597235653635,
+      "memory_size": 0
+    },
+    {
+      "i": 5,
+      "id": "B004",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": null,
+      "memory_size": 0
+    },
+    {
+      "i": 6,
+      "id": "B005",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 1.2726017772002933,
+      "memory_size": 0
+    },
+    {
+      "i": 7,
+      "id": "B006",
+      "subkind": "transported",
+      "found": false,
+      "bearing_error": 54.50143432404792,
+      "memory_size": 0
+    },
+    {
+      "i": 8,
+      "id": "B007",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 56.48199135474809,
+      "memory_size": 0
+    },
+    {
+      "i": 9,
+      "id": "B008",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 19.876264616711182,
+      "memory_size": 0
+    },
+    {
+      "i": 10,
+      "id": "B009",
+      "subkind": "transported",
+      "found": false,
+      "bearing_error": 14.0,
+      "memory_size": 0
+    },
+    {
+      "i": 11,
+      "id": "B010",
+      "subkind": "wrong_ipp",
+      "found": true,
+      "bearing_error": 6.070202577939369,
+      "memory_size": 0
+    },
+    {
+      "i": 12,
+      "id": "B011",
+      "subkind": "transported",
+      "found": false,
+      "bearing_error": 21.390268104187783,
+      "memory_size": 0
+    },
+    {
+      "i": 13,
+      "id": "B012",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 14.019322431381681,
+      "memory_size": 0
+    },
+    {
+      "i": 14,
+      "id": "B013",
+      "subkind": "wrong_ipp",
+      "found": false,
+      "bearing_error": 26.57130719125459,
+      "memory_size": 0
+    },
+    {
+      "i": 15,
+      "id": "B014",
+      "subkind": "deliberate_deviation",
+      "found": true,
+      "bearing_error": 11.373766361330212,
+      "memory_size": 0
+    },
+    {
+      "i": 16,
+      "id": "B015",
+      "subkind": "transported",
+      "found": true,
+      "bearing_error": 1.7714697400340924,
+      "memory_size": 0
+    }
+  ]
+}

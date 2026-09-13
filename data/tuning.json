@@ -3,7 +3,7 @@
     "exhaustion_trigger": 0.7,
     "max_revisions": 1,
     "min_periods_between_revisions": 4,
-    "evidence_trigger_floor": 0.4,
+    "evidence_trigger_floor": 0.25,
     "direction_mass_cutoff": 0.98,
     "direction_min_probability": 0.03,
     "max_nomination_prior": 0.2,
@@ -14,51 +14,51 @@
       "id": "trial-001",
       "parameter": "exhaustion_trigger",
       "was": 0.7,
-      "now": 0.4,
-      "rationale": "Overall located rate is only 50% and the system rarely revises (mean revisions 0.8 with cap 1), suggesting it is waiting too long before abandoning a premise; lowering the trigger to 0.4 will prompt earlier reconsideration of the leading account.",
-      "predicted": "Increased likelihood of finding the subject in cases where the initial premise is wrong, potentially raising the located rate above 50%, but may also cause premature abandonment of good hypotheses, slightly reducing the top\u2011decile belief success.",
-      "at": "2026-09-13T01:08:46+00:00",
+      "now": 0.3,
+      "rationale": "The high exhaustion_trigger (0.7) means the system waits until the leading account is almost ruled out before reconsidering, contributing to the 33% locate rate in deliberate_deviation failures. Lowering it to 0.3 will trigger premise reconsideration sooner, likely increasing overall locate rate and",
+      "predicted": "Improved locate rate and speed score; may increase the number of premature premise switches, potentially reducing precision in some searches.",
+      "at": "2026-09-13T01:33:42+00:00",
       "before": {
-        "find_rate": 0.4791666666666667,
-        "localise_rate": 0.4791666666666667,
-        "mean_peak": 78.59039306640625,
-        "objective": 0.3033854166666667,
+        "find_rate": 0.5,
+        "localise_rate": 0.4861111111111111,
+        "mean_peak": 78.77163357204861,
+        "objective": 0.3072916666666667,
         "n": 12
       },
       "after": {
-        "find_rate": 0.4166666666666667,
-        "localise_rate": 0.4375,
-        "mean_peak": 75.22481282552083,
-        "objective": 0.2799479166666667,
+        "find_rate": 0.5,
+        "localise_rate": 0.5555555555555556,
+        "mean_peak": 76.59806616512346,
+        "objective": 0.2890625,
         "n": 12
       },
       "accepted": false,
-      "verdict": "objective -0.023, below the 0.01 bar"
+      "verdict": "objective -0.018, below the 0.01 bar"
     },
     {
       "id": "trial-002",
       "parameter": "evidence_trigger_floor",
       "was": 0.4,
-      "now": 0.3,
-      "rationale": "The current floor of 0.15 is low, allowing newly arriving evidence to reopen premises too readily. Raising it to 0.3 should reduce unnecessary premise reopens, tightening the search focus.",
-      "predicted": "Faster convergence and higher speed score, but risk of missing legitimate new evidence that could correct a wrong hypothesis.",
-      "at": "2026-09-13T01:19:39+00:00",
+      "now": 0.25,
+      "rationale": "The current value (0.15) is low relative to the allowed range, which means new evidence can reopen the premise too readily. This can cause the system to thrash between accounts without committing, as seen by the overall low mean best ranking (85%) and moderate speed score (0.222). Raising the thresh",
+      "predicted": "It should increase subject locating rate and mean best ranking by reducing unnecessary revisions, but may slightly slow the speed score if the system takes a bit longer to reconsider a wrong premise.",
+      "at": "2026-09-13T01:40:22+00:00",
       "before": {
-        "find_rate": 0.4791666666666667,
-        "localise_rate": 0.4791666666666667,
-        "mean_peak": 78.59039306640625,
-        "objective": 0.3033854166666667,
+        "find_rate": 0.5,
+        "localise_rate": 0.4861111111111111,
+        "mean_peak": 78.77163357204861,
+        "objective": 0.3072916666666667,
         "n": 12
       },
       "after": {
-        "find_rate": 0.4166666666666667,
-        "localise_rate": 0.5208333333333334,
-        "mean_peak": 78.150713885272,
-        "objective": 0.3255208333333333,
+        "find_rate": 0.4444444444444444,
+        "localise_rate": 0.5138888888888888,
+        "mean_peak": 75.79673484519677,
+        "objective": 0.3350694444444444,
         "n": 12
       },
-      "accepted": false,
-      "verdict": "objective +0.022 but find rate -6 pp -- not worth it"
+      "accepted": true,
+      "verdict": "objective +0.028, find rate -6 pp"
     }
   ]
 }
