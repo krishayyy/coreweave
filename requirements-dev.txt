@@ -3,3 +3,6 @@ pytest>=8.0
 # Optional. Tracing is a no-op when weave is absent or unauthenticated, so the
 # loop never depends on it.
 weave>=0.51
+
+# The interactive explorer in notebooks/. Optional: nothing in src imports it.
+marimo>=0.24
