@@ -39,10 +39,13 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from searchloop.config import DEFAULT as CFG                          # noqa: E402
 from searchloop.county import CountyModel, ResolvedCase, fit_county   # noqa: E402
 from searchloop.grid import build_grid                                # noqa: E402
 from searchloop.hypotheses import PROFILES, build_prior_field         # noqa: E402
-from searchloop.scenario import generate_suite                        # noqa: E402
+from searchloop.loop import run_scenario                              # noqa: E402
+from searchloop.pod import pod_field                                  # noqa: E402
+from searchloop.scenario import generate_suite, stable_seed           # noqa: E402
 from searchloop.terrain import load_terrain                           # noqa: E402
 
 # Real search-and-rescue jurisdictions, chosen for genuinely different terrain:
@@ -152,9 +155,39 @@ def main() -> int:
         results[name]["transplant"] = trans
         print(f"  {name:14s} {100 * base:9.1f}% {100 * home:9.1f}% {100 * trans:10.1f}%")
 
+    print("\n\nflying it: the same drone and the same code, on held-out cases\n")
+    print(f"  {'county':14s} {'cold':>18} {'experienced':>18} {'neighbour':>18}")
+    end_to_end = {}
+    for name, spec in COUNTIES.items():
+        grid, scen = grids[name], suites[name]
+        _, tests = cases_and_tests(grid, scen, max(TRAIN_SIZES))
+        pod = pod_field(grid)
+        others = [o for o in COUNTIES if o != name]
+        arms = {"cold": None, "experienced": fitted_at_max[name],
+                "neighbour": fitted_at_max[others[0]]}
+        row = {}
+        for arm, model in arms.items():
+            found, periods = 0, []
+            for s_, _p in tests:
+                for rep in range(3):
+                    r = run_scenario(grid, pod, s_, "none", CFG,
+                                     np.random.default_rng(stable_seed(s_.id, rep)),
+                                     county=model)
+                    found += bool(r.found)
+                    periods.append(r.periods_to_find if r.found else CFG.max_periods)
+            n = len(tests) * 3
+            row[arm] = {"find_rate": found / n, "mean_periods": float(np.mean(periods))}
+            print(f"    {arm:>12}  {100 * found / n:5.1f}% found, "
+                  f"{np.mean(periods):4.1f} periods", end="")
+            if arm == "neighbour":
+                print()
+        print(f"  {name}")
+        end_to_end[name] = row
+
     out = ROOT / "runs" / "county_learning.json"
     out.write_text(json.dumps(
         {"counties": {k: {kk: v[kk] for kk in v} for k, v in results.items()},
+         "end_to_end": end_to_end,
          "train_sizes": TRAIN_SIZES, "n_total": n_total}, indent=2, default=float))
     print(f"\nwrote {out}")
     return 0

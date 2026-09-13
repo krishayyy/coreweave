@@ -160,8 +160,16 @@ def build_prior_field(
     return field_ / total if total > 0 else np.full(field_.shape, 1.0 / field_.size)
 
 
-def library_hypotheses(grid: SearchGrid, ipp_rc: tuple[int, int]) -> list[Hypothesis]:
-    """The deterministic arm: every published profile, anchored at the IPP."""
+def library_hypotheses(grid: SearchGrid, ipp_rc: tuple[int, int],
+                       county=None) -> list[Hypothesis]:
+    """The deterministic arm: every published profile, anchored at the IPP.
+
+    `county` is the local correction this county has learned from its own
+    resolved cases. It shapes where each published profile expects to find the
+    subject, and it does not add, remove or reweight hypotheses -- the same
+    seven profiles compete on the same terms. A county that has never resolved
+    a case passes None and gets the published model exactly.
+    """
     return [
         Hypothesis(
             id=p.key,
@@ -169,7 +177,9 @@ def library_hypotheses(grid: SearchGrid, ipp_rc: tuple[int, int]) -> list[Hypoth
             narrative=p.narrative,
             profile=p,
             anchor_rc=ipp_rc,
-            prior_field=build_prior_field(grid, p, ipp_rc),
+            prior_field=(build_prior_field(grid, p, ipp_rc) if county is None
+                         else county.adjust(build_prior_field(grid, p, ipp_rc),
+                                            grid, ipp_rc)),
             origin="library",
         )
         for p in PROFILES.values()

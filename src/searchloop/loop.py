@@ -101,9 +101,15 @@ def run_scenario(
     cfg: Config,
     rng: np.random.Generator,
     on_period=None,
+    county=None,
 ) -> RunResult:
-    """Search until the subject is found or the period budget is exhausted."""
-    belief = Belief.from_hypotheses(library_hypotheses(grid, scenario.ipp_rc))
+    """Search until the subject is found or the period budget is exhausted.
+
+    `county` is the shared local model of the county being flown, or None for
+    a county with no resolved cases yet.
+    """
+    belief = Belief.from_hypotheses(
+        library_hypotheses(grid, scenario.ipp_rc, county))
     capacity = segment_capacity(grid, cfg.period_track_km, cfg.altitude_m)
     position = scenario.ipp_rc
     last_revision: int | None = None

@@ -271,6 +271,46 @@ getting better.
 
     python scripts/county_learning.py 96
 
+#### It improves the prior. It does not improve the outcome.
+
+Wired into the operational loop -- the same drone, the same code, flying
+held-out cases -- the county model does not find more people:
+
+    search window      cold   experienced    delta
+      1 period        54.2%      54.7%      +0.5pp
+      2 periods       72.4%      69.8%      -2.6pp
+      3 periods       78.6%      79.2%      +0.5pp
+      4 periods       83.3%      83.9%      +0.5pp
+      6 periods       88.0%      88.5%      +0.5pp
+
+That is noise, at every window length. A better prior did not convert into a
+better search.
+
+My first explanation was granularity: one sortie sweeps a contiguous 7.4% of
+this county, while ideal cell-by-cell ordering reaches the subject after
+3.3-4.2%, so the subject sits inside the first blob either way and a ranking
+gain smaller than the smallest action available cannot be acted on. That
+predicts the gain should appear once a sortie is small relative to the county.
+It does not:
+
+    county        sortie      cold   experienced    delta
+    21x21 km       7.4%      95.8%      92.4%      -3.5pp
+    34x34 km       2.5%      95.1%      95.1%      +0.0pp
+    48x48 km       1.2%      97.2%      97.9%      +0.7pp
+
+The prediction failed, so the explanation was wrong. The likelier reason is
+plainer: the find rate sits at 95-97% across every scale tested, because the
+radial term dominates and the subject is near the anchor. There is no headroom
+for a better prior to claim. Whether local knowledge pays off under conditions
+that actually bite -- a displaced anchor, a genuinely large search area, a
+subject who did not stay near where they started -- is not settled here.
+
+So the honest scope of this section is narrower than it first appears. What is
+demonstrated is that a county learns a correction that is real when there is
+one, absent when there is not, and **not transferable to its neighbours**. What
+is *not* demonstrated is that any of this finds more people. Those are
+different claims and only the first is supported.
+
 #### What this does not yet show
 
 The local deviations were planted by me, and their size is my choice. The
