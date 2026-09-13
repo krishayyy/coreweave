@@ -2,14 +2,22 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Search Loop</title>
-<link rel="stylesheet" href="src/style.css?v=3" />
+<link rel="stylesheet" href="src/style.css?v=5" />
 
 <div id="app">
   <main id="stage">
     <section class="pane" id="paneA"><canvas class="map"></canvas></section>
     <section class="pane" id="paneB">
       <canvas class="map"></canvas>
-      <div class="revising"><span>PREMISE FAILING</span></div>
+      <div class="revising">
+        <div class="revbox">
+          <span>PREMISE FAILING</span>
+          <dl class="revswap">
+            <dt>WAS</dt><dd id="revWas"></dd>
+            <dt>NOW</dt><dd id="revNow"></dd>
+          </dl>
+        </div>
+      </div>
     </section>
     <div class="panelabel" id="labelA">Conventional search</div>
     <div class="panesub">optimises inside its assumption</div>
@@ -50,4 +58,4 @@
     </div>
   </footer>
 </div>
-<script type="module" src="src/main.js?v=3"></script>
+<script type="module" src="src/main.js?v=5"></script>
