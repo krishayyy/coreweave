@@ -9,6 +9,22 @@ finds the subject 35% of the time. This finds them 83% of the time.**
     against a real but small cost of 2.8 points on the cases where the
     premise was right, which each carry a false lead designed to bait it
 
+**The result that does not depend on this system being good.** Every search
+system needs some signal for "my premise may be wrong". Conventionally that
+signal is *exhaustion* -- the fraction of the predicted area swept without
+contact. Measured across every trigger firing in the suite, exhaustion fires at
+a median of **0.67 on correct premises and 0.67 on wrong ones**: an AUC of 0.5,
+indistinguishable from a coin flip. Asking a calibrated model the question
+directly -- *did this subject begin somewhere other than the planning point?* --
+separates the two at **AUC 0.813**.
+
+That is a comparison between two detectors on identical data, so it does not
+rest on our planner being better than a baseline we also wrote. It is the one
+result here that stands on its own, and it is the one worth taking away:
+**coverage cannot tell you that you are looking in the wrong place, because
+coming up empty happens just as often when you are looking in exactly the right
+one.**
+
 **And it finds them while it still matters.** A search is not scored on whether
 it eventually succeeds; it is scored on whether it succeeds while the subject is
 alive. Restricted to the wrong-premise cases -- the ones still running after
@@ -249,6 +265,15 @@ cannot answer "am I wrong", because coming up empty happens just as often when
 you are looking in exactly the right place. Asking the question directly
 carries information; inferring it from how much ground you have covered does
 not.
+
+This is the least contaminated result in the project, because it compares two
+detectors on the same cases rather than comparing this system against a
+baseline the same author wrote. It is not uncontaminated. The false leads were
+written by me, and I wrote them the way real logs read -- carrying their own
+disconfirmation, "traced to another party", "did not develop". A model that
+reads those correctly is partly being scored on how legible I made them. What
+the number establishes is that the *signal exists and exhaustion does not carry
+it*; how large the separation is on real case files is not settled here.
 
 #### Three attempts to drive the correct-premise cost to zero, none of which worked
 
