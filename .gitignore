@@ -11,3 +11,4 @@ dist/
 .DS_Store
 data/llm_cache/
 data/jev_cache/
+data/imagery/

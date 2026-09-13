@@ -129,3 +129,54 @@ def hillshade(t: Terrain, azimuth: float = 315.0, altitude: float = 45.0) -> np.
     alt = np.radians(altitude)
     shaded = np.sin(alt) * np.cos(slope) + np.cos(alt) * np.sin(slope) * np.cos(az - aspect)
     return np.clip(shaded, 0.0, 1.0)
+
+
+# Aerial imagery for the display. USGS National Map: public domain, no key, and
+# the same slippy-tile scheme as the elevation tiles, so a mosaic over the same
+# tile range lines up with the terrain exactly.
+IMAGERY_URL = ("https://basemap.nationalmap.gov/arcgis/rest/services/"
+               "USGSImageryOnly/MapServer/tile/{z}/{y}/{x}")
+IMAGERY_CACHE = Path(__file__).resolve().parents[2] / "data" / "imagery"
+
+
+def load_imagery(terrain: Terrain, detail: int = 2) -> Image.Image:
+    """Aerial imagery covering exactly the same ground as `terrain`.
+
+    `detail` is how many zoom levels finer than the elevation tiles to fetch;
+    each level doubles the resolution and quadruples the number of requests.
+
+    This is a basemap, not a sensor feed. It shows the real ground the search is
+    happening over -- which is the point, since the terrain, the drainages and
+    the behaviour models are all real too. Nothing here is a simulated camera.
+    """
+    zoom = terrain.zoom + detail
+    step = 2**detail
+    x0, y0 = deg2tile(terrain.lat_north - 1e-9, terrain.lon_west + 1e-9, zoom)
+    x1, y1 = deg2tile(terrain.lat_south + 1e-9, terrain.lon_east - 1e-9, zoom)
+    # Snap to the elevation mosaic's footprint so the two align exactly.
+    x0 = (x0 // step) * step
+    y0 = (y0 // step) * step
+    cols = terrain.shape[1] // TILE_PX * step
+    rows = terrain.shape[0] // TILE_PX * step
+
+    session = requests.Session()
+    session.headers["User-Agent"] = "searchloop/1.0"
+    canvas = Image.new("RGB", (cols * TILE_PX, rows * TILE_PX))
+
+    for dy in range(rows):
+        for dx in range(cols):
+            x, y = x0 + dx, y0 + dy
+            cache = IMAGERY_CACHE / str(zoom) / str(x) / f"{y}.jpg"
+            if cache.exists():
+                tile = Image.open(cache).convert("RGB")
+            else:
+                try:
+                    resp = session.get(IMAGERY_URL.format(z=zoom, x=x, y=y), timeout=30)
+                    resp.raise_for_status()
+                    cache.parent.mkdir(parents=True, exist_ok=True)
+                    cache.write_bytes(resp.content)
+                    tile = Image.open(io.BytesIO(resp.content)).convert("RGB")
+                except Exception:
+                    tile = Image.new("RGB", (TILE_PX, TILE_PX), (18, 20, 24))
+            canvas.paste(tile, (dx * TILE_PX, dy * TILE_PX))
+    return canvas

@@ -80,7 +80,12 @@ function tintSwept(img) {
   return c;
 }
 
-/** Shade relief into a cool dark ramp; raw greyscale competes with the field. */
+/** Darken and cool the aerial imagery so the belief field reads over it.
+ *
+ * Left at full brightness the photograph competes with the data; crushed to
+ * grey it stops looking like ground. This keeps it recognisably the real
+ * mountain -- glaciers, timber, logging roads -- while ceding the bright end of
+ * the range to the overlay. */
 function tintTerrain(img) {
   const c = document.createElement("canvas");
   c.width = img.width; c.height = img.height;
@@ -89,8 +94,16 @@ function tintTerrain(img) {
   const data = ctx.getImageData(0, 0, c.width, c.height);
   const px = data.data;
   for (let i = 0; i < px.length; i += 4) {
-    const s = Math.pow(px[i] / 255, 1.45);
-    px[i] = 16 + s * 62; px[i + 1] = 20 + s * 70; px[i + 2] = 28 + s * 84; px[i + 3] = 255;
+    // Keep most of the photograph and only pull saturation and exposure down.
+    // Crushing it further makes the ground unreadable, which defeats the point
+    // of using real imagery at all.
+    const lum = (px[i] * 0.30 + px[i + 1] * 0.59 + px[i + 2] * 0.11);
+    const desat = 0.42;                  // toward luminance
+    const exposure = 0.78;
+    px[i] = (px[i] * (1 - desat) + lum * desat) * exposure * 0.96;
+    px[i + 1] = (px[i + 1] * (1 - desat) + lum * desat) * exposure;
+    px[i + 2] = (px[i + 2] * (1 - desat) + lum * desat) * exposure * 1.08;
+    px[i + 3] = 255;
   }
   ctx.putImageData(data, 0, 0);
   return c;
@@ -146,8 +159,9 @@ class Pane {
 
     ctx.fillStyle = "#0d1015";
     ctx.fillRect(x, y, size, size);
-    ctx.globalAlpha = 0.34 * (revising ? 0.5 : 1);
+    ctx.globalAlpha = revising ? 0.55 : 1;
     ctx.drawImage(this.a.hillshade, x, y, size, size);
+    ctx.globalAlpha = 1;
 
     ctx.globalAlpha = 0.85;
     ctx.drawImage(this.a.swept[i], x, y, size, size);
@@ -211,20 +225,78 @@ class Pane {
 }
 
 class Display {
-  constructor(run, ours, rival) {
-    this.run = run;
-    this.paneB = new Pane(el("paneB"), ours, run, true);
-    this.paneA = new Pane(el("paneA"), rival, run, false);
-    this.paneB.frames = run.frames;
-    this.paneA.frames = run.versus.frames;
+  constructor(demo, basemap) {
+    this.demo = demo;
+    this.basemap = basemap;
+    this.lut = buildLut();
+    this.cache = new Map();
     this.graph = el("graph");
     this.gctx = this.graph.getContext("2d");
-    this.total = Math.max(run.frames.length, run.versus.frames.length);
+    this.paneB = new Pane(el("paneB"), null, demo, true);
+    this.paneA = new Pane(el("paneA"), null, demo, false);
     this.started = 0;
     this.sizeGraph();
     window.addEventListener("resize", () => {
       this.paneA.resize(); this.paneB.resize(); this.sizeGraph();
     });
+    this.buildCaseList();
+  }
+
+  buildCaseList() {
+    const host = el("cases");
+    host.innerHTML = "";
+    this.demo.cases.forEach((c, i) => {
+      const b = document.createElement("button");
+      const found = c.ours.found;
+      b.className = found ? "" : "miss";
+      b.innerHTML = `${c.id} · ${c.subkind.replace(/_/g, " ")}` +
+        `<span class="tag">${found ? "P" + c.ours.periods_to_find : "missed"}</span>`;
+      b.onclick = () => this.select(i);
+      host.appendChild(b);
+    });
+  }
+
+  async select(i) {
+    this.index = i;
+    [...el("cases").children].forEach((b, k) => b.classList.toggle("on", k === i));
+    const c = this.demo.cases[i];
+    if (!this.cache.has(i)) {
+      const load = async (frames) => ({
+        belief: await Promise.all(frames.map(async (f) =>
+          colorize(await loadImage("public/run/" + f.belief), this.lut))),
+        swept: await Promise.all(frames.map(async (f) =>
+          tintSwept(await loadImage("public/run/" + f.swept)))),
+      });
+      this.cache.set(i, {
+        ours: { hillshade: this.basemap, ...(await load(c.ours.frames)) },
+        conv: { hillshade: this.basemap, ...(await load(c.conventional.frames)) },
+      });
+    }
+    const a = this.cache.get(i);
+    this.paneB.a = a.ours; this.paneB.frames = c.ours.frames;
+    this.paneA.a = a.conv; this.paneA.frames = c.conventional.frames;
+    this.total = Math.max(c.ours.frames.length, c.conventional.frames.length);
+    this.case_ = c;
+    this.started = performance.now();
+
+    el("op").textContent = `OPERATION ${c.id}`;
+    el("subject").textContent = c.case_file.split(",").slice(0, 2).join(",");
+    const hrs = this.demo.period_hours;
+    const fmt = (r) => r.found ? `${(r.periods_to_find * hrs / 24).toFixed(1)} days`
+                               : "not located";
+    el("mDist").textContent = `${c.truth_distance_km.toFixed(1)} km away`;
+    el("mConv").textContent = fmt(c.conventional);
+    el("mOurs").textContent = fmt(c.ours);
+    if (c.ours.found && !c.conventional.found) {
+      const budget = c.conventional.frames.length;
+      el("mSaved").textContent =
+        `${((budget - c.ours.periods_to_find) * hrs / 24).toFixed(1)}+ days`;
+    } else if (c.ours.found && c.conventional.found) {
+      el("mSaved").textContent =
+        `${((c.conventional.periods_to_find - c.ours.periods_to_find) * hrs / 24).toFixed(1)} days`;
+    } else {
+      el("mSaved").textContent = "neither located";
+    }
   }
 
   sizeGraph() {
@@ -237,122 +309,99 @@ class Display {
   }
 
   clock(now) {
-    let t = (now - this.started);
-    const span = (i) => (this.run.frames[i] && this.run.frames[i].revised ? REVISE_MS : DWELL_MS);
+    let t = now - this.started;
+    const frames = this.case_.ours.frames;
     for (let i = 0; i < this.total; i++) {
-      const s = span(i);
-      if (t < s) return { period: i + 1, phase: clamp01(t / s), done: false };
-      t -= s;
+      const span = frames[i] && frames[i].revised ? REVISE_MS : DWELL_MS;
+      if (t < span) return { period: i + 1, phase: clamp01(t / span), done: false };
+      t -= span;
     }
     return { period: this.total, phase: 1, done: t > HOLD_MS };
   }
 
   draw(now) {
+    if (!this.case_) return;
     const { period, phase, done } = this.clock(now);
     if (done) { this.started = now; return; }
-    const geo = this.run.geo, sc = this.run.scenario;
+    const c = this.case_;
     const finished = period >= this.total;
+    const sc = { ipp: c.ipp, truth: c.truth };
 
-    this.paneB.draw(period, phase, geo, sc, finished);
-    this.paneA.draw(period, phase, geo, sc, finished);
+    this.paneB.draw(period, phase, this.demo.geo, sc, finished);
+    this.paneA.draw(period, phase, this.demo.geo, sc, finished);
     this.chrome(period, phase, finished);
     this.drawGraph(period, phase);
   }
 
   chrome(period, phase, finished) {
+    const c = this.case_;
     el("clock").textContent = `P${String(period).padStart(2, "0")}`;
-    const frame = this.run.frames[Math.min(period - 1, this.run.frames.length - 1)];
-    const revising = period - 1 < this.run.frames.length && frame && frame.revised;
+    const hrs = this.demo.period_hours;
+    el("elapsed").textContent = `${(period * hrs / 24).toFixed(1)} DAYS`;
+    const f = c.ours.frames[Math.min(period - 1, c.ours.frames.length - 1)];
+    const revising = period - 1 < c.ours.frames.length && f && f.revised;
     const status = el("status");
     status.className = revising ? "alert" : "live";
     status.textContent = revising ? "PREMISE FAILING" : "SEARCHING";
 
-    const ours = this.run.result, rival = this.run.versus;
-    const setVerdict = (pane, res, label) => {
+    const setV = (pane, res) => {
       const v = pane.querySelector(".verdict");
-      const reached = res.found && period >= res.periods_to_find;
-      if (reached) {
+      if (res.found && period >= res.periods_to_find) {
         v.className = "verdict on found";
-        v.textContent = `SUBJECT LOCATED · PERIOD ${res.periods_to_find}`;
+        v.textContent = `SUBJECT LOCATED · ${(res.periods_to_find * hrs / 24).toFixed(1)} DAYS`;
       } else if (finished && phase > 0.05) {
         v.className = "verdict on lost";
         v.textContent = "NOT LOCATED";
-      } else {
-        v.className = "verdict";
-      }
+      } else { v.className = "verdict"; }
     };
-    setVerdict(el("paneB"), ours);
-    setVerdict(el("paneA"), rival);
+    setV(el("paneB"), c.ours);
+    setV(el("paneA"), c.conventional);
   }
 
   drawGraph(period, phase) {
-    const ctx = this.gctx, w = this.gw, h = this.gh;
-    const pad = { l: 34, r: 12, t: 8, b: 18 };
+    const ctx = this.gctx, w = this.gw, h = this.gh, c = this.case_;
+    const pad = { l: 30, r: 10, t: 6, b: 14 };
     ctx.clearRect(0, 0, w, h);
-
     const X = (p) => pad.l + (p - 1) / Math.max(this.total - 1, 1) * (w - pad.l - pad.r);
     const Y = (v) => h - pad.b - v * (h - pad.t - pad.b);
 
     ctx.strokeStyle = "#1c2128"; ctx.lineWidth = 1;
     for (const v of [0, 0.5, 1]) {
       ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(w - pad.r, Y(v)); ctx.stroke();
-      ctx.fillStyle = "#565e6b"; ctx.font = "9px ui-monospace, monospace";
-      ctx.fillText(`${(v * 100).toFixed(0)}%`, 6, Y(v) + 3);
+      ctx.fillStyle = "#565e6b"; ctx.font = "8.5px ui-monospace, monospace";
+      ctx.fillText(`${(v * 100).toFixed(0)}%`, 4, Y(v) + 3);
     }
-
-    const line = (frames, colour, upto) => {
-      ctx.beginPath();
-      let started = false;
+    const upto = period - 1 + phase;
+    const line = (frames, colour) => {
+      ctx.beginPath(); let on = false;
       for (const f of frames) {
         if (f.period > upto) break;
         const px = X(f.period), py = Y((f.truth_percentile ?? 0) / 100);
-        started ? ctx.lineTo(px, py) : (ctx.moveTo(px, py), started = true);
+        on ? ctx.lineTo(px, py) : (ctx.moveTo(px, py), on = true);
       }
-      if (!started) return;
-      ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.stroke();
+      if (on) { ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.stroke(); }
     };
-    const upto = period - 1 + phase;
-    line(this.run.versus.frames, "#8b93a1", upto);
-    line(this.run.frames, "#ffb020", upto);
-
-    // Mark the moment the premise was abandoned.
-    for (const f of this.run.frames) {
+    line(c.conventional.frames, "#8b93a1");
+    line(c.ours.frames, "#ffb020");
+    for (const f of c.ours.frames) {
       if (!f.revised || f.period > upto) continue;
-      ctx.strokeStyle = "rgba(255,90,82,0.55)"; ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255,90,82,0.5)"; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(X(f.period), pad.t); ctx.lineTo(X(f.period), h - pad.b); ctx.stroke();
     }
-
-    ctx.font = "9.5px ui-monospace, monospace";
-    ctx.fillStyle = "#8b93a1"; ctx.fillText("conventional", w - pad.r - 150, pad.t + 10);
-    ctx.fillStyle = "#ffb020"; ctx.fillText("this system", w - pad.r - 62, pad.t + 10);
   }
 
   run_() {
-    this.started = performance.now();
     const tick = (now) => { this.draw(now); requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
   }
 }
 
 async function boot() {
-  const run = await (await fetch("public/run/run.json")).json();
-  if (!run.versus) throw new Error("run.json has no comparison arm; export with --versus");
-  const lut = buildLut();
-  const base = "public/run/";
-
-  const load = async (frames) => ({
-    belief: await Promise.all(frames.map(async (f) => colorize(await loadImage(base + f.belief), lut))),
-    swept: await Promise.all(frames.map(async (f) => tintSwept(await loadImage(base + f.swept)))),
-  });
-
-  const hillshade = tintTerrain(await loadImage(base + "hillshade.png"));
-  const ours = { hillshade, ...(await load(run.frames)) };
-  const rival = { hillshade, ...(await load(run.versus.frames)) };
-
-  el("op").textContent = `OPERATION ${run.scenario.id}`;
-  el("subject").textContent = run.scenario.case_file.split(",").slice(0, 2).join(",");
-
-  new Display(run, ours, rival).run_();
+  const demo = await (await fetch("public/run/demo.json")).json();
+  const basemap = tintTerrain(await loadImage("public/run/imagery.jpg"));
+  const d = new Display(demo, basemap);
+  await d.select(0);
+  d.run_();
 }
 
 boot().catch((err) => { el("status").textContent = "LOAD FAILED"; console.error(err); });
