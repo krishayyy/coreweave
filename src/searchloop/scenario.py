@@ -172,6 +172,35 @@ _A_TEMPLATES = {
               "Vehicle at the pullout, waders and gear missing from it.",
 }
 
+# False leads. Real searches are full of these -- a sighting that turns out to
+# be a different hiker, a vehicle that matches the description and belongs to
+# somebody else, a dog alert that does not develop. They are the reason a
+# willingness to reconsider is dangerous as well as useful: a system that
+# relocates on every incoming report will abandon the right search area on the
+# strength of a tip that means nothing.
+#
+# Without these, a correct-premise case in this suite receives no new
+# information at all, and any evidence-driven trigger scores perfectly on it
+# for a reason that would never hold in the field. They exist to make the
+# correct-premise cases capable of being failed.
+_FALSE_LEADS = [
+    "A caller reports seeing someone in a red jacket on the {direction} side "
+    "around midday. Deputies traced the report to a day hiker from a different "
+    "party, since accounted for.",
+    "A vehicle matching the description was logged at a trailhead {direction} "
+    "of here. The registered owner has been contacted and is not connected to "
+    "{name}.",
+    "A dog team indicated interest along the {direction} approach. The team "
+    "worked it out for two hours and it did not develop.",
+    "A carrier returned a low-confidence handset registration consistent with a "
+    "wide area {direction} of the planning point. The provider cautions the "
+    "sector is several kilometres across and the timestamp predates the "
+    "reported departure.",
+    "A hunter {direction} of here reported hearing a shout. The area was swept "
+    "and a second party in the drainage confirmed they had been calling to "
+    "each other.",
+]
+
 _B_TEMPLATES = {
     "transported": (
         "{name}, {age}, was dropped at the {ipp_name} trailhead intending a day hike and did not "
@@ -242,8 +271,16 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
         key = str(rng.choice(TYPE_A_PROFILES))
         text, ctx = _fill(_A_TEMPLATES[key], rng)
         true_rc = _sample_truth(grid, key, ipp, rng, local)
+        # A correct-premise case still gets a tip, because real ones do. It
+        # points somewhere the subject is not, and the right response is to
+        # keep searching where the evidence already says.
+        ctx["direction"] = _compass(float(rng.uniform(0, 360)))
+        lead = Evidence(period=int(rng.integers(2, 5)),
+                        text=str(rng.choice(_FALSE_LEADS)).format(**ctx),
+                        kind="false_lead")
         return Scenario(scenario_id, "A", key, ipp, true_rc, ipp, key,
-                        f"Subject behaved as a {PROFILES[key].label}.", text)
+                        f"Subject behaved as a {PROFILES[key].label}.", text,
+                        late_evidence=[lead])
 
     subkind = str(rng.choice(B_KINDS if kind == "B" else C_KINDS))
     opening, late_text, account = _B_TEMPLATES[subkind]
