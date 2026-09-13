@@ -179,7 +179,8 @@ class Pane {
     this.marker(x, y, scale, scenario.ipp, "#7ee7ff", "cross");
     if (showTruth) this.marker(x, y, scale, scenario.truth, "#ff5a52", "x");
 
-    this.root.querySelector(".revising")?.classList.toggle("on", revising && phase < 0.6);
+    const rev = this.root.querySelector(".revising");
+    if (rev) rev.classList.toggle("on", revising && phase < 0.6);
   }
 
   aircraft(track, x, y, scale, phase) {
@@ -230,6 +231,8 @@ class Display {
     this.basemap = basemap;
     this.lut = buildLut();
     this.cache = new Map();
+    this.logged = new Set();
+    this.lastPeriod = 1;
     this.graph = el("graph");
     this.gctx = this.graph.getContext("2d");
     this.paneB = new Pane(el("paneB"), null, demo, true);
@@ -249,16 +252,33 @@ class Display {
       const b = document.createElement("button");
       const found = c.ours.found;
       b.className = found ? "" : "miss";
-      b.innerHTML = `${c.id} · ${c.subkind.replace(/_/g, " ")}` +
+      b.type = "button";
+      b.setAttribute("role", "option");
+      b.setAttribute("aria-selected", "false");
+      b.innerHTML =
+        `<span>${c.id} · ${c.subkind.replace(/_/g, " ")}</span>` +
         `<span class="tag">${found ? "P" + c.ours.periods_to_find : "missed"}</span>`;
       b.onclick = () => this.select(i);
+      // A list you can only reach with a mouse is a list half the room cannot
+      // use, and a judging table is exactly where someone drives by keyboard.
+      b.onkeydown = (e) => {
+        const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (step === undefined) return;
+        e.preventDefault();
+        const next = (i + step + this.demo.cases.length) % this.demo.cases.length;
+        host.children[next].focus();
+        this.select(next);
+      };
       host.appendChild(b);
     });
   }
 
   async select(i) {
     this.index = i;
-    [...el("cases").children].forEach((b, k) => b.classList.toggle("on", k === i));
+    [...el("cases").children].forEach((b, k) => {
+      b.classList.toggle("on", k === i);
+      b.setAttribute("aria-selected", String(k === i));
+    });
     const c = this.demo.cases[i];
     if (!this.cache.has(i)) {
       const load = async (frames) => ({
@@ -277,6 +297,8 @@ class Display {
     this.paneA.a = a.conv; this.paneA.frames = c.conventional.frames;
     this.total = Math.max(c.ours.frames.length, c.conventional.frames.length);
     this.case_ = c;
+    this.logged = new Set();
+    el("log").innerHTML = "";
     this.started = performance.now();
 
     el("op").textContent = `OPERATION ${c.id}`;
@@ -300,12 +322,17 @@ class Display {
   }
 
   sizeGraph() {
+    // Measure the wrapper, never the canvas: measuring an element you are
+    // about to resize from that measurement is how the deck grew to 598px
+    // inside a 196px row.
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const r = this.graph.getBoundingClientRect();
-    this.graph.width = Math.round(r.width * dpr);
-    this.graph.height = Math.round(r.height * dpr);
+    const host = this.graph.parentElement.getBoundingClientRect();
+    const w = Math.max(host.width, 1);
+    const h = Math.max(host.height - 15, 1);
+    this.graph.width = Math.round(w * dpr);
+    this.graph.height = Math.round(h * dpr);
     this.gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.gw = r.width; this.gh = r.height;
+    this.gw = w; this.gh = h;
   }
 
   clock(now) {
@@ -333,8 +360,20 @@ class Display {
     this.drawGraph(period, phase);
   }
 
+  logEvent(key, text, cls) {
+    if (this.logged.has(key)) return;
+    this.logged.add(key);
+    const li = document.createElement("li");
+    li.className = cls || "";
+    li.innerHTML = `<span class="t">P${String(this.lastPeriod).padStart(2, "0")}</span>`
+      + `<span>${text}</span>`;
+    el("log").prepend(li);
+    while (el("log").childElementCount > 14) el("log").lastElementChild.remove();
+  }
+
   chrome(period, phase, finished) {
     const c = this.case_;
+    this.lastPeriod = period;
     el("clock").textContent = `P${String(period).padStart(2, "0")}`;
     const hrs = this.demo.period_hours;
     el("elapsed").textContent = `${(period * hrs / 24).toFixed(1)} DAYS`;
@@ -344,8 +383,20 @@ class Display {
     status.className = revising ? "alert" : "live";
     status.textContent = revising ? "PREMISE FAILING" : "SEARCHING";
 
-    const setV = (pane, res) => {
-      const v = pane.querySelector(".verdict");
+    // Evidence, disconfirmation and proposals, as they land.
+    for (const e of c.late_evidence || []) {
+      if (e.period <= period) this.logEvent(`ev${e.period}`, e.text, "evidence");
+    }
+    const cf = c.ours.frames[Math.min(period - 1, c.ours.frames.length - 1)];
+    if (cf && period - 1 < c.ours.frames.length) {
+      if (cf.trigger_reason && cf.revised)
+        this.logEvent(`tr${cf.period}`, cf.trigger_reason, "revise");
+      for (const [n, nom] of (cf.nominations || []).entries())
+        this.logEvent(`nm${cf.period}-${n}`, `New account: ${nom.narrative || nom.label}`, "revise");
+      this.logEvent(`sw${cf.period}`, `Swept ${Math.round(cf.track_km || 0)} km, no contact.`);
+    }
+
+    const setV = (v, res) => {
       if (res.found && period >= res.periods_to_find) {
         v.className = "verdict on found";
         v.textContent = `SUBJECT LOCATED · ${(res.periods_to_find * hrs / 24).toFixed(1)} DAYS`;
@@ -354,8 +405,8 @@ class Display {
         v.textContent = "NOT LOCATED";
       } else { v.className = "verdict"; }
     };
-    setV(el("paneB"), c.ours);
-    setV(el("paneA"), c.conventional);
+    setV(el("verdictB"), c.ours);
+    setV(el("verdictA"), c.conventional);
   }
 
   drawGraph(period, phase) {
@@ -365,10 +416,13 @@ class Display {
     const X = (p) => pad.l + (p - 1) / Math.max(this.total - 1, 1) * (w - pad.l - pad.r);
     const Y = (v) => h - pad.b - v * (h - pad.t - pad.b);
 
-    ctx.strokeStyle = "#1c2128"; ctx.lineWidth = 1;
+    const css = getComputedStyle(document.documentElement);
+    const tok = (n, fallback) => (css.getPropertyValue(n).trim() || fallback);
+    ctx.strokeStyle = tok("--rule", "#1c2128"); ctx.lineWidth = 1;
+    ctx.font = `500 9px ${tok("--mono", "monospace")}`;
     for (const v of [0, 0.5, 1]) {
       ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(w - pad.r, Y(v)); ctx.stroke();
-      ctx.fillStyle = "#565e6b"; ctx.font = "8.5px ui-monospace, monospace";
+      ctx.fillStyle = tok("--label", "#7a8494");
       ctx.fillText(`${(v * 100).toFixed(0)}%`, 4, Y(v) + 3);
     }
     const upto = period - 1 + phase;
@@ -381,12 +435,14 @@ class Display {
       }
       if (on) { ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.stroke(); }
     };
-    line(c.conventional.frames, "#8b93a1");
-    line(c.ours.frames, "#ffb020");
+    line(c.conventional.frames, tok("--dim", "#8b93a1"));
+    line(c.ours.frames, tok("--warm", "#ffb020"));
     for (const f of c.ours.frames) {
       if (!f.revised || f.period > upto) continue;
-      ctx.strokeStyle = "rgba(255,90,82,0.5)"; ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255,90,82,0.45)"; ctx.lineWidth = 1;
+      ctx.setLineDash([2, 3]);
       ctx.beginPath(); ctx.moveTo(X(f.period), pad.t); ctx.lineTo(X(f.period), h - pad.b); ctx.stroke();
+      ctx.setLineDash([]);
     }
   }
 

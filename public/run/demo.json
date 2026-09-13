@@ -2450,6 +2450,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -5391,6 +5392,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 79% unexplored",
             "nominations": []
           },
@@ -8328,6 +8330,7 @@
             "revised": true,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 37.66818576388889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 33% ruled out",
             "nominations": [
               {
@@ -11776,6 +11779,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 41.35199652777778,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -16017,6 +16021,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 46.05034722222222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 56% unexplored",
             "nominations": []
           },
@@ -20462,6 +20467,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 49.18077256944444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 54% unexplored",
             "nominations": []
           },
@@ -24363,6 +24369,7 @@
             "revised": true,
             "leader": "Started to the west-south-west",
             "truth_percentile": 82.35948350694444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "51% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": [
               {
@@ -28463,6 +28470,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 87.51627604166666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -33216,6 +33224,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 92.24989149305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 73% unexplored",
             "nominations": []
           },
@@ -37749,6 +37758,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 92.24989149305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 65% unexplored",
             "nominations": []
           }
@@ -40177,6 +40187,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -43118,6 +43129,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 79% unexplored",
             "nominations": []
           },
@@ -46375,6 +46387,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 33% ruled out",
             "nominations": []
           },
@@ -50276,6 +50289,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 59% unexplored",
             "nominations": []
           },
@@ -54273,6 +54287,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 54% unexplored",
             "nominations": []
           },
@@ -58626,6 +58641,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "52% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -62011,6 +62027,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "56% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -66252,6 +66269,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 12.763129340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "60% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -71501,6 +71519,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 13.00998263888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "63% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -76502,6 +76521,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 13.00998263888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "66% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -82483,6 +82503,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 13.541666666666666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "68% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -88276,6 +88297,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 14.48025173611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "70% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -93381,6 +93403,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 14.55349392361111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "72% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -96894,6 +96917,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 15.01736111111111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "74% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -102867,6 +102891,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 18.4814453125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "76% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -106776,6 +106801,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 20.277235243055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "77% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -109516,6 +109542,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 58.14344618055556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -113073,6 +113100,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 60.72319878472222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 80% unexplored",
             "nominations": []
           },
@@ -116238,6 +116266,7 @@
             "revised": true,
             "leader": "Started to the north-east",
             "truth_percentile": 99.05598958333334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 29% ruled out",
             "nominations": [
               {
@@ -121163,6 +121192,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 99.74500868055556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -126896,6 +126926,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 99.88335503472221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 67% unexplored",
             "nominations": []
           },
@@ -133081,6 +133112,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 99.92947048611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 63% unexplored",
             "nominations": []
           },
@@ -136974,6 +137006,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 99.92947048611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 59% unexplored",
             "nominations": []
           }
@@ -139694,6 +139727,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 58.14344618055556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -143251,6 +143285,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 60.72319878472222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 80% unexplored",
             "nominations": []
           },
@@ -147392,6 +147427,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 64.62131076388889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 29% ruled out",
             "nominations": []
           },
@@ -152125,6 +152161,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 70.16872829861111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 64% unexplored",
             "nominations": []
           },
@@ -155662,6 +155699,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 76.5380859375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 58% unexplored",
             "nominations": []
           },
@@ -159999,6 +160037,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 81.75998263888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 54% unexplored",
             "nominations": []
           },
@@ -163392,6 +163431,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 87.22330729166666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 50% unexplored",
             "nominations": []
           },
@@ -168213,6 +168253,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 90.42697482638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "53% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -172422,6 +172463,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 93.35666232638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "56% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -178055,6 +178097,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 95.37760416666666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "59% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -182108,6 +182151,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 96.22667100694444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "62% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -186945,6 +186989,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 96.60373263888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "63% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -193754,6 +193799,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 97.54774305555556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "65% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -198779,6 +198825,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 98.56228298611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "67% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -202600,6 +202647,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 98.95562065972221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "69% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -205981,6 +206029,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 99.12109375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "71% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -208541,6 +208590,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 45.22026909722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -211878,6 +211928,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 45.42371961805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 78% unexplored",
             "nominations": []
           },
@@ -214975,6 +215026,7 @@
             "revised": true,
             "leader": "Started to the west",
             "truth_percentile": 87.37250434027779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 33% ruled out",
             "nominations": [
               {
@@ -218512,6 +218564,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 93.10167100694444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -222945,6 +222998,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 95.95540364583334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 59% unexplored",
             "nominations": []
           },
@@ -226734,6 +226788,7 @@
             "revised": true,
             "leader": "Started to the west",
             "truth_percentile": 88.20529513888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "51% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": [
               {
@@ -231510,6 +231565,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 92.83040364583334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -236535,6 +236591,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 96.08018663194444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 56% unexplored",
             "nominations": []
           },
@@ -239892,6 +239949,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 96.8994140625,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 52% unexplored",
             "nominations": []
           },
@@ -244305,6 +244363,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 97.61284722222221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "51% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": []
           },
@@ -248030,6 +248089,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 97.61284722222221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "55% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": []
           }
@@ -250570,6 +250630,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 45.22026909722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -253907,6 +253968,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 45.42371961805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 78% unexplored",
             "nominations": []
           },
@@ -257072,6 +257134,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 45.50509982638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 33% ruled out",
             "nominations": []
           },
@@ -261353,6 +261416,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 46.78819444444444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 60% unexplored",
             "nominations": []
           },
@@ -265914,6 +265978,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 49.17805989583333,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 55% unexplored",
             "nominations": []
           },
@@ -271067,6 +271132,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 52.487521701388886,
+            "track_km": 293.74752047716015,
             "trigger_reason": "50% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -274036,6 +274102,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 54.55186631944444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "55% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -277589,6 +277656,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 58.683268229166664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -283366,6 +283434,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 64.20627170138889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "61% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -287959,6 +288028,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 69.189453125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "64% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -291172,6 +291242,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 74.63107638888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "66% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -296317,6 +296388,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 79.90180121527779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "68% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -301990,6 +302062,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 85.24576822916666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "70% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -307535,6 +307608,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 89.44498697916666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "72% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -313472,6 +313546,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 43.74457465277778,
+            "track_km": 293.74752047716015,
             "trigger_reason": "74% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -317753,6 +317828,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 47.59657118055556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "76% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -320565,6 +320641,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 61.735026041666664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -323874,6 +323951,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 63.28667534722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 78% unexplored",
             "nominations": []
           },
@@ -327743,6 +327821,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 65.771484375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 67% unexplored",
             "nominations": []
           },
@@ -331240,6 +331319,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 68.86121961805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 60% unexplored",
             "nominations": []
           },
@@ -334629,6 +334709,7 @@
             "revised": true,
             "leader": "Started to the north-east",
             "truth_percentile": 98.91221788194444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 46% ruled out",
             "nominations": [
               {
@@ -339246,6 +339327,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 99.75043402777779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -342259,6 +342341,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 99.18077256944444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 62% unexplored",
             "nominations": []
           },
@@ -346984,6 +347067,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 97.16254340277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 53% unexplored",
             "nominations": []
           },
@@ -348789,6 +348873,7 @@
             "revised": true,
             "leader": "Started to the north-east",
             "truth_percentile": 96.9970703125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "54% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": [
               {
@@ -351320,6 +351405,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 93.93988715277779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -354541,6 +354627,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 80.6884765625,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 59% unexplored",
             "nominations": []
           },
@@ -358146,6 +358233,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 85.88324652777779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "51% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": []
           },
@@ -361447,6 +361535,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 87.20431857638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "55% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": []
           },
@@ -365256,6 +365345,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 88.85904947916666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "57% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": []
           },
@@ -368925,6 +369015,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 89.7705078125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": []
           },
@@ -373650,6 +373741,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 93.4326171875,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": []
           }
@@ -376442,6 +376534,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 61.735026041666664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -379751,6 +379844,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 63.28667534722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 78% unexplored",
             "nominations": []
           },
@@ -383620,6 +383714,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 65.771484375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 67% unexplored",
             "nominations": []
           },
@@ -387117,6 +387212,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 68.86121961805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 60% unexplored",
             "nominations": []
           },
@@ -391038,6 +391134,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 75.40418836805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 46% ruled out",
             "nominations": []
           },
@@ -395647,6 +395744,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 80.90277777777779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "51% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -399316,6 +399414,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 86.43934461805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "55% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -403273,6 +403372,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 90.98307291666666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -408606,6 +408706,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 94.19216579861111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "61% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -413123,6 +413224,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 96.88313802083334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "64% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -419624,6 +419726,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 97.48806423611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "67% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -424361,6 +424464,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 98.45106336805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "69% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -426854,6 +426958,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 98.89594184027779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "71% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -432671,6 +432776,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 99.32725694444444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "73% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -437372,6 +437478,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 99.5361328125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "75% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -443841,6 +443948,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 97.19780815972221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "76% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -446269,6 +446377,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -449350,6 +449459,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 79% unexplored",
             "nominations": []
           },
@@ -452855,6 +452965,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 68% unexplored",
             "nominations": []
           },
@@ -456232,6 +456343,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 60% unexplored",
             "nominations": []
           },
@@ -459493,6 +459605,7 @@
             "revised": true,
             "leader": "Started to the west-south-west",
             "truth_percentile": 78.91167534722221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 46% ruled out",
             "nominations": [
               {
@@ -463093,6 +463206,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 85.77473958333334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -468230,6 +468344,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 89.51551649305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 73% unexplored",
             "nominations": []
           },
@@ -473007,6 +473122,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 93.40277777777779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 67% unexplored",
             "nominations": []
           },
@@ -476576,6 +476692,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 95.751953125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 65% unexplored",
             "nominations": []
           },
@@ -482661,6 +482778,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 96.63357204861111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 61% unexplored",
             "nominations": []
           },
@@ -486062,6 +486180,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 97.12185329861111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 59% unexplored",
             "nominations": []
           },
@@ -489199,6 +489318,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 97.76204427083334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 58% unexplored",
             "nominations": []
           },
@@ -492416,6 +492536,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 98.06586371527779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 56% unexplored",
             "nominations": []
           },
@@ -497025,6 +497146,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 98.876953125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 55% unexplored",
             "nominations": []
           },
@@ -499794,6 +499916,7 @@
             "revised": true,
             "leader": "Started to the west-south-west",
             "truth_percentile": 99.49544270833334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "50% of the mass predicted by 'Started to the west-south-west' has been covered with no contact",
             "nominations": [
               {
@@ -503298,6 +503421,7 @@
             "revised": false,
             "leader": "Started to the west-south-west",
             "truth_percentile": 99.49544270833334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           }
@@ -505706,6 +505830,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -508787,6 +508912,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 79% unexplored",
             "nominations": []
           },
@@ -512292,6 +512418,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 68% unexplored",
             "nominations": []
           },
@@ -515669,6 +515796,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 60% unexplored",
             "nominations": []
           },
@@ -519538,6 +519666,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.445203993055554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 46% ruled out",
             "nominations": []
           },
@@ -522223,6 +522352,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.7001953125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "50% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -526876,6 +527006,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.762586805555554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "54% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -529013,6 +529144,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.762586805555554,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -534386,6 +534518,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 17.79242621527778,
+            "track_km": 293.74752047716015,
             "trigger_reason": "62% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -538719,6 +538852,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 18.150499131944446,
+            "track_km": 293.74752047716015,
             "trigger_reason": "64% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -544060,6 +544194,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 18.693033854166664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "67% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -549737,6 +549872,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 19.970703125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "69% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -554742,6 +554878,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 20.70041232638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "70% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -559487,6 +559624,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 22.713216145833336,
+            "track_km": 293.74752047716015,
             "trigger_reason": "72% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -565920,6 +566058,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 26.07964409722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "74% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -572421,6 +572560,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 29.134114583333332,
+            "track_km": 293.74752047716015,
             "trigger_reason": "76% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -575069,6 +575209,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 50.528971354166664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -578146,6 +578287,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 50.6103515625,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 80% unexplored",
             "nominations": []
           },
@@ -580855,6 +580997,7 @@
             "revised": true,
             "leader": "Started to the west",
             "truth_percentile": 33.88400607638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 31% ruled out",
             "nominations": [
               {
@@ -584019,6 +584162,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 36.06228298611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -588440,6 +588584,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 36.81369357638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 75% unexplored",
             "nominations": []
           },
@@ -591777,6 +591922,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 37.24772135416667,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 71% unexplored",
             "nominations": []
           },
@@ -595066,6 +595212,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 38.34092881944444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 69% unexplored",
             "nominations": []
           },
@@ -598835,6 +598982,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 39.78407118055556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 64% unexplored",
             "nominations": []
           },
@@ -602220,6 +602368,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 41.09429253472222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 58% unexplored",
             "nominations": []
           },
@@ -605633,6 +605782,7 @@
             "revised": true,
             "leader": "Started to the west",
             "truth_percentile": 33.740234375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "50% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": [
               {
@@ -609669,6 +609819,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 33.86773003472222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -614270,6 +614421,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 35.23491753472222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 58% unexplored",
             "nominations": []
           },
@@ -618619,6 +618771,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 37.77669270833333,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 50% unexplored",
             "nominations": []
           },
@@ -623072,6 +623225,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 43.60080295138889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "54% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": []
           },
@@ -628917,6 +629071,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 46.79904513888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "56% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": []
           },
@@ -631946,6 +632101,7 @@
             "revised": false,
             "leader": "Started to the west",
             "truth_percentile": 48.82541232638889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "62% of the mass predicted by 'Started to the west' has been covered with no contact",
             "nominations": []
           }
@@ -634574,6 +634730,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 50.528971354166664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -637651,6 +637808,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 50.6103515625,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 80% unexplored",
             "nominations": []
           },
@@ -640756,6 +640914,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 50.895182291666664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 31% ruled out",
             "nominations": []
           },
@@ -644449,6 +644608,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 51.66558159722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 61% unexplored",
             "nominations": []
           },
@@ -648338,6 +648498,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 52.799479166666664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 55% unexplored",
             "nominations": []
           },
@@ -651515,6 +651676,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 53.53461371527778,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 50% unexplored",
             "nominations": []
           },
@@ -656532,6 +656694,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 57.32964409722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "54% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -661433,6 +661596,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 61.531575520833336,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -665566,6 +665730,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 63.88075086805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "61% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -669171,6 +669336,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 67.01388888888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "64% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -673332,6 +673498,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 71.57118055555556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "66% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -678229,6 +678396,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 75.5126953125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "68% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -681226,6 +681394,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 79.83940972222221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "70% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -684115,6 +684284,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 84.65169270833334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "72% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -687792,6 +687962,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 88.34364149305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "74% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -693529,6 +693700,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 91.76161024305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "75% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -696129,6 +696301,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 61.68348524305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -699242,6 +699415,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 62.60308159722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 78% unexplored",
             "nominations": []
           },
@@ -702799,6 +702973,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 64.97124565972221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 68% unexplored",
             "nominations": []
           },
@@ -707660,6 +707835,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 69.76725260416666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 62% unexplored",
             "nominations": []
           },
@@ -710337,6 +710513,7 @@
             "revised": true,
             "leader": "Started to the north-east",
             "truth_percentile": 52.83203125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 43% ruled out",
             "nominations": [
               {
@@ -714986,6 +715163,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 56.363932291666664,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -718415,6 +718593,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 61.92491319444444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 68% unexplored",
             "nominations": []
           },
@@ -724268,6 +724447,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 7.459852430555555,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 61% unexplored",
             "nominations": []
           },
@@ -728645,6 +728825,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 9.9853515625,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 56% unexplored",
             "nominations": []
           },
@@ -732770,6 +732951,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 11.002604166666668,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 54% unexplored",
             "nominations": []
           },
@@ -735623,6 +735805,7 @@
             "revised": true,
             "leader": "Started to the north-east",
             "truth_percentile": 54.671223958333336,
+            "track_km": 293.74752047716015,
             "trigger_reason": "51% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": [
               {
@@ -738462,6 +738645,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 55.769856770833336,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -742931,6 +743115,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 58.474392361111114,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 67% unexplored",
             "nominations": []
           },
@@ -746256,6 +746441,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 62.288411458333336,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 57% unexplored",
             "nominations": []
           },
@@ -750697,6 +750883,7 @@
             "revised": false,
             "leader": "Started to the north-east",
             "truth_percentile": 62.288411458333336,
+            "track_km": 293.74752047716015,
             "trigger_reason": "50% of the mass predicted by 'Started to the north-east' has been covered with no contact",
             "nominations": []
           }
@@ -753277,6 +753464,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 61.68348524305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -756390,6 +756578,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 62.60308159722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 78% unexplored",
             "nominations": []
           },
@@ -759947,6 +760136,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 64.97124565972221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 68% unexplored",
             "nominations": []
           },
@@ -764808,6 +764998,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 69.76725260416666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 62% unexplored",
             "nominations": []
           },
@@ -768473,6 +768664,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 72.89496527777779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 43% ruled out",
             "nominations": []
           },
@@ -773366,6 +773558,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 77.07790798611111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 53% unexplored",
             "nominations": []
           },
@@ -776579,6 +776772,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 81.97157118055556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "52% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -780456,6 +780650,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 86.79470486111111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "55% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -786441,6 +786636,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 27.644856770833332,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -790370,6 +790566,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 31.187608506944443,
+            "track_km": 293.74752047716015,
             "trigger_reason": "61% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -795171,6 +795368,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 35.00705295138889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "63% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -799332,6 +799530,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 39.94683159722222,
+            "track_km": 293.74752047716015,
             "trigger_reason": "66% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -802265,6 +802464,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 41.2109375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "67% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -805222,6 +805422,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 43.89919704861111,
+            "track_km": 293.74752047716015,
             "trigger_reason": "70% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -808927,6 +809128,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 46.98893229166667,
+            "track_km": 293.74752047716015,
             "trigger_reason": "71% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -811948,6 +812150,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 50.58051215277778,
+            "track_km": 293.74752047716015,
             "trigger_reason": "72% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
@@ -814384,6 +814587,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 73.92578125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -817597,6 +817801,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 75.76226128472221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 80% unexplored",
             "nominations": []
           },
@@ -821298,6 +821503,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 77.94867621527779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 69% unexplored",
             "nominations": []
           },
@@ -824699,6 +824905,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 82.06380208333334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 61% unexplored",
             "nominations": []
           },
@@ -829372,6 +829579,7 @@
             "revised": true,
             "leader": "Started to the north",
             "truth_percentile": 99.32454427083334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 45% ruled out",
             "nominations": [
               {
@@ -832880,6 +833088,7 @@
             "revised": false,
             "leader": "Started to the north",
             "truth_percentile": 99.7802734375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "cooling down since last revision",
             "nominations": []
           },
@@ -836709,6 +836918,7 @@
             "revised": false,
             "leader": "Started to the north",
             "truth_percentile": 99.7802734375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 71% unexplored",
             "nominations": []
           }
@@ -839125,6 +839335,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 73.92578125,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 100% unexplored",
             "nominations": []
           },
@@ -842338,6 +842549,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 75.76226128472221,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 80% unexplored",
             "nominations": []
           },
@@ -846039,6 +846251,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 77.94867621527779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 69% unexplored",
             "nominations": []
           },
@@ -849440,6 +849653,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 82.06380208333334,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 61% unexplored",
             "nominations": []
           },
@@ -854189,6 +854403,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 86.80284288194444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "new evidence arrived while 'Lost hiker, down-drainage' was already 45% ruled out",
             "nominations": []
           },
@@ -858542,6 +858757,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 90.19639756944444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "leading account still 50% unexplored",
             "nominations": []
           },
@@ -863959,6 +864175,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 93.42719184027779,
+            "track_km": 293.74752047716015,
             "trigger_reason": "54% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -867440,6 +867657,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 97.15983072916666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "58% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -872053,6 +872271,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 98.30457899305556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "60% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -878578,6 +878797,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 70.91200086805556,
+            "track_km": 293.74752047716015,
             "trigger_reason": "63% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -882475,6 +882695,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 75.146484375,
+            "track_km": 293.74752047716015,
             "trigger_reason": "66% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -886116,6 +886337,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 79.99131944444444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "68% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -891401,6 +891623,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 83.58018663194444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "70% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -896638,6 +896861,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 87.13107638888889,
+            "track_km": 293.74752047716015,
             "trigger_reason": "72% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -901247,6 +901471,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 89.78678385416666,
+            "track_km": 293.74752047716015,
             "trigger_reason": "73% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           },
@@ -906100,6 +906325,7 @@
             "revised": false,
             "leader": "Lost hiker, down-drainage",
             "truth_percentile": 93.37022569444444,
+            "track_km": 293.74752047716015,
             "trigger_reason": "74% of the mass predicted by 'Lost hiker, down-drainage' has been covered with no contact",
             "nominations": []
           }
