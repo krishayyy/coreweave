@@ -6,14 +6,13 @@
 <div id="app">
   <header id="bar">
     <div class="left"><span id="op">—</span><span class="sep"></span><span id="subject">—</span></div>
-    <div class="right"><span id="status">STANDBY</span><span id="clock">P00</span></div>
+    <div class="right"><span id="elapsed">—</span><span class="sep"></span><span id="status">STANDBY</span><span id="clock">P00</span></div>
   </header>
 
   <main id="stage">
     <section class="pane" id="paneA">
       <h2>Conventional search<em>optimises inside its assumption</em></h2>
-      <canvas class="map"></canvas>
-      <div class="verdict"></div>
+      <canvas class="map"></canvas><div class="verdict"></div>
     </section>
     <section class="pane" id="paneB">
       <h2>This system<em>can abandon the assumption</em></h2>
@@ -23,9 +22,16 @@
     </section>
   </main>
 
-  <footer id="chart">
-    <div class="label">How highly each system ranks the subject&rsquo;s actual location</div>
-    <canvas id="graph"></canvas>
+  <footer id="deck">
+    <div id="cases"></div>
+    <div id="readout">
+      <div class="metric"><span class="k">subject was</span><span class="v" id="mDist">—</span></div>
+      <div class="metric"><span class="k">conventional</span><span class="v dim" id="mConv">—</span></div>
+      <div class="metric"><span class="k">this system</span><span class="v warm" id="mOurs">—</span></div>
+      <div class="metric"><span class="k">time saved</span><span class="v warm" id="mSaved">—</span></div>
+      <canvas id="graph"></canvas>
+      <div class="glabel">how highly each ranks the subject&rsquo;s actual location</div>
+    </div>
   </footer>
 </div>
 <script type="module" src="src/main.js"></script>
