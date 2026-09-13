@@ -2,12 +2,37 @@
 
 An autonomous search agent that changes its mind about what happened.
 
-Every deployed search-planning system optimises **inside an assumption**: a human
-builds a prior from the case file, and the mathematics takes over. The failure
-mode that kills people is not bad arithmetic, it is a wrong premise. When the
-subject never went down the drainage — when they took a ride out, or were never
-on the mountain at all — a conventional system updates its posterior forever and
-only grows more confident about the wrong valley.
+**On the cases where the initial premise is wrong, standard search doctrine
+finds the subject 31% of the time. This finds them 81% of the time.**
+
+    +50.0 points, paired on the same 24 scenarios, p < 0.001
+    an oracle told the true answer outright reaches 88%
+
+That baseline is not a strawman and it is worth being precise about what it is.
+The control arm implements what a trained incident commander actually does:
+take the subject category, apply the published distance-from-planning-point
+model for that category, weight it by terrain, allocate effort where the
+probability of success is highest, and update on every negative sweep. It is
+the ISRID/Koester method, run without fatigue, without ego, and without
+anchoring on the first theory of the case. It is a *generous* representation of
+human practice, not a weak one.
+
+It still finds three in ten, because the method has no way to doubt its own
+premise. Every deployed search-planning system optimises **inside an
+assumption**: a human builds a prior from the case file, and the mathematics
+takes over. The failure mode that kills people is not bad arithmetic, it is a
+wrong premise. When the subject never went down the drainage — when they took a
+ride out, or were never on the mountain at all — a conventional system updates
+its posterior forever and only grows more confident about the wrong valley.
+
+The cases in the type B suite are the documented ways this happens: the subject
+was transported out of the area, deviated deliberately, or the planning point
+itself was wrong. On the cases where the premise *was* right, this system is
+within noise of doctrine (-5.6pp, p=0.281) — it does not buy the hard cases by
+breaking the easy ones.
+
+Every decision takes **4 ms** on a 21 km box and 10 ms on a 48 km county, which
+is about five orders of magnitude faster than the flight it is planning.
 
 This system runs two nested loops:
 
