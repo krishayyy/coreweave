@@ -313,15 +313,8 @@ system.
     find      vs library only          -2.8pp   [ -6.1,  -0.6]   0.030  a real cost
     find      vs blind relocation      -1.7pp   [ -5.0,  +1.1]   0.286  not significant
 
-The type A row is the one worth pausing on. Prose revision does help on type B
--- 57% against the library's 31% -- so the language model is not useless at
-this. But it pays for that help by damaging the cases where the premise was
-correct all along, dropping type A from 90% to 74%, because it argues itself
-into relocating a search that was already pointed at the subject. The
-calibrated arm does not, and the difference on the null is larger and better
-separated than the difference on type B. Being unable to rank your own
-hypotheses does not only cost you the wins; it costs you the cases you had
-already won.
+The type A row is the one worth pausing on: a 2.8 point cost, small and real,
+against a 48 point gain. That is the whole trade the system makes.
 
 Every figure comes from `runs/experiment_large.json`: 60 type A, 72 type B and
 24 type C scenarios, three detection-roll repeats, Wilson 95% intervals. The
@@ -329,12 +322,30 @@ suite was grown from 66 scenarios to 156; because scenario generation is
 append-only, the original 66 are bit-identical and the earlier run remains a
 valid subset rather than a superseded one.
 
-The prose language-model arm is not in this table. It was measured before the
-false leads and the doubt gate existed (`runs/experiment_llm_current.json`,
-57% on type B against the calibrated arm's 81%, and 74% on type A against 90%)
-and running it against a suite it has never seen would be comparing two
-different experiments. Its result is reported in the section above rather than
-placed in a table that would imply it was run under these conditions.
+**The prose language-model arm is deliberately not in this table**, and its
+numbers below are *not* comparable to the rows above -- they were measured on
+an earlier configuration, before the false leads and the doubt gate existed.
+Putting them in the same table would imply a comparison that was never run.
+
+Measured against the library baseline *of that configuration*
+(`runs/experiment_llm_current.json`, 24 type B and 30 type A scenarios):
+
+    arm                    type B find   type A find
+    library only               31%           96%
+    prose language model       57%           74%
+    calibrated distribution    81%           90%
+
+Prose revision does help -- 57% against the library's 31% -- so the language
+model is not useless at this. But it pays for that help on the cases where the
+premise was correct all along, dropping type A from 96% to 74%, because it
+argues itself into relocating a search that was already pointed at the subject.
+Against the calibrated arm the gap on that null (+15.6pp, p=0.001) was larger
+and better separated than the gap on type B (+23.6pp, p=0.020 — larger in
+magnitude but on far noisier ground). Being unable to rank your own hypotheses
+does not only cost you the wins; it costs you cases you had already won.
+
+That failure is what the premise-doubt question later addressed directly, and
+it is why the calibrated arm carries the result.
 
     python scripts/experiment.py --n-a 60 --n-b 72 --n-c 24 --repeats 3
     python scripts/significance.py runs/experiment_large.json jev
