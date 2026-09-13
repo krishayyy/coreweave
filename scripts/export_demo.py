@@ -84,7 +84,10 @@ def run_arm(grid, pod, scenario, arm, out, prefix):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cases", default="5,10,13,18,19,4")
+    # Ordered for the demo: the first case is the one that plays best as a
+    # clip -- revision at three seconds, located around nineteen, with the
+    # conventional arm still searching behind it.
+    ap.add_argument("--cases", default="13,5,18,19,10,4")
     ap.add_argument("--out", default=str(ROOT / "web" / "public" / "run"))
     ap.add_argument("--detail", type=int, default=2)
     args = ap.parse_args()
