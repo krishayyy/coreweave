@@ -444,6 +444,34 @@ Accepted lessons are injected into the nomination prompt for every future
 search. Rejected ones stay in the book with their measured effect, so the agent
 does not re-propose them and the record shows what was tried.
 
+### It recovered a setting a human found by hand
+
+Started from a deliberately naive configuration -- every value a plausible
+first guess, all of them wrong -- and asked to improve itself from its own
+measurements:
+
+    exhaustion_trigger   0.7 -> 0.5
+      objective  +0.023 +/- 0.011 on twelve held-out cases
+      find rate  +0 pp
+      ACCEPTED
+
+    direction_mass_cutoff  0.98 -> 0.9
+      objective  +0.001 +/- 0.003
+      REVERTED, below the bar
+
+**0.5 is the value a hand sweep independently landed on**, and the prompt did
+not contain it: the model was shown `exhaustion_trigger: currently 0.7, allowed
+0.2 to 0.7` and nothing else. An earlier version of this experiment *did* leak
+the answer -- the knob description printed the hand-tuned default as "currently"
+regardless of what was running, so every naive run was handed the eight values
+it existed to rediscover. Those runs were void and were rerun.
+
+**The honest caveat:** 0.5 is a round number inside a 0.2-0.7 range, so
+"proposed a round value that happened to be right" is a live alternative to
+"reasoned its way to the optimum". What is not in doubt is the acceptance:
+the change was measured on cases it was not tuned on and cleared the bar by
+about two standard errors.
+
 ### Why there is a gate
 
 Because I got this wrong myself, in exactly the way the gate exists to catch.
