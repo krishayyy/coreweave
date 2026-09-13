@@ -197,6 +197,13 @@ Every figure comes from `runs/experiment_headline.json`, and the prose arm from
 A, 24 type B and 12 type C scenarios, three detection-roll repeats, Wilson 95%
 intervals.
 
+**The prose-arm file is not in the repository.** `experiment_headline.json`
+carries `none`, `heuristic` and `jev`, so every row and every paired test
+involving those three can be recomputed from a clone. The two rows comparing
+against `language model writes prose` cannot be, because reproducing them needs
+an API key and a re-run. They are reported here as measured but a reader should
+treat them as unverified until that file is committed.
+
     python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
     python scripts/significance.py runs/experiment_headline.json \
         runs/experiment_llm_current.json jev
@@ -341,7 +348,7 @@ What keeps it honest rather than circular:
   from every arm. Whatever advantage exists is not information leakage.
 - The baseline gets the same theory. Conventional Bayesian search is anchored
   at the planning point *because that is what deployed systems do*, not because
-  it was handicapped. It solves type C outright at 89%, which is what a
+  it was handicapped. It solves type C outright at 97%, which is what a
   non-strawman looks like.
 
 What would actually answer it: replaying documented historical searches, where
@@ -355,9 +362,10 @@ loading on terrain is unmeasured.
 
 **n = 24 carries the thesis.** Type B is the family the argument rests on, and
 twenty-four scenarios give intervals wide enough that the find-rate result
-(+26.4pp, p = 0.001) is solid while localisation (+23.6pp, p = 0.018) would be
-more comfortable at twice the size. Every interval on this page is reported
-rather than summarised for that reason.
+(+50.0pp, 95% CI [+34.7, +65.3]) is solid while localisation (+30.6pp, CI
+[+9.7, +51.4]) clears zero only by its lower bound and would be more
+comfortable at twice the size. Every interval on this page is reported rather
+than summarised for that reason.
 
 **The most robust finding is not in the arm tables.** Across 297 nominations
 the language model could not rank its own proposals -- 56% concordance where
@@ -376,37 +384,47 @@ Treating 72 runs as 72 independent trials would overstate significance
 considerably.
 
     Type B, paired, 24 scenarios          delta      95% CI            p
-    find rate   vs library only          +16.7pp   [ +4.2, +30.6]   0.010   significant
-    find rate   vs blind relocation      +25.0pp   [ +9.7, +40.3]   0.002   significant
-    localised   vs library only          +20.8pp   [ -1.4, +43.1]   0.079   NOT significant
-    localised   vs blind relocation      +20.8pp   [ -1.4, +43.1]   0.080   NOT significant
+    find rate   vs library only          +50.0pp   [+34.7, +65.3]   0.000   significant
+    find rate   vs blind relocation      +63.9pp   [+48.6, +77.8]   0.000   significant
+    localised   vs library only          +30.6pp   [ +9.7, +51.4]   0.007   significant
+    localised   vs blind relocation      +30.6pp   [ +9.7, +51.4]   0.007   significant
 
     Type A, paired, 30 scenarios (null)
-    find rate   vs library only           -2.2pp   [-11.1,  +6.7]   0.596   no effect
+    find rate   vs library only           -5.6pp   [-16.7,  +5.6]   0.281   no effect
+    localised   vs library only           -1.1pp   [-11.1,  +8.9]   0.874   no effect
 
-        python scripts/significance.py
+    Type C, paired, 12 scenarios
+    find rate   vs library only           -2.8pp   [ -8.3,  +0.0]   0.696   no effect
+    localised   vs library only           +0.0pp   [ +0.0,  +0.0]   1.000   no effect
+
+        python scripts/significance.py runs/experiment_headline.json jev
 
 ### What this does and does not show
 
 **It works on the family it was built for.** On type B, reading the case file
-raises the find rate by 17 points over ordinary Bayesian search and by 25 points
+raises the find rate by 50 points over ordinary Bayesian search and by 64 points
 over relocating without reading. Both are significant under a paired test that
 resamples scenarios.
 
-**Localisation is directionally positive but not significant.** +20.8 points with
-an interval that just crosses zero at 24 scenarios. The effect looks real and
-this suite is too small to establish it. It is reported as a null, not rounded
-into the headline.
+**Localisation is significant, but only just.** +30.6 points, CI [+9.7, +51.4],
+p = 0.007. An earlier configuration could not establish this at all; the
+Jacobian correction, which put subjects near where they actually started, is
+what separated it. The lower bound is still within ten points of zero at 24
+scenarios, so treat the size of the effect as poorly pinned down even though
+its sign is not.
 
-**It does no harm where the premise was right.** Type A is flat (-2.2pp, p=0.60).
-An earlier configuration cost 12 points there; capping revisions removed that,
-and the cost of being wrong about being wrong is now close to zero.
+**It does no harm where the premise was right, as far as this suite can tell.**
+Type A comes in at -5.6pp with CI [-16.7, +5.6], p = 0.281. That is a null, not
+a demonstration of safety: the interval is equally consistent with no cost and
+with a 17-point one. An earlier configuration cost 12 points there and capping
+revisions removed most of it, but 30 scenarios cannot resolve what remains.
 
-**It captures a little under half the available headroom.** Baseline 43%,
-nomination 60%, and a diagnostic nominator with access to withheld ground truth
-reaches 83%. The remaining 23 points are cases where the model proposed a
-plausible account that was not the right one -- most of the error is in bearing,
-not in the story.
+**It captures most of the available headroom.** Baseline 31%, nomination 81%,
+and a diagnostic nominator with access to withheld ground truth reaches 88% --
+so 50 of the 57 available points. The remaining 7 are cases where the model
+proposed a plausible account that was not the right one, and the error there is
+in bearing rather than in the story. The oracle figure comes from
+`scripts/ceiling_check.py` rather than from the headline run.
 
 **Type C is unaffected**, as it should be: the library already solves it and
 there is nothing for revision to add.
