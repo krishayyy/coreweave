@@ -272,6 +272,36 @@ sharper lesson: the whole reason to use a calibrated model is to act on the
 calibration. Reading the probability and then ignoring it gives up most of what
 it is for.
 
+### What "days" means, and what it depends on
+
+The display reports days, and that number is assembled from one real convention
+and one chosen parameter.
+
+Real: one loop iteration is one **operational period of twelve hours**, which is
+standard incident-command practice. A search is planned, flown and reviewed on
+that cadence, and the premise is reconsidered at that boundary.
+
+Chosen: **400 km of total track per period**, which sweeps about 32 km² of a
+425 km² operating area. That is a plausible figure for a multi-aircraft day over
+forested terrain, but it was picked to pace the simulation rather than taken
+from an operations manual. Every "days" figure inherits it.
+
+So absolute durations here are indicative, not predictive. The obvious next
+question is whether the advantage is an artifact of that choice. It is not, but
+it is not independent of it either:
+
+    track/period   swept/period   conventional   this system   ratio
+       200 km          16 km2          23%           50%       2.18x
+       300 km          24 km2          35%           60%       1.71x
+       400 km          32 km2          44%           69%       1.57x
+       600 km          47 km2          62%           77%       1.23x
+
+**The method helps most when search capacity is scarce relative to the area**,
+which is when it matters. Given enough aircraft, everything gets covered
+eventually and being wrong about the premise costs less. The reported figure
+sits mid-range; a better-resourced operation would see a smaller gap and a
+worse-resourced one a larger.
+
 ### The strongest objection to all of this
 
 The evaluation is synthetic and I designed both sides of it. That is the
