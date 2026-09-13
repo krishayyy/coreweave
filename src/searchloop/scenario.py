@@ -260,12 +260,24 @@ def generate(grid: SearchGrid, scenario_id: str, kind: str, rng: np.random.Gener
 def generate_suite(
     grid: SearchGrid, n_a: int = 30, n_b: int = 20, n_c: int = 12, seed: int = 0
 ) -> list[Scenario]:
-    """A: premise correct. B: wrong about WHERE. C: wrong about WHO."""
-    rng = np.random.default_rng(seed)
-    suite = [generate(grid, f"A{i:03d}", "A", rng) for i in range(n_a)]
-    suite += [generate(grid, f"B{i:03d}", "B", rng) for i in range(n_b)]
-    suite += [generate(grid, f"C{i:03d}", "C", rng) for i in range(n_c)]
-    return suite
+    """A: premise correct. B: wrong about WHERE. C: wrong about WHO.
+
+    Each scenario gets its own generator seeded from its own id, rather than
+    drawing in turn from one shared stream. With a shared stream, asking for
+    more type B scenarios shifts every draw after them, so growing the suite
+    silently rewrites the type C scenarios and quietly invalidates any run
+    already measured against them. Deriving per scenario makes the suite
+    append-only: B024 is the same scenario whether you asked for 25 or 500.
+    """
+    def make(prefix: str, kind: str, count: int) -> list[Scenario]:
+        out = []
+        for i in range(count):
+            sid = f"{prefix}{i:03d}"
+            rng = np.random.default_rng(stable_seed(seed, sid))
+            out.append(generate(grid, sid, kind, rng))
+        return out
+
+    return make("A", "A", n_a) + make("B", "B", n_b) + make("C", "C", n_c)
 
 
 def stable_seed(*parts: object) -> int:

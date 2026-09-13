@@ -161,9 +161,16 @@ def main() -> int:
 
     selected_gain = lesson.validation.get("gain_deg")
     if selected_gain is not None:
-        print(f"\n{DIM}  selection fold said {selected_gain:+.1f} deg; "
-              f"this fold says {gain:+.1f} deg. The difference between them is "
-              f"the selection bias.{RESET}")
+        # Only a SHRINKAGE is evidence of selection bias. When the confirmation
+        # fold reads higher, the estimate is simply too noisy for either number
+        # to mean much, and saying "the difference is the selection bias" would
+        # assert something false.
+        note = ("consistent with selection bias" if gain < selected_gain
+                else "not shrinkage -- the estimate is simply very noisy")
+        print(f"\n{DIM}  selection fold said {selected_gain:+.1f} deg; this fold "
+              f"says {gain:+.1f} deg ({note}).{RESET}")
+        print(f"{DIM}  median gain {st.median(d for d in (-x for x in diffs)):+.1f} deg. "
+              f"A mean far from the median means one scenario is carrying it.{RESET}")
 
     holds = p < 0.05 and gain > 0
     print(f"\n{(GREEN + '  HOLDS UP') if holds else (RED + '  DOES NOT HOLD UP')}"
