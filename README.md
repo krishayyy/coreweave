@@ -161,10 +161,22 @@ belief mixture already consumes. There is no selection step because nothing
 needs selecting.
 
     arm                                family   find rate        localised
+    library only (no revision)         A        79% [69-86]      82% [73-89]
     library only (no revision)         B        43% [32-55]      54% [43-65]
-    blind relocation                   B        31% [21-42]      47% [36-59]
+    library only (no revision)         C        89% [75-96]      75% [59-86]
+    blind relocation (reads nothing)   A        77% [67-84]      82% [73-89]
+    blind relocation (reads nothing)   B        31% [21-42]      47% [36-59]
+    blind relocation (reads nothing)   C        78% [62-88]      58% [42-73]
+    System One calibrated distribution A        76% [66-83]      78% [68-85]
     System One calibrated distribution B        69% [58-79]      86% [76-92]
+    System One calibrated distribution C        81% [65-90]      67% [50-80]
     oracle -- told the true answer     B        83%              78%
+
+Every figure on this page comes from `runs/experiment_best.json`, one suite,
+one configuration: 30 type A, 24 type B and 12 type C scenarios, three
+independent detection-roll repeats each, Wilson 95% intervals. Regenerate with
+
+    python scripts/experiment.py --n-a 30 --n-b 24 --n-c 12 --repeats 3
 
     paired, 24 scenarios               delta      95% CI            p
     find      vs library only         +26.4pp   [+11.1, +43.1]   0.001  significant
@@ -174,6 +186,7 @@ needs selecting.
 
     paired, 30 scenarios, type A       delta      95% CI            p
     find      vs library only          -3.3pp   [-10.0,  +2.2]   0.199  no harm
+
 
 Localisation at 86% is above the oracle's 78%: the true location reaches the top
 decile of belief more often here than in a system handed the correct answer,
