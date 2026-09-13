@@ -2,7 +2,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Search Loop</title>
-<link rel="stylesheet" href="src/style.css?v=10" />
+<link rel="stylesheet" href="src/style.css?v=13" />
 
 <div id="app">
   <main id="stage">
@@ -36,6 +36,10 @@
     <span class="sep"></span>
     <span id="status">STANDBY</span>
     <span id="clock">P00</span>
+    <nav id="views" aria-label="View">
+      <button data-view="live" class="on">Live search</button>
+      <button data-view="evidence">Evidence</button>
+    </nav>
   </header>
 
   <aside id="side" class="float">
@@ -71,5 +75,58 @@
       <div class="glabel">percentile rank of the subject&rsquo;s actual location, by operational period</div>
     </div>
   </footer>
+  <section id="evidence" hidden>
+    <div class="evwrap">
+      <header class="evhead">
+        <h1>What was measured</h1>
+        <p>156 scenarios, three arms, three detection repeats per scenario. Every
+           arm sees the same cases with the same detection rolls, so the arms are
+           paired and the only difference between them is the method.</p>
+      </header>
+
+      <section class="evblock">
+        <h2>The finding</h2>
+        <p class="evlead">Every search system needs a signal for <em>my premise may be
+           wrong</em>. Conventionally that signal is exhaustion, the fraction of the
+           predicted area swept without contact. It cannot answer the question.</p>
+        <div class="evauc">
+          <div class="aucrow"><span class="auck">Exhaustion</span>
+            <div class="aucbar"><i class="dim" style="width:50%"></i></div>
+            <span class="aucv dim">AUC 0.50</span><span class="aucnote">chance</span></div>
+          <div class="aucrow"><span class="auck">Asking directly</span>
+            <div class="aucbar"><i style="width:81.3%"></i></div>
+            <span class="aucv warm">AUC 0.813</span><span class="aucnote">separates them</span></div>
+        </div>
+        <p class="evfoot">Coming up empty happens just as often when you are looking in
+           exactly the right place. This is the one result that compares two detectors on
+           identical data rather than this system against a baseline we also wrote.</p>
+      </section>
+
+      <section class="evblock">
+        <h2>Found within</h2>
+        <p class="evlead">Searches that go well end in hours. A search still running on
+           day three is looking in the wrong place, and day three is when a rescue
+           becomes a recovery.</p>
+        <div id="evCurve"></div>
+      </section>
+
+      <section class="evblock">
+        <h2>Every arm, every family</h2>
+        <div id="evTable"></div>
+        <p class="evfoot">Wilson 95% intervals. <em>Localised</em> means the true location
+           reached the top decile of belief at any point: it moves only when the agent
+           reallocates belief correctly, and ignores detection luck.</p>
+      </section>
+
+      <section class="evblock">
+        <h2>Paired differences</h2>
+        <div id="evPaired"></div>
+        <p class="evfoot">Bootstrap over scenarios, repeats averaged within a scenario
+           first. A cost of 2.8 points on correct-premise cases is real and significant,
+           and those cases each carry a false lead designed to bait the system into
+           moving. Break-even is a premise-error rate of 5.5 percent.</p>
+      </section>
+    </div>
+  </section>
 </div>
-<script type="module" src="src/main.js?v=10"></script>
+<script type="module" src="src/main.js?v=13"></script>
