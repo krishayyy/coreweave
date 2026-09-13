@@ -182,6 +182,38 @@ does not. Find rate stays below the oracle's 83% for the opposite reason -- a
 point estimate concentrates the sweep, and detection is what converts belief
 into a rescue.
 
+### Everyone finds them eventually. The question is how long.
+
+The headline is quoted at a sixteen-period budget -- eight days of twelve-hour
+operational periods. That budget is a choice, and one point off a curve invites
+the obvious question: is this better, or only faster?
+
+    budget            conventional   this system   oracle
+     4 days                   21%           53%      60%
+     6 days                   33%           64%      72%
+     8 days                   43%           69%      83%
+    10 days                   56%           82%      85%
+    12 days                   67%           86%      85%
+    14 days                   75%           93%      92%
+    16 days                   83%           96%      94%
+
+        python scripts/time_curve.py && python scripts/plot_time_curve.py
+
+**Conventional search needs fourteen days to reach what this system reaches in
+eight.** Both get there in the end -- enough sweeping covers any finite area --
+so the difference is not whether the subject is found but when, and in search
+and rescue the budget is not really aircraft hours. It is how long a person
+survives outside.
+
+**From twelve days on, inferred belief matches being told the answer.** The
+oracle is handed the true starting point; this system has to work it out from a
+case file. By twelve days the curves cross, and beyond that this system is
+ahead -- a distribution over directions keeps covering ground after a point
+estimate has exhausted the one place it believed in.
+
+That also settles the earlier question of why the headline is not 83%. It is:
+at twelve days rather than eight.
+
 ### The remaining failures, and which are fixable
 
 Two cases in the demo set fail, for reasons that are not the same.
