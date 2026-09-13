@@ -230,6 +230,56 @@ you are looking in exactly the right place. Asking the question directly
 carries information; inferring it from how much ground you have covered does
 not.
 
+#### Three attempts to drive the correct-premise cost to zero, none of which worked
+
+The -2.8pp is the price of being willing to doubt, and it would be better at
+zero. It resists.
+
+First, a look at where it comes from. Splitting the correct-premise cases by
+whether the system revised:
+
+    scenarios where it revised (n=25)     doctrine 94.7%   System One 88.0%
+    scenarios where it did not (n=35)     doctrine 100.0%  System One 100.0%
+
+Most of the apparent gap is selection rather than damage. Those 25 are the
+cases where sweeping the right ground came up empty, so doctrine does worse on
+them too -- the search is unlucky, which is also what makes the system doubt
+itself. The causal part is the remaining -6.7pp on the cases where revision
+fires, which averages to -2.8pp overall. An earlier reading of this that
+attributed the whole gap to revision was confounded.
+
+**Attempt one: stop a losing nomination from steering the aircraft.** Of the
+runs that revised and then failed, seven of nine still had a library hypothesis
+leading at the end -- the nomination lost the argument and cost the search
+anyway, which suggested it was taking just enough mass to move the sortie. So
+the planner was restricted to accounts holding at least half the leader's
+posterior, leaving the rest in the mixture to grow or die on evidence. It
+recovered almost nothing on correct-premise cases (-8.3pp to -8.3pp at a half
+share, -6.2pp at three quarters) and cost type B six points. Reverted.
+
+**Attempt two: raise the doubt floor.** The frontier is flat:
+
+    floor   correct-premise   premise-wrong   break-even
+     0.40        -8.3pp          +56.2pp        12.9%
+     0.50        -8.3pp          +52.1pp        13.8%
+     0.60        -6.2pp          +41.7pp        13.0%
+     0.70        -6.2pp          +41.7pp        13.0%
+
+Every point recovered on the correct-premise cases costs roughly its own worth
+on the cases the system exists for. There is no setting that buys a better
+trade, which is what a flat break-even column means.
+
+**Attempt three: cap how much belief a nomination can take.** Already capped,
+at 0.35 of the mixture and scaled by the model's own doubt, so the original
+account always retains the majority. Lowering it further had no effect on the
+heuristic arm and the knob does not reach the calibrated arm's damage.
+
+The conclusion is that the residual cost is not a threshold problem. It is the
+40% of false leads on which the premise judgement is genuinely wrong -- the
+model puts P(premise wrong) above 0.40 on a report that was already traced to
+somebody else. Reducing it further needs a better-calibrated answer to that
+question, not a different cutoff on the same answer.
+
 The floor is 0.40, chosen on the tuning fold: it blocks 60% of false leads
 while keeping 91% of the real displacements. A floor of 0.60 blocks 70% of
 false leads but discards a third of the cases the system exists to solve.
