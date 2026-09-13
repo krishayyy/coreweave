@@ -275,6 +275,30 @@ eventually and being wrong about the premise costs less. The reported figure
 sits mid-range; a better-resourced operation would see a smaller gap and a
 worse-resourced one a larger.
 
+### What the 50 points is actually measuring
+
+Correcting the Jacobian made the effect larger, which is the direction that
+should invite suspicion rather than celebration. It holds up, but it changes
+what the number means.
+
+With subjects correctly placed, a type B subject sits **1.7 km from where they
+started and 8.5 km from the planning point**, and the library prior ranks their
+true location at the 52nd percentile -- no better than a coin. So type B has
+become close to binary: identify the displaced starting point and the subject
+is within a couple of kilometres of it; miss it and no amount of searching near
+the planning point will reach them.
+
+That is a property of the problem rather than of the suite. Real subjects do
+stay near where they began -- a median of 1.9 km for hikers is the published
+figure -- which is precisely why a search anchored on a wrong planning point
+fails. The earlier version, with subjects scattered five kilometres from their
+own starting point, was the unrealistic one and it compressed the difference
+between a right and a wrong account.
+
+But it means the honest reading of +50 points is **"how often does it identify
+where the subject actually started"**, not "how much better does it sweep
+ground". Those are different claims and only the first is supported here.
+
 ### The strongest objection to all of this
 
 The evaluation is synthetic and I designed both sides of it. That is the
