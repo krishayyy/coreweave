@@ -85,12 +85,34 @@ class Reading:
     profile_confidence: float
     usage: dict[str, int]
 
-    def expected_distance_km(self) -> float:
-        """Probability-weighted distance across the bands."""
-        total = 0.0
+    def expected_distance_km(self, searched_km: float = 0.0) -> float:
+        """Probability-weighted distance, conditioned on what was ruled out.
+
+        The premise failed because the ground near the planning point was swept
+        without contact, so the subject is not there -- and a plain weighted
+        average over every band, including the ones already eliminated, drags
+        the estimate inward toward ground we have proven empty.
+
+        Conditioning on the search removes those bands and renormalises, which
+        is just Bayes on information already in hand. Measured on a case where
+        direction was correct and the answer was still missed: the estimate was
+        7.6 km against a true 10.6, short by a quarter, with the near bands
+        carrying weight that the search had already disproved.
+        """
+        weights = []
         for i, (_, midpoint) in enumerate(DISTANCE_BANDS):
-            total += self.distance_probs.get(str(i), 0.0) * midpoint
-        return total or self.distance_km
+            probability = self.distance_probs.get(str(i), 0.0)
+            if midpoint < searched_km:
+                probability = 0.0       # swept, and empty
+            weights.append((midpoint, probability))
+
+        total = sum(p for _, p in weights)
+        if total <= 1e-6:
+            # Everything the model believed has been ruled out; take the first
+            # band beyond the searched radius rather than falling back inward.
+            beyond = [m for m, _ in weights if m >= searched_km]
+            return beyond[0] if beyond else self.distance_km
+        return sum(m * p for m, p in weights) / total
 
 
 @tracing.op

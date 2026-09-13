@@ -163,21 +163,49 @@ needs selecting.
     arm                                family   find rate        localised
     library only (no revision)         B        43% [32-55]      54% [43-65]
     blind relocation                   B        31% [21-42]      47% [36-59]
-    System One calibrated distribution B        69% [58-79]      78% [67-86]
+    System One calibrated distribution B        69% [58-79]      86% [76-92]
     oracle -- told the true answer     B        83%              78%
 
     paired, 24 scenarios               delta      95% CI            p
-    find      vs library only         +26.4pp   [+13.9, +38.9]   0.000  significant
-    find      vs blind relocation     +38.9pp   [+23.6, +54.2]   0.000  significant
-    localised vs library only         +23.6pp   [ +1.4, +45.8]   0.049  significant
-    localised vs blind relocation     +30.6pp   [+15.3, +47.2]   0.000  significant
+    find      vs library only         +26.4pp   [+11.1, +43.1]   0.001  significant
+    find      vs blind relocation     +38.9pp   [+22.2, +55.6]   0.000  significant
+    localised vs library only         +31.9pp   [ +6.9, +55.6]   0.018  significant
+    localised vs blind relocation     +38.9pp   [+20.8, +58.3]   0.000  significant
 
     paired, 30 scenarios, type A       delta      95% CI            p
-    find      vs library only          -2.2pp   [ -8.9,  +3.3]   0.613  no harm
+    find      vs library only          -3.3pp   [-10.0,  +2.2]   0.199  no harm
 
-43% to 69% against a ceiling of 83%: about two thirds of the available headroom,
-with both metrics significant and no measurable cost on cases where the premise
-was already right.
+Localisation at 86% is above the oracle's 78%: the true location reaches the top
+decile of belief more often here than in a system handed the correct answer,
+because a distribution over directions covers ground a single point estimate
+does not. Find rate stays below the oracle's 83% for the opposite reason -- a
+point estimate concentrates the sweep, and detection is what converts belief
+into a rescue.
+
+### The remaining failures, and which are fixable
+
+Two cases in the demo set fail, for reasons that are not the same.
+
+**Right, and the sensor missed.** In B001 a witness reports the vehicle leaving
+north-east. The system proposes north-east, and its ranking of the subject's
+true location reaches 100% at period five and stays there for eleven consecutive
+periods. It searched the correct ground for five and a half days and the sensor
+never caught her. No amount of reasoning fixes this one; it wants flight hours
+or a better payload.
+
+**Right direction, short distance.** In B020 a relative reports the subject was
+driven to the west side of the range. The system proposes west, correctly, at
+7.6 km -- against a true 10.6. Belief piled up short of him.
+
+The second one exposed a real defect. The distance estimate was a
+probability-weighted average across every band, *including bands the search had
+already swept and found empty*. Ground proven empty was still dragging the
+estimate inward. Conditioning on what the search has eliminated -- zeroing those
+bands and renormalising, which is Bayes on information already in hand -- moved
+type B localisation from 78% to 86% and localised about half a period sooner,
+with no cost to find rate or to the null.
+
+It did not rescue either case. It was still the right fix.
 
 ### Two ceilings that were mine, not the model's
 

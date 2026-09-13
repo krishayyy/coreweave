@@ -233,11 +233,21 @@ def nominate_jev(
     )
     reading = jev.ask(state, {k: p.narrative for k, p in PROFILES.items()})
 
+    # How far out the search has already reached without contact. The subject
+    # is not in there, and the distance estimate should not be pulled into it.
+    searched_km = 0.0
+    if belief.history:
+        radii = [np.hypot(r - ipp_rc[0], c - ipp_rc[1])
+                 for record in belief.history for r, c in record.cells]
+        if radii:
+            # The bulk of the swept ground, not its furthest stray cell.
+            searched_km = float(np.percentile(radii, 75) * grid.cell_m / 1000.0)
+
     profile_key = max(reading.profile_probs, key=reading.profile_probs.get) \
         if reading.profile_probs else "hiker"
     if profile_key not in PROFILES:
         profile_key = "hiker"
-    distance_km = reading.expected_distance_km()
+    distance_km = reading.expected_distance_km(searched_km)
 
     # Hedge in proportion to doubt, and no further. The oracle localises the
     # subject LESS often than this arm does and still finds them more, because
