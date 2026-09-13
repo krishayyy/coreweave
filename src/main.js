@@ -163,6 +163,20 @@ class Pane {
     ctx.drawImage(this.a.hillshade, x, y, size, size);
     ctx.globalAlpha = 1;
 
+    // The conventional pane is cooled and held a step back. Same ground, but
+    // the eye should know within a second which side is the argument.
+    if (!this.ours) {
+      ctx.save();
+      ctx.globalCompositeOperation = "multiply";
+      ctx.fillStyle = "rgba(88,112,152,0.46)";
+      ctx.fillRect(x, y, size, size);
+      ctx.globalCompositeOperation = "saturation";
+      ctx.fillStyle = "rgba(128,128,128,1)";
+      ctx.globalAlpha = 0.35;
+      ctx.fillRect(x, y, size, size);
+      ctx.restore();
+    }
+
     ctx.globalAlpha = 0.85;
     ctx.drawImage(this.a.swept[i], x, y, size, size);
     if (fade > 0) { ctx.globalAlpha = 0.85 * fade; ctx.drawImage(this.a.swept[next], x, y, size, size); }
@@ -177,7 +191,7 @@ class Pane {
 
     if (live && frame) this.aircraft(frame.track || [], x, y, scale, phase);
     this.marker(x, y, scale, scenario.ipp, "#7ee7ff", "cross");
-    if (showTruth) this.marker(x, y, scale, scenario.truth, "#ff5a52", "x");
+    if (showTruth) this.marker(x, y, scale, scenario.truth, "#ff5a52", "x", phase);
 
     const rev = this.root.querySelector(".revising");
     if (rev) rev.classList.toggle("on", revising && phase < 0.6);
@@ -201,15 +215,38 @@ class Pane {
     const i0 = Math.floor(head), i1 = Math.min(i0 + 1, track.length - 1), f = head - i0;
     const ax = x + (lerp(track[i0][1], track[i1][1], f) + 0.5) * scale;
     const ay = y + (lerp(track[i0][0], track[i1][0], f) + 0.5) * scale;
-    ctx.beginPath(); ctx.arc(ax, ay, 2.6, 0, Math.PI * 2);
-    ctx.fillStyle = "#bff2ff"; ctx.fill();
-    ctx.beginPath(); ctx.arc(ax, ay, 6.5, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(126,231,255,0.30)"; ctx.lineWidth = 1; ctx.stroke();
+    const heading = Math.atan2(track[i1][0] - track[i0][0], track[i1][1] - track[i0][1]);
+
+    ctx.save();
+    ctx.shadowColor = "rgba(126,231,255,0.55)";
+    ctx.shadowBlur = 10;
+    ctx.translate(ax, ay);
+    ctx.rotate(heading);
+    ctx.beginPath();
+    ctx.moveTo(6, 0); ctx.lineTo(-3.6, 3.4); ctx.lineTo(-1.8, 0); ctx.lineTo(-3.6, -3.4);
+    ctx.closePath();
+    ctx.fillStyle = "#d9f6ff";
+    ctx.fill();
+    ctx.restore();
+
+    ctx.beginPath(); ctx.arc(ax, ay, 8.5, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(126,231,255,0.22)"; ctx.lineWidth = 1; ctx.stroke();
   }
 
-  marker(x, y, scale, rc, color, kind) {
+  marker(x, y, scale, rc, color, kind, reveal) {
     const ctx = this.ctx;
     const px = x + (rc[1] + 0.5) * scale, py = y + (rc[0] + 0.5) * scale;
+
+    // The subject's location arrives: a ring expands once and settles.
+    if (reveal !== undefined) {
+      const t = clamp01(reveal * 1.6);
+      const e = easeInOut(t);
+      ctx.beginPath();
+      ctx.arc(px, py, 6 + (1 - e) * 26, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,90,82,${(0.5 * (1 - e)).toFixed(3)})`;
+      ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
     ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.beginPath();
     const s = 6;
     if (kind === "cross") {
@@ -411,38 +448,80 @@ class Display {
 
   drawGraph(period, phase) {
     const ctx = this.gctx, w = this.gw, h = this.gh, c = this.case_;
-    const pad = { l: 30, r: 10, t: 6, b: 14 };
+    const pad = { l: 34, r: 14, t: 10, b: 16 };
     ctx.clearRect(0, 0, w, h);
-    const X = (p) => pad.l + (p - 1) / Math.max(this.total - 1, 1) * (w - pad.l - pad.r);
-    const Y = (v) => h - pad.b - v * (h - pad.t - pad.b);
+    if (w < 40 || h < 30) return;
 
     const css = getComputedStyle(document.documentElement);
-    const tok = (n, fallback) => (css.getPropertyValue(n).trim() || fallback);
+    const tok = (n, f) => (css.getPropertyValue(n).trim() || f);
+    const X = (p) => pad.l + (p - 1) / Math.max(this.total - 1, 1) * (w - pad.l - pad.r);
+    const Y = (v) => h - pad.b - v * (h - pad.t - pad.b);
+    const upto = period - 1 + phase;
+
     ctx.strokeStyle = tok("--rule", "#1c2128"); ctx.lineWidth = 1;
-    ctx.font = `500 9px ${tok("--mono", "monospace")}`;
+    ctx.font = `500 10px ${tok("--mono", "monospace")}`;
+    ctx.textBaseline = "middle";
     for (const v of [0, 0.5, 1]) {
       ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(w - pad.r, Y(v)); ctx.stroke();
-      ctx.fillStyle = tok("--label", "#7a8494");
-      ctx.fillText(`${(v * 100).toFixed(0)}%`, 4, Y(v) + 3);
+      ctx.fillStyle = tok("--label", "#828c9c");
+      ctx.fillText(`${(v * 100).toFixed(0)}`, 8, Y(v));
     }
-    const upto = period - 1 + phase;
-    const line = (frames, colour) => {
-      ctx.beginPath(); let on = false;
+
+    const path = (frames) => {
+      const pts = [];
       for (const f of frames) {
         if (f.period > upto) break;
-        const px = X(f.period), py = Y((f.truth_percentile ?? 0) / 100);
-        on ? ctx.lineTo(px, py) : (ctx.moveTo(px, py), on = true);
+        pts.push([X(f.period), Y((f.truth_percentile ?? 0) / 100)]);
       }
-      if (on) { ctx.strokeStyle = colour; ctx.lineWidth = 2; ctx.stroke(); }
+      return pts;
     };
-    line(c.conventional.frames, tok("--dim", "#8b93a1"));
-    line(c.ours.frames, tok("--warm", "#ffb020"));
+    const ours = path(c.ours.frames);
+    const conv = path(c.conventional.frames);
+
+    // Area under our line. The gap between the two curves is the claim, so
+    // the claim is the thing given weight rather than left as whitespace.
+    if (ours.length > 1) {
+      const g = ctx.createLinearGradient(0, pad.t, 0, h - pad.b);
+      g.addColorStop(0, "rgba(255,176,32,0.22)");
+      g.addColorStop(1, "rgba(255,176,32,0.02)");
+      ctx.beginPath();
+      ctx.moveTo(ours[0][0], Y(0));
+      for (const [px, py] of ours) ctx.lineTo(px, py);
+      ctx.lineTo(ours[ours.length - 1][0], Y(0));
+      ctx.closePath();
+      ctx.fillStyle = g; ctx.fill();
+    }
+
+    const stroke = (pts, colour, width) => {
+      if (pts.length < 2) return;
+      ctx.beginPath();
+      pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
+      ctx.strokeStyle = colour; ctx.lineWidth = width;
+      ctx.lineJoin = "round"; ctx.lineCap = "round";
+      ctx.stroke();
+    };
+    stroke(conv, tok("--dim", "#8b93a1"), 1.6);
+    stroke(ours, tok("--warm", "#ffb020"), 2.4);
+
+    // Where the premise was abandoned.
     for (const f of c.ours.frames) {
       if (!f.revised || f.period > upto) continue;
-      ctx.strokeStyle = "rgba(255,90,82,0.45)"; ctx.lineWidth = 1;
-      ctx.setLineDash([2, 3]);
-      ctx.beginPath(); ctx.moveTo(X(f.period), pad.t); ctx.lineTo(X(f.period), h - pad.b); ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.save();
+      ctx.setLineDash([2, 4]);
+      ctx.strokeStyle = "rgba(255,90,82,0.5)"; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(X(f.period), pad.t); ctx.lineTo(X(f.period), h - pad.b);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Leading dot on each line, so the eye knows where "now" is.
+    for (const [pts, colour, r] of [[conv, tok("--dim", "#8b93a1"), 2.2],
+                                    [ours, tok("--warm", "#ffb020"), 3]]) {
+      if (!pts.length) continue;
+      const [px, py] = pts[pts.length - 1];
+      ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fillStyle = colour; ctx.fill();
     }
   }
 
