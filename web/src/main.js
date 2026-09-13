@@ -386,7 +386,17 @@ class Display {
   draw(now) {
     if (!this.case_) return;
     const { period, phase, done } = this.clock(now);
-    if (done) { this.started = now; return; }
+    if (done) {
+      // Restarting the case restarts its story. The log is append-only and
+      // keyed by event id, so without clearing it the second cycle onward
+      // showed the whole previous run frozen in place while the clock counted
+      // up from P01 again -- the two halves of the screen disagreeing about
+      // what period it was.
+      this.started = now;
+      this.logged = new Set();
+      el("log").innerHTML = "";
+      return;
+    }
     const c = this.case_;
     const finished = period >= this.total;
     const sc = { ipp: c.ipp, truth: c.truth };
@@ -417,8 +427,13 @@ class Display {
     const f = c.ours.frames[Math.min(period - 1, c.ours.frames.length - 1)];
     const revising = period - 1 < c.ours.frames.length && f && f.revised;
     const status = el("status");
-    status.className = revising ? "alert" : "live";
-    status.textContent = revising ? "PREMISE FAILING" : "SEARCHING";
+    // Once the subject is located the header said SEARCHING while the verdict
+    // over the map said LOCATED, which is the one frame that has to be
+    // unambiguous.
+    const located = c.ours.found && period >= c.ours.periods_to_find;
+    status.className = located ? "live found" : (revising ? "alert" : "live");
+    status.textContent = located ? "LOCATED"
+                       : (revising ? "PREMISE FAILING" : "SEARCHING");
 
     // Evidence, disconfirmation and proposals, as they land.
     for (const e of c.late_evidence || []) {
@@ -433,14 +448,21 @@ class Display {
       this.logEvent(`sw${cf.period}`, `Swept ${Math.round(cf.track_km || 0)} km, no contact.`);
     }
 
+    // Set only the state classes. Assigning className outright used to drop
+    // the `right` modifier that positions this system's verdict over the
+    // second map, so both verdicts landed in the same place and the payoff
+    // frame rendered as two strings interleaved on top of each other.
     const setV = (v, res) => {
-      if (res.found && period >= res.periods_to_find) {
-        v.className = "verdict on found";
+      const located = res.found && period >= res.periods_to_find;
+      const lost = !located && finished && phase > 0.05;
+      v.classList.toggle("on", located || lost);
+      v.classList.toggle("found", located);
+      v.classList.toggle("lost", lost);
+      if (located) {
         v.textContent = `SUBJECT LOCATED · ${(res.periods_to_find * hrs / 24).toFixed(1)} DAYS`;
-      } else if (finished && phase > 0.05) {
-        v.className = "verdict on lost";
+      } else if (lost) {
         v.textContent = "NOT LOCATED";
-      } else { v.className = "verdict"; }
+      }
     };
     setV(el("verdictB"), c.ours);
     setV(el("verdictA"), c.conventional);
@@ -535,6 +557,9 @@ async function boot() {
   const demo = await (await fetch("public/run/demo.json")).json();
   const basemap = tintTerrain(await loadImage("public/run/imagery.jpg"));
   const d = new Display(demo, basemap);
+  // Exposed so the final frame can be inspected directly rather than by
+  // waiting for the clock to reach it.
+  window.display = d;
   await d.select(0);
   d.run_();
 }

@@ -113,6 +113,7 @@ html, body {
 #status { color: var(--label); transition: color 260ms var(--ease); }
 #status.live { color: var(--cold); }
 #status.alert { color: var(--alert); }
+#status.found { color: var(--warm); }
 
 /* ---- pane labels and verdicts ------------------------------------------ */
 
