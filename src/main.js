@@ -581,6 +581,75 @@ class Display {
   }
 }
 
+const pct = (v, d = 0) => `${(100 * v).toFixed(d)}%`;
+
+function renderEvidence(ev) {
+  const curve = ev.curve.map(r => `
+    <div class="crow">
+      <span class="ck">${r.label}</span>
+      <div class="cbars">
+        <div class="cbar"><i class="dim" style="width:${100 * r.none}%"></i><b>${pct(r.none, 1)}</b></div>
+        <div class="cbar"><i style="width:${100 * r.jev}%"></i><b class="warm">${pct(r.jev, 1)}</b></div>
+      </div>
+    </div>`).join("");
+  el("evCurve").innerHTML =
+    `<div class="clegend"><span class="dim">Conventional doctrine</span>
+       <span class="warm">This system</span></div>${curve}`;
+
+  const families = ["B", "A", "C"];
+  const arms = ["none", "heuristic", "jev"];
+  el("evTable").innerHTML = families.map(k => {
+    const rows = arms.map(a => {
+      const r = ev.arms.find(x => x.key === a && x.kind === k);
+      if (!r) return "";
+      const me = a === "jev" ? " me" : "";
+      return `<tr class="${me.trim()}">
+        <td>${r.arm}</td>
+        <td class="n">${pct(r.find)} <s>[${pct(r.findCI[0])}&ndash;${pct(r.findCI[1])}]</s></td>
+        <td class="n">${pct(r.loc)} <s>[${pct(r.locCI[0])}&ndash;${pct(r.locCI[1])}]</s></td>
+        <td class="n dimmed">${r.n}</td></tr>`;
+    }).join("");
+    const any = ev.arms.find(x => x.kind === k);
+    return `<table class="evtable"><caption>${any ? any.kindLabel : k}</caption>
+      <thead><tr><th>Arm</th><th class="n">Found</th><th class="n">Localised</th>
+      <th class="n">Runs</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }).join("");
+
+  const P = ev.paired;
+  const row = (label, d) => {
+    const sig = d.lo > 0 || d.hi < 0;
+    // A difference of zero is neither a gain nor a cost, and colouring it as a
+    // regression would read as one.
+    const tone = Math.abs(d.delta) < 0.0005 ? "" : (d.delta > 0 ? "warm" : "alert");
+    return `<div class="prow">
+      <span class="pk">${label}</span>
+      <span class="pv ${tone}">${d.delta > 0 ? "+" : ""}${(100 * d.delta).toFixed(1)}pp</span>
+      <span class="pci">95% CI [${(100 * d.lo).toFixed(1)}, ${(100 * d.hi).toFixed(1)}]</span>
+      <span class="psig ${sig ? "yes" : "no"}">${sig ? "significant" : "not significant"}</span>
+      <span class="pn">p = ${d.p < 0.001 ? "&lt;0.001" : d.p.toFixed(3)}</span>
+    </div>`;
+  };
+  el("evPaired").innerHTML =
+    row("Premise wrong &middot; found", P.B_find) +
+    row("Premise wrong &middot; localised", P.B_loc) +
+    row("Premise correct &middot; found", P.A_find) +
+    row("Wrong subject type &middot; found", P.C_find);
+}
+
+function wireViews() {
+  const buttons = [...document.querySelectorAll("#views button")];
+  const show = (name) => {
+    buttons.forEach(b => b.classList.toggle("on", b.dataset.view === name));
+    el("stage").hidden = name !== "live";
+    el("deck").hidden = name !== "live";
+    el("side").hidden = name !== "live";
+    el("evidence").hidden = name !== "evidence";
+    document.body.classList.toggle("reading", name === "evidence");
+  };
+  buttons.forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
+  return show;
+}
+
 async function boot() {
   const demo = await (await fetch("public/run/demo.json")).json();
   const basemap = tintTerrain(await loadImage("public/run/imagery.jpg"));
@@ -590,6 +659,17 @@ async function boot() {
   window.display = d;
   await d.select(0);
   d.run_();
+
+  wireViews();
+  try {
+    renderEvidence(await (await fetch("public/run/evidence.json")).json());
+  } catch (err) {
+    // The live view is the deliverable; a missing evidence file must not take
+    // the page down with it.
+    el("evidence").innerHTML =
+      "<div class='evwrap'><p>Evidence data unavailable.</p></div>";
+    console.error(err);
+  }
 }
 
 boot().catch((err) => { el("status").textContent = "LOAD FAILED"; console.error(err); });
