@@ -195,7 +195,10 @@ class Pane {
 
     const rev = this.root.querySelector(".revising");
     if (rev) {
-      const on = revising && phase < 0.6;
+      // Held to three quarters of the (longer) revision period rather than
+      // six tenths: this is the frame the whole display exists for and it
+      // has to survive being read, not just noticed.
+      const on = revising && phase < 0.75;
       rev.classList.toggle("on", on);
       if (on && frame) {
         // Name the account being abandoned and the one taking its place. The
