@@ -201,6 +201,85 @@ intervals.
     python scripts/significance.py runs/experiment_headline.json \
         runs/experiment_llm_current.json jev
 
+### What a county knows that its neighbour does not
+
+The published behaviour models are national. They state a hiker's terrain
+affinities once, for everywhere. But a search unit gets good at its own ground
+precisely because its ground is not the national average: in one county the
+drainages are the walkable way out and people follow them, in the next they are
+dry, choked and go nowhere, and people stay off them. A drone flying the same
+county for a year should end up knowing that. A drone flying the next county
+should not inherit it, because it is not true there.
+
+So the county layer learns a correction to the published prior rather than a
+replacement for it:
+
+    p_county(cell)  proportional to  p_published(cell) * exp(w . f(cell))
+
+`f` describes a cell's terrain -- drainage, downhill from the anchor, canopy,
+excess slope -- and `w` is fitted from that county's own resolved cases. Every
+drone in a county reads the same `w` and contributes its closed cases back to
+it, so the tenth drone starts where the ninth left off. `w = 0` is the
+published model, and is where every county begins.
+
+The learning rule is worth stating plainly because it is the entire mechanism:
+
+    gradient  =  terrain where subjects were actually found
+               - terrain the current belief expected to find them in
+
+Move toward the terrain that keeps being right, in proportion to how surprised
+you were. The problem is convex, so there is one optimum and nothing to seed.
+
+The regulariser is what makes it safe on a real caseload. A county resolves a
+handful of searches a year, and four free parameters fitted on three cases will
+cheerfully conclude that everybody is found in creeks because the last three
+were. The penalty is scaled by 1/n, so it dominates early and relaxes as
+evidence accumulates -- the county's own data earns its way in rather than
+being trusted on arrival.
+
+Measured on three real jurisdictions, chosen for genuinely different terrain: a
+glaciated volcano, barren high granite, and a forested Appalachian ridge. Two
+were given a local deviation from the literature; the third was given none.
+That third county is the important one.
+
+    county          published   home   transplanted from next door
+    Clackamas OR       4.2%     3.3%        7.9%
+    Inyo CA            2.4%     2.4%        3.6%
+    Buncombe NC        2.0%     2.0%        3.0%
+
+Fraction of the county swept before reaching the subject, searching the
+highest-probability cell first, on held-out cases. Lower is better.
+
+Clackamas recovers **+0.72 against a planted +0.70** and sweeps a fifth less
+ground. Buncombe is the null -- genuinely the national average -- and correctly
+learns nothing, landing at `[+0.01, -0.07, -0.06, -0.09]`, neither helped nor
+harmed. That is the result that makes the other two worth believing, because a
+method that "learns" a correction for an average county is fitting noise and
+its wins elsewhere would mean nothing.
+
+Inyo recovers its deviation correctly, **-0.88 against a planted -0.70**, and
+gains nothing operationally. Learning the right thing and gaining nothing is a
+real outcome and it is reported rather than dropped: there is less leverage in
+learning to avoid terrain the published prior already weights low than in
+learning to favour terrain it ignores.
+
+**Transplanting a neighbouring county's model is worse than having learned
+nothing, in all three counties.** That is the actual claim. What a county
+learns is true of its ground and not of ground in general, which is why this
+has to be a per-county ecosystem rather than one national model that keeps
+getting better.
+
+    python scripts/county_learning.py 96
+
+#### What this does not yet show
+
+The local deviations were planted by me, and their size is my choice. The
+experiment tests whether the method recovers a deviation that exists, ignores
+one that does not, and refuses to transfer -- it does not establish how large
+real county-to-county deviations are. That number would have to come from real
+resolved-case records, which is exactly the data a county already holds and
+this system would consume.
+
 ### The simulation was not implementing the literature it cites
 
 Real incident data is not obtainable. ISRID is contribution-based rather than
