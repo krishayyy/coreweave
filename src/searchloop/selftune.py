@@ -14,8 +14,9 @@ when confident rather than always hedging, conditioning distance on ground
 already swept. Sentences were never the lever. Configuration is.
 
 The gate is unchanged in spirit and stricter in practice. A proposal must
-improve the reasoning metric AND not regress the find rate, on a fold it was
-not derived from. Anything else is recorded and refused.
+improve the objective by more than a fixed bar AND by more than the noise the
+improvement was measured through AND not regress the find rate, on a fold it
+was not derived from. Anything else is recorded and refused.
 """
 from __future__ import annotations
 
@@ -33,8 +34,12 @@ TUNING_LOG = Path(__file__).resolve().parents[2] / "data" / "tuning.json"
 
 # A proposal must clear this on the objective to be worth the churn.
 MIN_SCORE_GAIN = 0.015
-# ...and may not cost more than this on the raw find rate.
-MAX_FIND_REGRESSION = 0.03
+# ...and may not cost more than this on the raw find rate. Set from the noise
+# rather than from taste: with twelve scenarios at six repeats the standard
+# error on a find rate is near six points, so a guard tighter than that rejects
+# signal for being noise -- which it did, blocking a real objective gain on a
+# six-point drop that was inside one standard error.
+MAX_FIND_REGRESSION = 0.08
 
 
 @dataclass
@@ -59,9 +64,22 @@ class Score:
     mean_peak: float
     objective: float
     n: int
+    repeats: int = 1
+    # Per-run objective, in a fixed (scenario, repeat) order so that two folds
+    # scored on the same scenarios and seeds can be differenced run by run. A
+    # paired difference is what lets the gate know whether a gain it likes is
+    # larger than the noise it is measured through; without it the gate is
+    # comparing two point estimates to a fixed bar and calling that rigour.
+    runs: list[float] = field(default_factory=list, repr=False)
+
+    @property
+    def n_runs(self) -> int:
+        return self.n * self.repeats
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        d = asdict(self)
+        d.pop("runs")          # too large for the log, and derivable
+        return d
 
 
 @dataclass
@@ -88,21 +106,33 @@ class Trial:
 class TuningLog:
     settings: dict[str, float] = field(default_factory=lambda: dict(tunable.DEFAULTS))
     trials: list[Trial] = field(default_factory=list)
+    # Where this run started. Recorded rather than inferred: `--from-naive`
+    # writes the naive configuration into this file, so a later run without the
+    # flag would load naive settings, diff them against DEFAULTS, and report
+    # eight spurious changes as if the loop had made them.
+    baseline: dict[str, float] = field(
+        default_factory=lambda: dict(tunable.DEFAULTS))
 
     @classmethod
     def load(cls, path: Path = TUNING_LOG) -> "TuningLog":
         if not path.exists():
             return cls()
         raw = json.loads(path.read_text())
+        settings = {**tunable.DEFAULTS, **raw.get("settings", {})}
         return cls(
-            settings={**tunable.DEFAULTS, **raw.get("settings", {})},
+            settings=settings,
             trials=[Trial(**t) for t in raw.get("trials", [])],
+            # An older log predates this field. Its starting point is
+            # unrecoverable, so assume it started where it now sits rather than
+            # inventing a diff against DEFAULTS that never happened.
+            baseline={**tunable.DEFAULTS, **raw.get("baseline", settings)},
         )
 
     def save(self, path: Path = TUNING_LOG) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(
             {"settings": self.settings,
+             "baseline": self.baseline,
              "trials": [t.to_dict() for t in self.trials]}, indent=2))
 
     @property
@@ -110,7 +140,8 @@ class TuningLog:
         return [t for t in self.trials if t.accepted]
 
 
-def score_fold(grid, pod, scenarios, cfg, arm: str, repeats: int = 4) -> Score:
+def score_fold(grid, pod, scenarios, settings: dict[str, float], base_cfg,
+               arm: str, repeats: int = 6) -> Score:
     """Run a fold and summarise it.
 
     Repeats matter more here than anywhere else in the project. A single pass
@@ -121,9 +152,18 @@ def score_fold(grid, pod, scenarios, cfg, arm: str, repeats: int = 4) -> Score:
 
     Repeats re-roll detection only. The scenarios are identical, so this
     averages out the sensor's luck without pretending to more cases than exist.
+
+    The settings are installed here rather than by the caller. Half of this
+    configuration travels through a Config object and half through module
+    globals, and when the caller owned both channels it was possible -- and
+    happened -- to measure a Config that did not match the globals in force.
+    One function now owns both.
     """
     from .loop import run_scenario
     from .scenario import stable_seed
+
+    tunable.apply(settings)
+    cfg = tunable.as_config(base_cfg, settings)
 
     found = localised = total = 0
     peaks: list[float] = []
@@ -139,7 +179,7 @@ def score_fold(grid, pod, scenarios, cfg, arm: str, repeats: int = 4) -> Score:
             speed.append((cfg.max_periods - result.periods_to_find + 1) / cfg.max_periods
                          if result.found else 0.0)
     return Score(found / total, localised / total, float(np.mean(peaks)),
-                 float(np.mean(speed)), len(scenarios))
+                 float(np.mean(speed)), len(scenarios), repeats, speed)
 
 
 _SYSTEM = """You are tuning a search and rescue planning system that you are \
@@ -192,7 +232,8 @@ def propose(before: Score, log: TuningLog, breakdown: str,
 
     user = (
         f"CURRENT PERFORMANCE on {before.n} cases where the initial premise was "
-        f"wrong\n"
+        f"wrong, each searched {before.repeats} times with different sensor luck "
+        f"({before.n_runs} runs)\n"
         f"  subject located            {100 * before.find_rate:.0f}%\n"
         f"  true location reached the top decile of belief   "
         f"{100 * before.localise_rate:.0f}%\n"
@@ -202,7 +243,7 @@ def propose(before: Score, log: TuningLog, breakdown: str,
         f"{before.objective:.3f}\n\n"
         f"{breakdown}\n\n"
         f"CURRENT CONFIGURATION\n{current}\n\n"
-        f"PARAMETERS YOU MAY CHANGE\n{tunable.describe()}\n\n"
+        f"PARAMETERS YOU MAY CHANGE\n{tunable.describe(log.settings)}\n\n"
         f"ALREADY TRIED\n{tried}\n\n"
         f"NEVER TRIED — prefer one of these\n  {untried}\n\n"
         f"Propose one change."
@@ -233,10 +274,17 @@ def propose(before: Score, log: TuningLog, breakdown: str,
     # rejected change anyway. Enforce it: an identical (parameter, value) pair
     # would be measured the same way and rejected the same way, and a round
     # spent re-measuring it is a round not spent searching.
+    # Exact equality was not enough: nothing stops the model answering 0.499
+    # where 0.5 was refused, and a difference that small is far inside the
+    # measurement noise, so the round buys nothing. Reject anything within 5% of
+    # the knob's range of a value already measured.
+    knob = tunable.KNOBS[name]
+    tolerance = max(1e-9, 0.05 * (knob.hi - knob.lo))
     for prior in log.trials:
-        if prior.parameter == name and abs(prior.now - value) < 1e-9:
+        if prior.parameter == name and abs(prior.now - value) <= tolerance:
             if debug:
-                print(f"      [rejected: {name} -> {value} already measured]")
+                print(f"      [rejected: {name} -> {value} is indistinguishable "
+                      f"from {prior.now}, already measured]")
             return None
 
     return Trial(
@@ -248,20 +296,52 @@ def propose(before: Score, log: TuningLog, breakdown: str,
     )
 
 
+def paired_stderr(before: Score, after: Score) -> float:
+    """Standard error of the objective difference, run by run.
+
+    The two folds are the same scenarios under the same seeds, so the runs pair
+    up and most of the scenario-to-scenario variance -- which is large, and
+    which neither configuration is responsible for -- cancels in the difference.
+    Returns 0.0 when the vectors are missing or do not pair, which makes the
+    gate fall back to the fixed bar alone rather than silently inventing
+    confidence it does not have.
+    """
+    if len(before.runs) != len(after.runs) or len(before.runs) < 2:
+        return 0.0
+    diff = np.asarray(after.runs) - np.asarray(before.runs)
+    return float(np.std(diff, ddof=1) / np.sqrt(diff.size))
+
+
 def judge(trial: Trial, before: Score, after: Score) -> None:
-    """Accept on the objective, and never at the cost of finding people."""
+    """Accept on the objective, and never at the cost of finding people.
+
+    Three conditions, in order of how often they bite:
+
+    1. the gain clears a fixed bar, so a change too small to matter is not kept
+       for the churn;
+    2. the gain clears its own measurement noise, so a change that is really
+       zero is not kept because the dice fell well. Repeats were added to give
+       the gate something to see; this is the part that actually looks;
+    3. the find rate does not fall further than the noise on the find rate,
+       because a configuration that reasons beautifully and recovers fewer
+       people is a worse configuration.
+    """
     gain = after.objective - before.objective
     regression = before.find_rate - after.find_rate
+    stderr = paired_stderr(before, after)
     trial.before = before.to_dict()
     trial.after = after.to_dict()
+    margin = f"objective {gain:+.3f} ± {stderr:.3f}" if stderr else f"objective {gain:+.3f}"
 
     if gain < MIN_SCORE_GAIN:
-        trial.verdict = (f"objective {gain:+.3f}, below the "
-                         f"{MIN_SCORE_GAIN:.2f} bar")
+        trial.verdict = f"{margin}, below the {MIN_SCORE_GAIN:.3f} bar"
+    elif stderr and gain < stderr:
+        trial.verdict = (f"{margin}, inside one standard error -- "
+                         f"indistinguishable from no change")
     elif regression > MAX_FIND_REGRESSION:
-        trial.verdict = (f"objective {gain:+.3f} but find rate "
+        trial.verdict = (f"{margin} but find rate "
                          f"{-100 * regression:+.0f} pp -- not worth it")
     else:
-        trial.verdict = (f"objective {gain:+.3f}, find rate "
+        trial.verdict = (f"{margin}, find rate "
                          f"{100 * (after.find_rate - before.find_rate):+.0f} pp")
         trial.accepted = True

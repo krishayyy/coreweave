@@ -86,10 +86,23 @@ NAIVE: dict[str, float] = {
 }
 
 
-def describe() -> str:
-    """The knobs, as the agent reads them."""
+def describe(settings: dict[str, float] | None = None) -> str:
+    """The knobs, as the agent reads them.
+
+    This used to print `currently {k.default}` -- the hand-tuned default --
+    regardless of what the system was actually running. Under `--from-naive`
+    that handed the model the eight values it was supposed to rediscover from
+    its own measurements, and quietly turned the experiment into a copying
+    exercise. The current value now comes from the live configuration or is
+    omitted entirely.
+    """
+    def value(k: Knob) -> str:
+        if settings is None:
+            return ""
+        return f"currently {settings.get(k.name, k.default)}, "
+
     return "\n".join(
-        f"  {k.name}: currently {k.default}, allowed {k.lo} to {k.hi}"
+        f"  {k.name}: {value(k)}allowed {k.lo} to {k.hi}"
         f"{' (whole numbers)' if k.integer else ''}\n      {k.what}"
         for k in KNOBS.values()
     )

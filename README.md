@@ -132,26 +132,22 @@ Scenarios come in three families:
 
 ## Results
 
-Held-out suite (seed 7), three independent detection-roll repeats per scenario.
-Every arm sees identical scenarios with identical detection rolls.
+### Why a System One model rather than a language model
 
-    arm                           family   find rate        localised
-    library only (no revision)    A        79% [69-86]      82% [73-89]
-    library only (no revision)    B        43% [32-55]      54% [43-65]
-    library only (no revision)    C        89% [75-96]      75% [59-86]
-    blind relocation              A        77% [67-84]      82% [73-89]
-    blind relocation              B        35% [25-46]      54% [43-65]
-    blind relocation              C        81% [65-90]      75% [59-86]
-    case-file nomination          A        77% [67-84]      86% [77-91]
-    case-file nomination          B        60% [48-70]      75% [64-84]
-    case-file nomination          C        86% [71-94]      67% [50-80]
+The first working version of this had a language model write accounts in prose.
+Its measured failure was never that its best proposal was bad -- the best
+proposal in each response sat 2.2 km from the truth. It was that the model
+could not tell which of its own proposals was the best one: across 297
+nominations, stated confidence ranked them at **56% concordance**, where 50% is
+no signal. Its top pick averaged 4.7 km from the truth; the best pick in the
+same response averaged 2.2 km.
 
-### A System One model does better than a language model here
-
-The language model arm's measured failure was never that its best proposal was
-bad -- the best proposal in each response sat 2.2 km from the truth. It was that
-it could not tell which of its own proposals was the best one: stated confidence
-ranked them at 56% concordance, where 50% is no signal.
+That measurement is the reason for everything that follows, and it does not
+depend on the configuration it was taken under. The language model arm's
+*headline numbers* were measured before the evidence trigger, the sixteen-point
+compass and the distance conditioning, so they are not comparable to the table
+above and are deliberately not quoted here rather than presented as a
+side-by-side that would mislead.
 
 TypeSafe's System One model removes that problem rather than mitigating it. It
 does not write. You define the shape of the answer and it returns a probability

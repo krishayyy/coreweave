@@ -34,6 +34,31 @@
       },
       "accepted": false,
       "verdict": "objective -0.023, below the 0.01 bar"
+    },
+    {
+      "id": "trial-002",
+      "parameter": "evidence_trigger_floor",
+      "was": 0.4,
+      "now": 0.3,
+      "rationale": "The current floor of 0.15 is low, allowing newly arriving evidence to reopen premises too readily. Raising it to 0.3 should reduce unnecessary premise reopens, tightening the search focus.",
+      "predicted": "Faster convergence and higher speed score, but risk of missing legitimate new evidence that could correct a wrong hypothesis.",
+      "at": "2026-09-13T01:19:39+00:00",
+      "before": {
+        "find_rate": 0.4791666666666667,
+        "localise_rate": 0.4791666666666667,
+        "mean_peak": 78.59039306640625,
+        "objective": 0.3033854166666667,
+        "n": 12
+      },
+      "after": {
+        "find_rate": 0.4166666666666667,
+        "localise_rate": 0.5208333333333334,
+        "mean_peak": 78.150713885272,
+        "objective": 0.3255208333333333,
+        "n": 12
+      },
+      "accepted": false,
+      "verdict": "objective +0.022 but find rate -6 pp -- not worth it"
     }
   ]
 }
