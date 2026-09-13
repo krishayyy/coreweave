@@ -79,6 +79,12 @@ html, body {
 #app { position: relative; height: 100vh; overflow: hidden; }
 
 #stage { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; }
+#stage::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(130% 100% at 50% 45%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.62) 100%),
+    linear-gradient(to bottom, rgba(0,0,0,0.42) 0, rgba(0,0,0,0) 14%);
+}
 .pane { position: relative; min-width: 0; overflow: hidden; }
 .pane + .pane { box-shadow: inset 1px 0 0 var(--rule); }
 .map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -127,7 +133,7 @@ html, body {
 .panesub:not(.right) { left: 272px; }
 
 .verdict {
-  position: absolute; bottom: 208px; z-index: 2; pointer-events: none;
+  position: absolute; bottom: 226px; z-index: 2; pointer-events: none;
   width: calc(50% - 40px); text-align: center;
   font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.16em;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
@@ -163,7 +169,7 @@ html, body {
 /* ---- side panel -------------------------------------------------------- */
 
 #side {
-  top: 68px; left: 14px; bottom: 202px; width: 214px; border-radius: 6px;
+  top: 68px; left: 14px; bottom: 220px; width: 214px; border-radius: 6px;
   padding: 13px 12px; display: flex; flex-direction: column; gap: 7px;
   overflow: hidden;
 }
@@ -212,8 +218,8 @@ html, body {
 /* ---- deck -------------------------------------------------------------- */
 
 #deck {
-  left: 14px; right: 14px; bottom: 14px; height: 176px; border-radius: 6px;
-  display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  left: 14px; right: 14px; bottom: 14px; height: 194px; border-radius: 6px;
+  display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   column-gap: 30px; padding: 15px 20px 13px; align-items: stretch;
 }
@@ -248,8 +254,18 @@ html, body {
   #stage { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
   .pane + .pane { box-shadow: inset 0 1px 0 var(--rule); }
   #side { display: none; }
+  /* Both sub-labels inherited the desktop position and stacked on each other.
+     They follow their headings down instead. */
   .panelabel:not(.right) { left: 18px; }
   .panelabel.right { left: 18px; top: calc(50% + 14px); }
+  .panesub:not(.right) { left: 18px; top: 86px; }
+  .panesub.right { left: 18px; top: calc(50% + 32px); }
+  /* The header is a strip, not a paragraph: nothing in it wraps. */
+  #bar { gap: 10px; font-size: 10.5px; }
+  #bar #subject { overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 34vw; }
+  #bar #op, #bar #elapsed, #bar #status, #bar #clock { white-space: nowrap; }
+  #bar #elapsed { display: none; }
   .verdict { width: calc(100% - 36px); left: 18px; }
   .verdict:not(.right) { bottom: calc(50% + 200px); }
   .verdict.right { right: auto; left: 18px; }
